@@ -112,7 +112,28 @@ pub async fn code_chat(http: &reqwest::Client, user: &str) -> Result<String> {
 
 /// Perencana alat untuk model lokal: keluaran DIKUNCI ke skema JSON (alat harus dari daftar), plus contoh few-shot.
 /// Teknik ini (constrained decoding + few-shot) membuat model 1B mampu memanggil alat secara andal.
+/// Kalimat majemuk dipecah per klausa berurutan (model kecil lebih akurat per klausa), maks 4 langkah.
 pub async fn plan(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat::Call>, String)> {
+    let mut segs = vec![goal.to_string()];
+    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " habis itu ", " selanjutnya ", ";"] {
+        segs = segs.iter().flat_map(|s| s.split(sep).map(String::from).collect::<Vec<_>>()).collect();
+    }
+    segs.retain(|s| !s.trim().is_empty());
+    if segs.len() < 2 {
+        return plan_one(http, goal).await;
+    }
+    let (mut calls, mut reply) = (vec![], String::new());
+    for s in segs.iter().take(4) {
+        let (c, r) = plan_one(http, s.trim()).await?;
+        calls.extend(c);
+        if reply.is_empty() {
+            reply = r;
+        }
+    }
+    Ok((calls, reply))
+}
+
+async fn plan_one(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat::Call>, String)> {
     if !has(http, CHAT_MODEL).await {
         bail!("model obrolan lokal belum terpasang");
     }
@@ -131,7 +152,7 @@ pub async fn plan(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat
         crate::alat::TOOL_HELP.lines().chain(["atur <kecerahan|volume> <N>", "waktu", "web <pertanyaan>", "gambar <kata>", "jurnal <topik tahun>"]).map(|l| l.chars().take(110).collect::<String>()).collect::<Vec<_>>().join("\n"),
         crate::fakta::ringkas()
     );
-    let shots: [(&str, &str); 9] = [
+    let shots: [(&str, &str); 11] = [
         ("cuaca di bandung", r#"{"calls":[{"tool":"cuaca","arg":"bandung"}],"reply":"Kucek cuaca Bandung ya Bos ☁"}"#),
         ("catat beli kabel besok", r#"{"calls":[{"tool":"catat","arg":"beli kabel besok"}],"reply":"Siap, kucatat Bos 📝"}"#),
         ("cek wifi di sini", r#"{"calls":[{"tool":"wifi","arg":""}],"reply":"Siap Bos, kucek Wi-Fi-nya ya 📶"}"#),
@@ -140,6 +161,8 @@ pub async fn plan(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat
         ("berita listrik hari ini", r#"{"calls":[{"tool":"berita","arg":"listrik"}],"reply":"Kucek kabar terbarunya, Bos 📰"}"#),
         ("carikan jurnal deep learning 2021 sampai 2025", r#"{"calls":[{"tool":"jurnal","arg":"deep learning 2021 sampai 2025"}],"reply":"Kucari jurnalnya ya Bos 📚"}"#),
         ("kecerahan 40 persen", r#"{"calls":[{"tool":"atur","arg":"kecerahan 40"}],"reply":"Kuatur kecerahannya ya 🔆"}"#),
+        ("buka youtube dan cari lagu santai", r#"{"calls":[{"tool":"open","arg":"https://www.youtube.com/results?search_query=lagu%20santai"}],"reply":"Kubuka pencarian YouTube-nya ya 🎵"}"#),
+        ("rute ke stasiun bandung", r#"{"calls":[{"tool":"open","arg":"https://www.google.com/maps/search/stasiun%20bandung"}],"reply":"Kubuka petanya, Bos 🗺"}"#),
         ("halo apa kabar", r#"{"calls":[],"reply":"Halo Bos! Aku baik, siap bantu apa hari ini? 😊"}"#),
     ];
     let mut msgs = vec![json!({"role": "system", "content": sys})];

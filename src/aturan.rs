@@ -57,7 +57,7 @@ fn layanan(l: &str) -> Option<String> {
     let has = |k: &str| w.contains(&k);
     let q = |extra: &[&str]| w.iter().filter(|x| !NOISE.contains(x) && !extra.contains(x)).cloned().collect::<Vec<_>>().join(" ");
     let files = ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"].iter().any(|k| has(k));
-    let (base, q) = if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan"].iter().any(|k| has(k)) && !files) {
+    let (base, q) = if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"].iter().any(|k| has(k)) && !files) {
         ("https://www.youtube.com/results?search_query=", q(&[]))
     } else if l.starts_with("rute ke ") || l.starts_with("navigasi ke ") || has("maps") || l.starts_with("peta ") || l.starts_with("lokasi ") {
         ("https://www.google.com/maps/search/", q(&[]))

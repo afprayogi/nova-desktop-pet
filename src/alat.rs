@@ -499,7 +499,7 @@ pub fn summarize(text: &str, n: usize) -> String {
 pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     FROM_ML.store(false, Ordering::Relaxed);
     let mut segs = vec![goal.to_string()];
-    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", ";", " then "] {
+    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " habis itu ", " abis itu ", " selanjutnya ", ";", " then "] {
         segs = segs.iter().flat_map(|s| s.split(sep).map(String::from).collect::<Vec<_>>()).collect();
     }
     segs.retain(|s| !s.trim().is_empty());
@@ -653,6 +653,12 @@ mod tests {
 
     /// Penjaga urutan aturan: tiap kalimat harus menghasilkan alat yang diharapkan (aturan baru tak boleh menimpa yang lama).
     #[test]
+    fn ordered_steps() {
+        let p = plan_offline("buka youtube cari lagu santai setelah itu cek baterai lalu agenda").unwrap();
+        let tools: Vec<&str> = p.iter().map(|c| c.tool.as_str()).collect();
+        assert_eq!(tools, ["open", "baterai", "agenda"]);
+    }
+    #[test]
     fn web_services() {
         let url = |t: &str| crate::aturan::rule(t).map(|c| (c.tool, c.arg));
         let (tool, arg) = url("carikan di video youtube anime fullmetal").unwrap();
@@ -660,6 +666,8 @@ mod tests {
         assert!(arg.starts_with("https://www.youtube.com/results?search_query=anime%20fullmetal"));
         assert!(url("rute ke bandung").unwrap().1.contains("google.com/maps/search/bandung"));
         assert!(url("carikan repo rust pet di github").unwrap().1.contains("github.com/search"));
+        assert!(url("buka video anime fullmetal").unwrap().1.contains("youtube.com/results?search_query=anime%20fullmetal"));
+        assert_ne!(url("buka video.mp4").map(|c| c.1.contains("youtube")), Some(true));
         assert_ne!(url("carikan file video mp4 kemarin").map(|c| c.0), Some("open".into()));
     }
     #[test]
