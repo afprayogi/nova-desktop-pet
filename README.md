@@ -2,83 +2,82 @@
 
 # NOVA
 
-Asisten desktop berwujud peliharaan pixel-art untuk Windows, ditulis dalam Rust. NOVA berjalan di tray, hidup di atas desktop, dan
-membantu pekerjaan harian: perintah komputer, jadwal, ingatan, analitik kebiasaan, dan asisten koding. Hampir semua fitur bekerja
-**offline dan lokal**; model bahasa (Gemini, OmniRoute, atau Ollama) bersifat opsional.
+NOVA adalah peliharaan pixel-art yang tinggal di desktop Windows-ku dan bisa diajak ngobrol. Aku mulai membuatnya karena bosan
+dengan asisten yang semuanya lewat cloud: aku ingin yang ingatannya ada di laptopku sendiri, bisa disuruh membereskan berkas dan
+mengecek baterai, dan tetap berguna waktu internet mati. Ditulis dengan Rust, dan masih terus kutambal.
 
-> Status: pengembangan aktif, hanya Windows 10/11. Antarmuka dan sebagian besar teks berbahasa Indonesia.
+Hanya jalan di Windows 10/11. Teksnya berbahasa Indonesia.
 
-## Fitur
+## Yang bisa dilakukan
 
-| Area | Isi |
-|------|-----|
-| Peliharaan | Jendela transparan (egui), animasi, karakter bergaya Shimeji, sahabat ber-level (buddy), dok ketik, popup balasan |
-| Perintah komputer | Cari/rapikan berkas (pratinjau + `urungkan`), proses, baterai, kecerahan/volume, buka aplikasi (daftar putih), baca layar (OCR), shell terbatas |
-| Otak berlapis | Aturan lokal → router semantik (embedding) → Gemini (JSON) → OmniRoute → Llama lokal (Ollama), dengan koreksi-diri bila JSON rusak |
-| Memori | SQLite lokal: fakta tentang pengguna, pencarian hibrida BM25 + vektor + graf, tindak-lanjut obrolan multi-giliran |
-| Analitik | K-Means tipe hari, deteksi anomali, ramalan disk, prediksi kelelahan (MLP), prediksi baterai |
-| Web | Cuaca, kurs, berita sesuai minat, jadwal sholat, harga (Yahoo), baca halaman lewat Chrome headless |
-| Email | Baca (Gmail/Outlook OAuth, IMAP), kirim laporan ke diri sendiri (SMTP, selalu minta persetujuan) |
-| Koding | `/proyek`, `/log`, `/makro`, `/scaffold`, `/build`, ringkasan git, ekstensi browser pemblokir iklan |
-| Keamanan | Penilaian risiko tiap alat (aman/konfirmasi/blok), daftar jalur sensitif, kunci dienkripsi DPAPI, API lokal bertoken |
+Kebanyakan hal berjalan tanpa model bahasa sama sekali. Kalimat yang kukenali lewat aturan dan pencocokan makna (embedding)
+langsung dikerjakan di laptop. Model baru dipanggil kalau kalimatnya tidak dikenali: Gemini dulu, lalu OmniRoute, lalu Llama
+lokal lewat Ollama. Kalau Llama membalas JSON yang rusak, galatnya dikembalikan ke modelnya supaya diperbaiki.
 
-Daftar lengkap perintah: ketik `/bantuan` di NOVA.
+Beberapa hal yang sehari-hari kupakai:
 
-## Mulai cepat
+- Mencari dan merapikan berkas. Perubahan selalu dipratinjau dulu dan bisa dibatalkan dengan `urungkan`.
+- Mengecek proses, baterai, CPU, RAM, disk; mengatur kecerahan dan volume; membuka aplikasi dari daftar yang diizinkan.
+- Mengingat fakta tentangku, jadwal, dan kebiasaan. Semuanya di SQLite lokal. Obrolan lanjutan seperti "yang rilis tahun ini aja"
+  nyambung ke pertanyaan sebelumnya.
+- Cuaca, kurs, berita sesuai minat, jadwal sholat, harga saham, dan membaca halaman web lewat Chrome tanpa jendela.
+- Membaca email (Gmail, Outlook, IMAP) dan mengirim ringkasan ke alamatku sendiri, selalu setelah kutekan setuju.
+- Bantuan koding: `/proyek`, `/log`, `/makro`, `/build`, ringkasan git, dan pemblokir iklan lewat DNS lokal plus ekstensi browser.
+- Statistik pemakaian: tipe hari, anomali, ramalan disk, dan perkiraan kapan aku mulai kelelahan.
 
-Prasyarat: Windows 10/11 dan [Rust](https://rustup.rs) (stable).
+Daftar lengkapnya muncul kalau mengetik `/bantuan` di NOVA.
+
+## Mencoba
+
+Butuh Windows dan [Rust](https://rustup.rs).
 
 ```powershell
-git clone <url-repo> nova
-cd nova
-cargo run --release          # tray + peliharaan
+git clone https://github.com/afprayogi/nova-desktop-pet.git
+cd nova-desktop-pet
+cargo run --release
 ```
 
-Pasang permanen (tanpa admin, ke `%LOCALAPPDATA%\NOVA` + mulai otomatis): jalankan `pasang-asisten.bat`; lepas dengan `lepas-asisten.bat`.
-Pintasan global **Ctrl+Alt+N** membuka obrolan cepat.
+Supaya terpasang tetap dan mulai sendiri saat login (tanpa hak admin), jalankan `pasang-asisten.bat`. Untuk melepasnya,
+`lepas-asisten.bat`. Ctrl+Alt+N membuka obrolan cepat.
 
-### Model bahasa (opsional)
-- **Gemini**: `/gemini key <kunci>` (disimpan terenkripsi).
-- **OmniRoute / Ollama**: atur lewat Pengaturan, atau `/ollama` dan `/lokal`. Model kecil `llama3.2:1b` dan `nomic-embed-text` cukup untuk RAM 8 GB.
-- **Email**: `/google`, `/outlook`, `/email imap auto <alamat> <sandi-aplikasi>`, `/smtp auto <alamat> <sandi-aplikasi>`.
+Model bahasa bersifat opsional. Kunci Gemini dimasukkan dengan `/gemini key <kunci>` dan disimpan terenkripsi. Untuk model lokal,
+pasang [Ollama](https://ollama.com) lalu pakai `/ollama` dan `/lokal`; `llama3.2:1b` sudah cukup di laptop 8 GB. Email diatur lewat
+`/google`, `/outlook`, `/email imap` dan `/smtp`.
 
-## Arsitektur
+## Cara kerjanya
 
 <p align="center"><img src="docs/arsitektur.svg" alt="Diagram arsitektur NOVA" width="800"></p>
 
-```
-src/main.rs        entri: tray, API, peliharaan
-src/engine.rs      inti: antrean misi, agen, event
-src/engine/        chat · slash (perintah /) · misi (perencana) · teks (bantuan)
-src/aturan.rs      aturan bahasa alami → alat       src/alat.rs   alat + penilaian risiko
-src/gemini.rs, omniroute.rs, lokal.rs               rantai penyedia model
-src/niat.rs        klasifikasi niat terstruktur     src/rawat.rs  normalisasi + tindak-lanjut
-src/pet.rs, lukis.rs                                 jendela & gambar peliharaan (egui)
-src/api.rs, ui.html, dash.html                       API lokal 127.0.0.1 + UI web
-```
+Peliharaan dan antarmuka web hanyalah klien dari API lokal di `127.0.0.1` yang dijaga token. Semua permintaan masuk ke
+`src/engine.rs`, yang memutuskan lewat rantai di atas. Sebelum alat apa pun dijalankan, `alat::assess` menilainya: aman,
+perlu konfirmasi, atau ditolak. Model hanya memilih nama alat; yang menjalankannya kode Rust dengan daftar putih.
 
-API lokal hanya menerima `localhost` dengan token (`x-nova-token`) yang dibuat di folder data.
+Peta singkat isi `src/`: `engine/` (obrolan, perintah `/`, perencana misi), `aturan.rs` dan `alat.rs` (aturan bahasa dan alat),
+`gemini.rs`, `omniroute.rs`, `lokal.rs` (penyedia model), `niat.rs` dan `rawat.rs` (klasifikasi niat dan normalisasi kalimat),
+`pet.rs` dan `lukis.rs` (jendela dan gambar peliharaan).
 
-## Pengembangan
+## Mengembangkan
 
 ```powershell
-cargo test                   # 120+ tes (data uji terisolasi di folder sementara)
+cargo test
 cargo build --release
 ```
 
-Matikan `nova.exe` yang sedang berjalan sebelum membangun ulang rilis (berkas terkunci).
+Tutup `nova.exe` yang sedang jalan sebelum membangun rilis, kalau tidak berkasnya terkunci.
 
 ## Privasi
 
-Data hanya disimpan lokal di `%APPDATA%\nova` (hapus folder itu untuk menghapus semuanya): nama aplikasi aktif + jam, fakta yang Anda
-simpan, riwayat obrolan, statistik. Tidak ada ketikan global, judul jendela, atau isi layar yang disimpan. OCR mati bawaan. Kunci, token,
-dan sandi dienkripsi DPAPI (hanya akun Windows Anda). Ke penyedia model hanya dikirim teks perintah dan konteks ringkas, tidak pernah isi berkas, layar, atau email.
+Data tinggal di `%APPDATA%\nova`; hapus folder itu dan semuanya hilang. Yang dicatat: nama aplikasi yang sedang aktif beserta jam,
+fakta yang kusimpan, riwayat obrolan, dan statistik. Tidak ada ketikan global, judul jendela, atau isi layar yang disimpan, dan OCR
+mati secara bawaan. Kunci, token, dan sandi dienkripsi dengan DPAPI Windows. Ke penyedia model hanya dikirim teks perintah dan
+konteks singkat, tidak pernah isi berkas, layar, atau email.
 
-## Aset karakter
+## Karakter
 
-Repositori **tidak** menyertakan seni karakter. Paket karakter diletakkan di `%APPDATA%\nova\karakter\<nama>\`; buat sendiri dari gambar Anda
-dengan `/karakter buat <nama> <gambar>`. Seni berhak cipta pihak lain hanya untuk pemakaian pribadi dan tidak boleh disebarkan.
+Repositori ini tidak menyertakan gambar karakter apa pun. Paket karakter bergaya Shimeji ditaruh di
+`%APPDATA%\nova\karakter\<nama>\`, atau dibuat dari gambarmu sendiri dengan `/karakter buat <nama> <gambar>`. Seni milik orang lain
+hanya untuk dipakai sendiri dan jangan disebarkan.
 
-## Lisensi & atribusi
+## Lisensi
 
-[MIT](LICENSE). Bagian yang diadaptasi dicatat di [NOTICE.md](NOTICE.md).
+[MIT](LICENSE). Bagian yang kuadaptasi dari proyek lain dicatat di [NOTICE.md](NOTICE.md).
