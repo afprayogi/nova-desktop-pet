@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="Segoe UI,Arial,sans-serif" role="img" aria-label="Arsitektur NOVA">
+  <style>.b{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}.h{fill:#e0f2fe;stroke:#0284c7;stroke-width:1.5}.s{fill:#dcfce7;stroke:#16a34a;stroke-width:1.5}.t{font-size:14px;fill:#0f172a;text-anchor:middle}.u{font-size:11px;fill:#475569;text-anchor:middle}.a{stroke:#475569;stroke-width:1.5;fill:none;marker-end:url(#m)}</style>
+  <defs><marker id="m" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#475569"/></marker></defs>
+  <rect width="900" height="360" fill="#fff"/>
+  <rect class="b" x="20" y="30" width="150" height="60" rx="8"/><text class="t" x="95" y="56">Peliharaan &amp; UI</text><text class="u" x="95" y="74">egui · /ui · /dash</text>
+  <rect class="b" x="220" y="30" width="150" height="60" rx="8"/><text class="t" x="295" y="56">API lokal</text><text class="u" x="295" y="74">127.0.0.1 + token</text>
+  <rect class="h" x="420" y="30" width="190" height="60" rx="8"/><text class="t" x="515" y="56">Engine</text><text class="u" x="515" y="74">chat · slash · misi</text>
+  <rect class="b" x="660" y="30" width="200" height="60" rx="8"/><text class="t" x="760" y="56">Normalisasi</text><text class="u" x="760" y="74">rawat · tindak-lanjut</text>
+  <path class="a" d="M170,60 H218"/><path class="a" d="M370,60 H418"/><path class="a" d="M610,60 H658"/>
+  <text class="t" x="450" y="132" style="text-anchor:start;font-weight:600">Rantai keputusan (urut, berhenti di yang pertama cocok)</text>
+  <rect class="s" x="20" y="150" width="150" height="60" rx="8"/><text class="t" x="95" y="176">Aturan lokal</text><text class="u" x="95" y="194">aturan.rs (offline)</text>
+  <rect class="s" x="205" y="150" width="150" height="60" rx="8"/><text class="t" x="280" y="176">Router semantik</text><text class="u" x="280" y="194">embedding + ML</text>
+  <rect class="h" x="390" y="150" width="140" height="60" rx="8"/><text class="t" x="460" y="176">Gemini</text><text class="u" x="460" y="194">JSON terstruktur</text>
+  <rect class="h" x="565" y="150" width="140" height="60" rx="8"/><text class="t" x="635" y="176">OmniRoute</text><text class="u" x="635" y="194">OpenAI-compatible</text>
+  <rect class="h" x="740" y="150" width="140" height="60" rx="8"/><text class="t" x="810" y="176">Ollama lokal</text><text class="u" x="810" y="194">Llama + koreksi-diri</text>
+  <path class="a" d="M170,180 H203"/><path class="a" d="M355,180 H388"/><path class="a" d="M530,180 H563"/><path class="a" d="M705,180 H738"/>
+  <path class="a" d="M515,90 V120 H95 V148"/>
+  <rect class="b" x="20" y="270" width="200" height="60" rx="8"/><text class="t" x="120" y="296">Penilai risiko</text><text class="u" x="120" y="314">aman · konfirmasi · blok</text>
+  <rect class="b" x="260" y="270" width="200" height="60" rx="8"/><text class="t" x="360" y="296">Alat (whitelist)</text><text class="u" x="360" y="314">berkas · sistem · web · email</text>
+  <rect class="b" x="500" y="270" width="180" height="60" rx="8"/><text class="t" x="590" y="296">Memori lokal</text><text class="u" x="590" y="314">SQLite · fakta · graf</text>
+  <rect class="b" x="720" y="270" width="160" height="60" rx="8"/><text class="t" x="800" y="296">Daemon latar</text><text class="u" x="800" y="314">jadwal · email · mood</text>
+  <path class="a" d="M95,210 V268"/><path class="a" d="M222,300 H258"/><path class="a" d="M460,300 H498"/>
+</svg>

@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/banner.svg" alt="NOVA" width="720"></p>
+
 # NOVA
 
 Asisten desktop berwujud peliharaan pixel-art untuk Windows, ditulis dalam Rust. NOVA berjalan di tray, hidup di atas desktop, dan
@@ -41,6 +43,8 @@ Pintasan global **Ctrl+Alt+N** membuka obrolan cepat.
 - **Email**: `/google`, `/outlook`, `/email imap auto <alamat> <sandi-aplikasi>`, `/smtp auto <alamat> <sandi-aplikasi>`.
 
 ## Arsitektur
+
+<p align="center"><img src="docs/arsitektur.svg" alt="Diagram arsitektur NOVA" width="800"></p>
 
 ```
 src/main.rs        entri: tray, API, peliharaan
