@@ -2,34 +2,34 @@
 
 # NOVA
 
-NOVA adalah peliharaan pixel-art yang tinggal di desktop Windows-ku dan bisa diajak ngobrol. Aku mulai membuatnya karena bosan
-dengan asisten yang semuanya lewat cloud: aku ingin yang ingatannya ada di laptopku sendiri, bisa disuruh membereskan berkas dan
-mengecek baterai, dan tetap berguna waktu internet mati. Ditulis dengan Rust, dan masih terus kutambal.
+NOVA is a pixel-art pet that lives on my Windows desktop and can be talked to. I started it because I was tired of assistants that
+live entirely in the cloud. I wanted one whose memory stays on my own laptop, that can tidy files and check the battery, and that
+is still useful when the internet is down. It is written in Rust and I keep patching it.
 
-Hanya jalan di Windows 10/11. Teksnya berbahasa Indonesia.
+Windows 10/11 only. The interface and most replies are in Indonesian.
 
-## Yang bisa dilakukan
+## What it does
 
-Kebanyakan hal berjalan tanpa model bahasa sama sekali. Kalimat yang kukenali lewat aturan dan pencocokan makna (embedding)
-langsung dikerjakan di laptop. Model baru dipanggil kalau kalimatnya tidak dikenali: Gemini dulu, lalu OmniRoute, lalu Llama
-lokal lewat Ollama. Kalau Llama membalas JSON yang rusak, galatnya dikembalikan ke modelnya supaya diperbaiki.
+Most things work without any language model. Sentences that match a rule or are recognized by meaning (embeddings) run locally.
+A model is only called when a sentence is not recognized: Gemini first, then OmniRoute, then a local Llama through Ollama. If the
+local model returns broken JSON, the error is sent back to it once so it can correct itself.
 
-Beberapa hal yang sehari-hari kupakai:
+Things I use every day:
 
-- Mencari dan merapikan berkas. Perubahan selalu dipratinjau dulu dan bisa dibatalkan dengan `urungkan`.
-- Mengecek proses, baterai, CPU, RAM, disk; mengatur kecerahan dan volume; membuka aplikasi dari daftar yang diizinkan.
-- Mengingat fakta tentangku, jadwal, dan kebiasaan. Semuanya di SQLite lokal. Obrolan lanjutan seperti "yang rilis tahun ini aja"
-  nyambung ke pertanyaan sebelumnya.
-- Cuaca, kurs, berita sesuai minat, jadwal sholat, harga saham, dan membaca halaman web lewat Chrome tanpa jendela.
-- Membaca email (Gmail, Outlook, IMAP) dan mengirim ringkasan ke alamatku sendiri, selalu setelah kutekan setuju.
-- Bantuan koding: `/proyek`, `/log`, `/makro`, `/build`, ringkasan git, dan pemblokir iklan lewat DNS lokal plus ekstensi browser.
-- Statistik pemakaian: tipe hari, anomali, ramalan disk, dan perkiraan kapan aku mulai kelelahan.
+- Find and tidy files. Changes are always previewed first and can be reverted with `urungkan` (undo).
+- Check processes, battery, CPU, RAM and disk; set brightness and volume; open apps from an allow-list.
+- Remember facts about me, my schedule and my habits, all in local SQLite. Follow-ups such as "only the ones released this year"
+  continue the previous question.
+- Weather, exchange rates, news by interest, prayer times, stock prices, and reading web pages through headless Chrome.
+- Read email (Gmail, Outlook, IMAP) and send a summary to my own address, always after I approve it.
+- Coding help: `/proyek`, `/log`, `/makro`, `/build`, git summaries, and an ad blocker (local DNS plus a browser extension).
+- Usage statistics: day types, anomalies, disk forecast, and an estimate of when I start getting tired.
 
-Daftar lengkapnya muncul kalau mengetik `/bantuan` di NOVA.
+Type `/bantuan` in NOVA for the full command list.
 
-## Mencoba
+## Try it
 
-Butuh Windows dan [Rust](https://rustup.rs).
+You need Windows and [Rust](https://rustup.rs).
 
 ```powershell
 git clone https://github.com/afprayogi/nova-desktop-pet.git
@@ -37,47 +37,47 @@ cd nova-desktop-pet
 cargo run --release
 ```
 
-Supaya terpasang tetap dan mulai sendiri saat login (tanpa hak admin), jalankan `pasang-asisten.bat`. Untuk melepasnya,
-`lepas-asisten.bat`. Ctrl+Alt+N membuka obrolan cepat.
+To install it permanently and start it at login (no admin rights), run `pasang-asisten.bat`. Remove it with `lepas-asisten.bat`.
+Ctrl+Alt+N opens the quick chat.
 
-Model bahasa bersifat opsional. Kunci Gemini dimasukkan dengan `/gemini key <kunci>` dan disimpan terenkripsi. Untuk model lokal,
-pasang [Ollama](https://ollama.com) lalu pakai `/ollama` dan `/lokal`; `llama3.2:1b` sudah cukup di laptop 8 GB. Email diatur lewat
-`/google`, `/outlook`, `/email imap` dan `/smtp`.
+Language models are optional. Add a Gemini key with `/gemini key <key>`; it is stored encrypted. For a local model, install
+[Ollama](https://ollama.com) and use `/ollama` and `/lokal`; `llama3.2:1b` is enough on an 8 GB laptop. Email is set up with
+`/google`, `/outlook`, `/email imap` and `/smtp`.
 
-## Cara kerjanya
+## How it works
 
-<p align="center"><img src="docs/arsitektur.svg" alt="Diagram arsitektur NOVA" width="800"></p>
+<p align="center"><img src="docs/arsitektur.svg" alt="NOVA architecture diagram" width="800"></p>
 
-Peliharaan dan antarmuka web hanyalah klien dari API lokal di `127.0.0.1` yang dijaga token. Semua permintaan masuk ke
-`src/engine.rs`, yang memutuskan lewat rantai di atas. Sebelum alat apa pun dijalankan, `alat::assess` menilainya: aman,
-perlu konfirmasi, atau ditolak. Model hanya memilih nama alat; yang menjalankannya kode Rust dengan daftar putih.
+The pet and the web UI are only clients of a local API on `127.0.0.1`, protected by a token. Every request goes to
+`src/engine.rs`, which decides through the chain above. Before any tool runs, `alat::assess` rates it: safe, needs confirmation,
+or blocked. The model only picks a tool name; Rust code with an allow-list does the actual work.
 
-Peta singkat isi `src/`: `engine/` (obrolan, perintah `/`, perencana misi), `aturan.rs` dan `alat.rs` (aturan bahasa dan alat),
-`gemini.rs`, `omniroute.rs`, `lokal.rs` (penyedia model), `niat.rs` dan `rawat.rs` (klasifikasi niat dan normalisasi kalimat),
-`pet.rs` dan `lukis.rs` (jendela dan gambar peliharaan).
+A quick map of `src/`: `engine/` (chat, `/` commands, mission planner), `aturan.rs` and `alat.rs` (language rules and tools),
+`gemini.rs`, `omniroute.rs`, `lokal.rs` (model providers), `niat.rs` and `rawat.rs` (intent classification and sentence
+normalization), `pet.rs` and `lukis.rs` (pet window and drawing).
 
-## Mengembangkan
+## Development
 
 ```powershell
 cargo test
 cargo build --release
 ```
 
-Tutup `nova.exe` yang sedang jalan sebelum membangun rilis, kalau tidak berkasnya terkunci.
+Close any running `nova.exe` before building a release, otherwise the file is locked.
 
-## Privasi
+## Privacy
 
-Data tinggal di `%APPDATA%\nova`; hapus folder itu dan semuanya hilang. Yang dicatat: nama aplikasi yang sedang aktif beserta jam,
-fakta yang kusimpan, riwayat obrolan, dan statistik. Tidak ada ketikan global, judul jendela, atau isi layar yang disimpan, dan OCR
-mati secara bawaan. Kunci, token, dan sandi dienkripsi dengan DPAPI Windows. Ke penyedia model hanya dikirim teks perintah dan
-konteks singkat, tidak pernah isi berkas, layar, atau email.
+Data lives in `%APPDATA%\nova`; delete that folder and everything is gone. What is recorded: the name of the active app and the
+time, facts I save, chat history, and statistics. No global keystrokes, window titles or screen contents are stored, and OCR is
+off by default. Keys, tokens and passwords are encrypted with Windows DPAPI. Model providers only receive the command text and a
+short context, never file contents, the screen, or email.
 
-## Karakter
+## Characters
 
-Repositori ini tidak menyertakan gambar karakter apa pun. Paket karakter bergaya Shimeji ditaruh di
-`%APPDATA%\nova\karakter\<nama>\`, atau dibuat dari gambarmu sendiri dengan `/karakter buat <nama> <gambar>`. Seni milik orang lain
-hanya untuk dipakai sendiri dan jangan disebarkan.
+This repository ships no character artwork. Shimeji-style character packs go in `%APPDATA%\nova\karakter\<name>\`, or you can
+build one from your own image with `/karakter buat <name> <image>`. Other people's artwork is for personal use only; do not
+redistribute it.
 
-## Lisensi
+## License
 
-[MIT](LICENSE). Bagian yang kuadaptasi dari proyek lain dicatat di [NOTICE.md](NOTICE.md).
+[MIT](LICENSE). Code adapted from other projects is credited in [NOTICE.md](NOTICE.md).
