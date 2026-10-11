@@ -131,37 +131,26 @@ pub fn pelajari(path: &str) -> String {
     format!("Dipelajari: {n} potongan dari '{src}'. Tanyakan lewat misi: tanya <pertanyaan>")
 }
 
-/// Potong teks menjadi ~700 karakter per catatan (baris baru dipertahankan agar kode tetap terbaca) dan simpan ke disk.
+/// Potong teks pada batas semantik (paragraf, kalimat, kata) menjadi 400-800 karakter per catatan.
+pub fn pecah(text: &str) -> Vec<&str> {
+    text_splitter::TextSplitter::new(400..800).chunks(text).collect()
+}
+
+/// Potong teks per `pecah` dan simpan ke disk.
 /// Mengganti catatan lama dengan label `src` yang sama. Mengembalikan jumlah potongan.
 pub fn ingest(src: &str, text: &str) -> usize {
     let Ok(mut c) = open() else { return 0 };
     let Ok(tx) = c.transaction() else { return 0 };
     let _ = tx.execute("DELETE FROM kb WHERE src=?1", [src]);
-    let (mut buf, mut n) = (String::new(), 0usize);
-    let flush = |buf: &mut String, n: &mut usize| {
-        let body = buf.trim();
-        if body.len() > 40 && *n < 3000 {
+    let mut n = 0usize;
+    for body in pecah(text) {
+        let body = body.trim();
+        if body.len() > 40 && n < 3000 {
             let title: String = body.trim_start_matches(|c: char| c == '#' || c.is_whitespace()).lines().next().unwrap_or("").chars().take(50).collect();
             let _ = tx.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,?3)", (title, body, src));
-            *n += 1;
-        }
-        buf.clear();
-    };
-    for para in text.split("\n\n") {
-        let para = para.trim_matches('\n');
-        if para.trim().is_empty() {
-            continue;
-        }
-        // paragraf sangat panjang (hasil ekstraksi PDF) dipecah per 6 baris
-        for part in para.split('\n').collect::<Vec<_>>().chunks(if para.len() > 1500 { 6 } else { 400 }) {
-            buf.push_str(&part.join("\n"));
-            buf.push('\n');
-            if buf.len() > 700 {
-                flush(&mut buf, &mut n);
-            }
+            n += 1;
         }
     }
-    flush(&mut buf, &mut n);
     let _ = tx.commit();
     crate::ingat::clear_cache();
     n
@@ -331,5 +320,16 @@ mod tests {
         let a = calc("drop tegangan panjang 50 m luas 2.5 mm2 arus 13.6 a tegangan 220 v").unwrap();
         assert!(a.contains("Drop tegangan"));
         assert!(calc("pilih kabel dan mcb daya 2000 w 220 v").unwrap().contains("MCB 16"));
+    }
+}
+
+#[cfg(test)]
+mod pecah_tests {
+    #[test]
+    fn splits_on_boundaries() {
+        let t = "Kalimat satu yang cukup panjang untuk diuji. ".repeat(60);
+        let v = super::pecah(&t);
+        assert!(v.len() > 2 && v.iter().all(|c| c.len() <= 800));
+        assert!(v.iter().all(|c| c.trim_end().ends_with('.')));
     }
 }
