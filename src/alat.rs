@@ -653,6 +653,16 @@ mod tests {
 
     /// Penjaga urutan aturan: tiap kalimat harus menghasilkan alat yang diharapkan (aturan baru tak boleh menimpa yang lama).
     #[test]
+    fn web_services() {
+        let url = |t: &str| crate::aturan::rule(t).map(|c| (c.tool, c.arg));
+        let (tool, arg) = url("carikan di video youtube anime fullmetal").unwrap();
+        assert_eq!(tool, "open");
+        assert!(arg.starts_with("https://www.youtube.com/results?search_query=anime%20fullmetal"));
+        assert!(url("rute ke bandung").unwrap().1.contains("google.com/maps/search/bandung"));
+        assert!(url("carikan repo rust pet di github").unwrap().1.contains("github.com/search"));
+        assert_ne!(url("carikan file video mp4 kemarin").map(|c| c.0), Some("open".into()));
+    }
+    #[test]
     fn rules_golden() {
         let cases = [
             ("hitung 2+3*4", "hitung"),

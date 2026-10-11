@@ -37,7 +37,7 @@ fn clean(a: &str) -> String {
 
 /// Buang kata pembuka yang tidak berarti ("halo nova coba tolong ...") agar aturan awalan tetap cocok.
 fn strip_fillers(s: &str) -> &str {
-    const F: &[&str] = &["halo", "hai", "hi", "hey", "nova", "coba", "tolong", "bisa", "bisakah", "kah", "dong", "please", "ya", "yuk", "saya", "aku", "mau", "minta"];
+    const F: &[&str] = &["halo", "hai", "hi", "hey", "nova", "gemini", "coba", "tolong", "bisa", "bisakah", "kah", "dong", "please", "ya", "yuk", "saya", "aku", "mau", "minta"];
     let mut cur = s.trim();
     loop {
         let first = cur.split_whitespace().next().unwrap_or("");
@@ -50,6 +50,27 @@ fn strip_fillers(s: &str) -> &str {
     }
 }
 
+/// Layanan web: kalimat → URL pencarian (YouTube, Maps, Google, GitHub). Dibuka di browser lewat alat `open`.
+fn layanan(l: &str) -> Option<String> {
+    const NOISE: &[&str] = &["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "saja", "pakai", "lewat", "link", "tautan"];
+    let w: Vec<&str> = l.split(|c: char| !c.is_alphanumeric()).filter(|x| !x.is_empty()).collect();
+    let has = |k: &str| w.contains(&k);
+    let q = |extra: &[&str]| w.iter().filter(|x| !NOISE.contains(x) && !extra.contains(x)).cloned().collect::<Vec<_>>().join(" ");
+    let files = ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"].iter().any(|k| has(k));
+    let (base, q) = if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan"].iter().any(|k| has(k)) && !files) {
+        ("https://www.youtube.com/results?search_query=", q(&[]))
+    } else if l.starts_with("rute ke ") || l.starts_with("navigasi ke ") || has("maps") || l.starts_with("peta ") || l.starts_with("lokasi ") {
+        ("https://www.google.com/maps/search/", q(&[]))
+    } else if has("github") && (has("cari") || has("carikan") || has("repo") || has("repositori")) {
+        ("https://github.com/search?type=repositories&q=", q(&[]))
+    } else if has("googling") || l.contains("di google") || l.contains("cari google") || l.starts_with("google ") {
+        ("https://www.google.com/search?q=", q(&[]))
+    } else {
+        return None;
+    };
+    (!q.is_empty()).then(|| format!("{base}{}", urlencoding::encode(&q)))
+}
+
 pub fn rule(s: &str) -> Option<Call> {
     let s = strip_fillers(s);
     let l = s.to_ascii_lowercase();
@@ -58,6 +79,9 @@ pub fn rule(s: &str) -> Option<Call> {
     }
     if let Some(r) = after(s, &l, &["baca dengan chrome", "baca pakai chrome", "buka dan baca"]) {
         return Some(Call { tool: "peramban".into(), arg: clean(r) });
+    }
+    if let Some(u) = layanan(&l) {
+        return Some(Call { tool: "open".into(), arg: u });
     }
     if let Some((tool, arg)) = crate::perkakas::rule(s, &l) {
         return Some(Call { tool: tool.into(), arg });

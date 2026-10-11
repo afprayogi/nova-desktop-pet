@@ -59,7 +59,8 @@ pub fn perluas(q: &str) -> String {
 
 fn tindak_lanjut(l: &str) -> bool {
     let w: Vec<&str> = l.split_whitespace().collect();
-    !w.is_empty() && w.len() <= 7 && LANJUT.contains(&w[0]) && !l.starts_with('/')
+    let koreksi = l.contains("maksud") || ["carikan di", "cari di", "di youtube", "di google", "di github", "di maps"].iter().any(|k| l.starts_with(k));
+    !w.is_empty() && w.len() <= 7 && (LANJUT.contains(&w[0]) || koreksi) && !l.starts_with('/')
 }
 
 /// Normalisasi lalu, bila ini tindak-lanjut, sambungkan dengan giliran sebelumnya. Giliran dicatat.
@@ -92,5 +93,7 @@ mod tests {
         let _ = resolve("cari anime aksi");
         assert_eq!(resolve("yang rilis tahun ini aja"), "cari anime aksi yang rilis tahun ini saja");
         assert_eq!(resolve("buka notepad"), "buka notepad");
+        let _ = resolve("halo gemini coba buka video anime fullmetal");
+        assert!(resolve("carikan di video youtube maksudnya").starts_with("halo gemini coba buka video anime fullmetal"));
     }
 }
