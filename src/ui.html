@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA</title>
+<style>
+:root{--bg:#15171c;--panel:#1b1e25;--panel2:#22262e;--line:#2b303a;--text:#d6dae2;--mut:#8a92a0;--acc:#8ab4f8;--me:#27324a;--ok:#86d4a8;--warn:#e8c47c;--bad:#ea9a9a;--r:14px;--sh:0 10px 30px #0006}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#f5f4f1;--panel:#fffefc;--panel2:#efede8;--line:#e3e0d9;--text:#2a2d33;--mut:#7a7f89;--acc:#3b6fd4;--me:#e4ebfa;--ok:#2f8f5b;--warn:#a87a1c;--bad:#c25555;--sh:0 10px 30px #0001}}
+:root[data-theme=light]{--bg:#f5f4f1;--panel:#fffefc;--panel2:#efede8;--line:#e3e0d9;--text:#2a2d33;--mut:#7a7f89;--acc:#3b6fd4;--me:#e4ebfa;--ok:#2f8f5b;--warn:#a87a1c;--bad:#c25555;--sh:0 10px 30px #0001}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.6 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-track{background:transparent}
+header{position:relative;display:flex;align-items:center;gap:16px;padding:8px 18px;background:var(--bg);border-bottom:1px solid var(--line);z-index:6}
+.logo{width:30px;height:30px;flex:none;border-radius:8px}
+.title{font-weight:600;letter-spacing:.2px;line-height:1.2}.sub{font-size:12px;color:var(--mut)}
+.ti{min-width:0;white-space:nowrap}
+nav{display:flex;align-items:center;gap:2px;flex:1;min-width:0}
+.sp{flex:1}
+.btn,.m>button{background:none;border:0;color:var(--mut);padding:7px 12px;border-radius:9px;font:inherit;font-size:14px;cursor:pointer;transition:background .15s,color .15s}
+.btn:hover,.m>button:hover,.m.open>button{background:var(--panel2);color:var(--text)}
+.m{position:static}
+.dd{display:none;position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:var(--sh)}
+.dd.mega{left:12px;right:12px;top:calc(100% + 6px);gap:6px;max-height:72vh;overflow:auto;padding:12px}
+.m.open .dd.mega{display:flex;flex-wrap:wrap}
+.mega .col{flex:1 1 210px;min-width:190px}
+.mega h5{margin:4px 10px 8px;font-size:11px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--mut)}
+.dd button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;color:var(--text);padding:7px 10px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer}
+.dd button:hover{background:var(--panel2)}.dd button span{width:20px;text-align:center;opacity:.85}
+nav .find{background:var(--panel);border:1px solid var(--line);color:var(--mut);margin-left:6px}
+nav kbd{font:11px Consolas,monospace;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:8px}
+#bn{position:relative}
+.badge{background:var(--acc);color:var(--bg);border-radius:99px;padding:0 7px;font-size:11px;font-weight:700;margin-left:4px}
+main{flex:1;display:flex;min-height:0}
+#chat{flex:1;overflow-y:auto;padding:28px max(18px,calc((100% - 760px)/2)) 12px;scroll-behavior:smooth}
+.row{display:flex;gap:12px;margin:18px 0;animation:in .22s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(4px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.row.me{justify-content:flex-end}
+.av{width:30px;height:30px;flex:none;border-radius:8px;margin-top:2px}
+.bub{max-width:min(680px,88%);padding:2px 0;border-radius:var(--r);word-wrap:anywhere;white-space:pre-wrap}
+.row:not(.me) .bub{background:none}
+.me .bub{background:var(--me);padding:9px 15px;border-bottom-right-radius:5px}
+.who{font-size:12px;font-weight:600;color:var(--mut);margin-bottom:2px}
+.sys{color:var(--mut);font-size:13px;text-align:center;margin:14px 0;white-space:pre-wrap}
+.bub a,.sys a{color:var(--acc);text-decoration:none;border-bottom:1px solid #8884}
+.card{margin:16px 0;padding:14px 16px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
+.card.bad{border-color:#ea9a9a66}.card h4{margin:0 0 6px;font-size:14px}
+.card code{display:block;background:var(--panel2);padding:7px 10px;border-radius:8px;margin:8px 0;max-height:90px;overflow:auto;white-space:pre-wrap;font:12px Consolas,monospace}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:none;border:1px solid var(--line);color:var(--text);border-radius:99px;padding:5px 14px;cursor:pointer;font:inherit;font-size:13.5px;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--acc);background:var(--panel2)}
+.chip.p{background:var(--acc);color:var(--bg);border-color:transparent;font-weight:600}.chip.d{color:var(--bad);border-color:#ea9a9a55}
+footer{padding:6px max(18px,calc((100% - 760px)/2)) 20px;background:var(--bg)}
+.box{display:flex;gap:8px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:7px 8px 7px 18px;box-shadow:var(--sh);transition:border-color .15s}
+.box:focus-within{border-color:#8ab4f866}
+textarea{height:38px;min-height:38px;flex:1;background:none;border:0;outline:0;resize:none;color:var(--text);font:inherit;max-height:140px;padding:7px 0}
+textarea::placeholder{color:var(--mut)}
+.send{background:var(--acc);color:var(--bg);border:0;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:15px;flex:none}
+.send:hover{filter:brightness(1.08)}
+.sug{position:absolute;bottom:70px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;display:none;min-width:260px;box-shadow:var(--sh)}
+.sug div{padding:6px 10px;border-radius:8px;cursor:pointer}.sug div:hover,.sug .on{background:var(--panel2)}
+#side,#wd{width:0;overflow:hidden;background:var(--panel);border-left:1px solid var(--line);transition:width .2s}
+#side.open{width:300px;padding:16px;overflow:auto}#wd.open{width:320px;padding:14px;overflow:auto}
+.n{font-size:13px;color:var(--mut);border-bottom:1px solid var(--line);padding:9px 0}
+.dots span{display:inline-block;width:6px;height:6px;margin:0 2px;background:var(--mut);border-radius:50%;animation:b 1.1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes b{50%{transform:translateY(-4px);opacity:.4}}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:8px 18px;display:none;max-width:420px;box-shadow:var(--sh);font-size:14px;z-index:40}
+canvas.ch{display:block;width:100%;max-width:480px;height:auto;border-radius:12px;margin:10px 0;background:var(--panel)}
+#term{position:fixed;right:16px;bottom:96px;width:min(440px,92vw);background:#0d1117;border:1px solid #243028;border-radius:12px;box-shadow:var(--sh);z-index:8}
+#term .th2{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;color:#8fd6a8;font:12px Consolas,monospace;border-bottom:1px solid #243028}
+#term button{background:none;border:0;color:#8fd6a8;cursor:pointer;font-size:16px}
+#term pre{margin:0;padding:10px 12px;max-height:200px;overflow:auto;color:#a9e2bc;font:12px/1.5 Consolas,monospace;white-space:pre-wrap}
+#omni,#pal{position:fixed;inset:0;background:#0007;display:none;z-index:30;backdrop-filter:blur(3px)}
+#omni.open{display:flex;align-items:center;justify-content:center}
+#omni .box2{width:min(540px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--sh)}
+#omni input{width:100%;margin:4px 0 14px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+#omni .mdl{font-size:13px;color:var(--mut);max-height:150px;overflow:auto}
+#pal.open{display:flex;align-items:flex-start;justify-content:center;padding-top:13vh}
+#pal .bx{width:min(540px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh)}
+#pq{width:100%;padding:15px 20px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--text);font:inherit;font-size:16px;outline:0}
+.pi{display:flex;gap:12px;align-items:center;padding:9px 20px;cursor:pointer;font-size:14.5px}.pi small{margin-left:auto;color:var(--mut)}.pi.on,.pi:hover{background:var(--panel2)}
+.wc{background:var(--panel2);border-radius:14px;padding:14px;margin-bottom:10px}
+.wc h4{margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--mut)}
+.vb{display:flex;align-items:center;gap:10px;font-size:12.5px;margin:6px 0}.vb span{width:54px;color:var(--mut)}
+.vb i{flex:1;height:6px;background:var(--line);border-radius:9px;overflow:hidden}.vb i b{display:block;height:100%;border-radius:9px;opacity:.9}
+.td{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px}.td.dn span{text-decoration:line-through;color:var(--mut)}.td span{flex:1}.td button{background:none;border:0;color:var(--mut);cursor:pointer;font-size:16px}
+.td input{accent-color:var(--acc)}
+.wi{width:100%;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:14px}
+.big2{font:600 32px Consolas,monospace;text-align:center;margin:6px 0;letter-spacing:1px}
+.row2{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.th{display:block;max-width:100%;width:320px;border-radius:12px;margin:8px 0 2px}
+@media (max-width:820px){header{flex-wrap:wrap;gap:8px}nav{order:3;flex-basis:100%;overflow-x:auto}#wd.open,#side.open{position:fixed;right:0;top:0;bottom:0;z-index:20;box-shadow:var(--sh)}}
+</style>
+</head>
+<body>
+<header>
+  <svg class="logo" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" rx="3" fill="#232a3a"/><rect x="3" y="4" width="10" height="8" fill="#8ab4f8"/><rect x="5" y="6" width="2" height="2" fill="#15171c"/><rect x="9" y="6" width="2" height="2" fill="#15171c"/><rect x="7" y="2" width="2" height="2" fill="#e8c47c"/><rect x="6" y="10" width="4" height="1" fill="#15171c"/></svg>
+  <div class="ti"><div class="title">NOVA</div><div class="sub" id="status">menghubungkan…</div></div>
+  <nav id="nav"></nav>
+  <button class="btn" id="bn" title="Notifikasi">🔔 <span class="badge" id="nb" style="display:none"></span></button>
+</header>
+<main><div id="chat"></div><aside id="wd"></aside><aside id="side"><b>Notifikasi</b><div id="nl"></div></aside></main>
+<div id="toast"></div>
+<div id="pal"><div class="bx"><input id="pq" placeholder="Cari fitur… (mis. cuaca, catat, harga, pencapaian)" autocomplete="off"><div id="pl"></div></div></div>
+<div id="term" hidden><div class="th2"><span>Terminal NOVA</span><button id="tx" title="Tutup">×</button></div><pre id="tp"></pre></div>
+<div id="omni"><div class="box2"><h3 style="margin:0 0 4px">🛰 OmniRoute</h3><div class="sub" style="margin-bottom:12px">Gateway model kompatibel OpenAI (OmniRoute, LiteLLM, OpenRouter, dll.). NOVA memindai model, mengujinya, lalu memilih yang terbaik otomatis.</div><label class="sub">URL dasar (mis. https://host/v1)</label><input id="ou" placeholder="https://..."><label class="sub">API key</label><input id="ok" type="password" placeholder="(kosongkan untuk mempertahankan yang tersimpan)"><div class="chips"><button class="chip p" id="osv">Simpan &amp; pindai model</button><button class="chip" id="ocl">Tutup</button><button class="chip d" id="odl">Hapus</button></div><div id="ores" class="mdl" style="margin-top:12px"></div></div></div>
+<footer>
+  <div style="position:relative"><div class="sug" id="sug"></div></div>
+  <div class="box"><textarea id="in" rows="1" placeholder="Ketik pesan…  ( / untuk perintah, Ctrl K untuk cari fitur )"></textarea><button class="send" id="go" title="Kirim">➤</button></div>
+</footer>
+<script>
+const TOKEN="__TOKEN__";
+const COL=["#5aa9ff","#fbbf24","#f87171","#34d399"], NAME=["NOVA","VOLT","SENTRY","MEMO"];
+const MENUS={
+ "Aksi":[["🛏","Bisa tidur 8 jam?","bisa tidur 8 jam malam ini"],["📈","Pola & kelelahan","/pola"],["📶","Cek Wi-Fi","cek wifi"],["🔌","Port aktif","cek port yang aktif"],["🔋","Baterai","kapan baterai habis"],["🗓","Agenda hari ini","agenda"],["🕌","Jadwal sholat","/sholat"],["⏰","Waktu sekarang","jam berapa sekarang"]],
+ "Berkas":[["🧹","Bersihkan cache aman","bersihkan cache aman"],["🖼","Cari gambar…","carikan gambar ","fill"],["📎","Pilih berkas…","/pilih"],["📁","Pilih folder…","/pilih folder"],["🔎","Cari berkas…","carikan file ","fill"],["🧹","Rapikan Download","rapikan folder download"],["↩","Urungkan rapikan","urungkan"]],
+ "Tim":[["🧩","Pikirkan bersama (beberapa sudut)…","diskusi ","fill"],["📰","Berita hari ini","berita"],["😄","Kasih meme","kasih meme"],["📧","Ringkas email","email"],["🎵","Putar musik","putar musik"]],
+ "Dasbor":[["📈","Analitik (tipe hari, ramalan disk)","/analitik"],["🦙","Status model lokal","/lokal"],["📊","Buka dasbor","/dash","tab"],["🧠","Latih ulang ML","/latih"],["💾","Cadangkan sekarang","/cadangan"],["🔨","Build proyek aktif","/build"]],
+ "Perkakas":[["📈","Harga & grafik…","harga ","fill"],["👁","Pantau harga…","pantau ","fill"],["☔","Pengingat cuaca…","ingatkan kalau hujan di ","fill"],["🌿","Ringkas git proyek aktif","gitringkas"],["📄","Ringkas halaman web…","ringkas halaman ","fill"],["📊","Analisis CSV…","analisis csv ","fill"],["🧮","Kalkulator…","hitung ","fill"],["🔁","Konversi satuan…","konversi ","fill"],["🕐","Zona waktu (jam di kota)…","jam di ","fill"],["⚡","Hukum Ohm…","ohm V=12 R=4"],["⚡","Arus 3 fase…","fase3 P=15kw V=380 cos=0.85"],["📅","Berapa hari lagi…","berapa hari lagi ke ","fill"],["🔐","Kata sandi acak","buat password acak 16"],["📝","Catat…","catat ","fill"],["📒","Lihat catatan","catatan"],["🌤","Cuaca…","cuaca di ","fill"],["💱","Kurs mata uang…","kurs 100 usd ke idr","fill"],["📖","Wikipedia…","wikipedia ","fill"],["🌐","Terjemahkan…","terjemahkan ","fill"],["🧩","Berpikir langkah demi langkah…","pikirkan langkah demi langkah ","fill"]],
+ "Belajar":[["📚","Cari jurnal ilmiah…","carikan jurnal ","fill"],["📚","Pelajari berkas…","pelajari ","fill"],["🕸","Petakan folder…","/graphify ","fill"],["📝","Rencana belajar…","kurikulum ","fill"],["🧠","Cek pemahaman semantik…","/semantik ","fill"]],
+ "Pengaturan":[["🛰","OmniRoute (URL & API key)…","omni","modal"],["🔆","Kecerahan otomatis","/otomatis kecerahan on"],["🔊","Suara otomatis","/otomatis suara on"],["⚙","Status otomatis","/otomatis"],["💬","Kecerewetan 0/1/2…","/cerewet ","fill"],["🚫","Blokir iklan on","/iklan on"]],
+ "Sahabat":[["🐾","Kartu sahabat (level, statistik)","/buddy"],["🤗","Belai sahabat","/buddy belai"],["🎙","Suara: keduanya","/buddy suara keduanya"],["🎙","Suara: backseat (kepribadian)","/buddy suara backseat"],["🎙","Suara: pelatih (teknis)","/buddy suara pelatih"],["🔇","Diam (tanpa pop-up)","/buddy diam"],["💬","Bicara lagi","/buddy bicara"],["✏","Ganti nama…","/buddy nama ","fill"],["🥚","Menetas ulang","/buddy ulang"]],
+ "Gamifikasi":[["🏆","Pencapaian","/pencapaian"],["🍖","Token dimakan & agen AI","/agen"],["🔊","Efek suara: nyala","/suara on"],["🔇","Efek suara: mati","/suara off"],["🎨","Buat karakter dari gambar…","/karakter buat ","fill"]],
+ "Karakter":[["🤖","Robot NOVA (bawaan)","/karakter nova"]],
+ "Memori":[["🧠","Apa yang kamu ingat tentang saya","/ingat"],["🗑","Lupakan fakta…","/lupa ","fill"]],
+ "Persona":[["🎭","Lihat persona & kepribadian","/persona"],["📥","Impor kartu karakter…","/persona impor ","fill"],["♻","Reset kepribadian","/persona reset"]],
+ "Gemini":[["✅","Tes koneksi","/gemini tes"],["🤖","Model otomatis","/gemini model auto"],["📋","Daftar model","/gemini models"],["💾","Memori hemat token","/gemini cache"]],
+ "Bantuan":[["🚀","Mulai di sini","/mulai"],["❓","Daftar perintah","/bantuan"],["🔍","Cari perintah…","/bantuan ","fill"]]
+};
+const IS_APP=/[?&]app=1/.test(location.search);
+const $=s=>document.querySelector(s), chat=$("#chat"), inp=$("#in");
+let lastSeq=-1,seenN=0,notes=0,state=null,sugI=-1;
+function av(i,sz){const c=COL[i%4];return `<svg class="av" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" rx="4" fill="#0c1a33"/><rect x="3" y="4" width="10" height="8" fill="${c}"/><rect x="5" y="6" width="2" height="2" fill="#0b1220"/><rect x="9" y="6" width="2" height="2" fill="#0b1220"/><rect x="7" y="2" width="2" height="2" fill="#fbbf24"/><rect x="6" y="10" width="4" height="1" fill="#0b1220"/></svg>`}
+function esc(t){return t.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function chartHtml(j){try{JSON.parse(j)}catch(e){return ""}return `<canvas class="ch" data-c="${encodeURIComponent(j)}" width="640" height="220"></canvas>`}
+function fmt(t){return t.split("\n").map(raw=>{
+ if(/^CHART \{/.test(raw))return chartHtml(raw.slice(6));
+ if(/^IMG https?:\/\//.test(raw))return `<img class="th" referrerpolicy="no-referrer" loading="lazy" src="${esc(raw.slice(4))}" onerror="this.remove()">`;
+ return esc(raw).replace(/(https?:\/\/[^\s<]+)/g,u=>`<a href="${u}" target="_blank" rel="noopener">🔗 Buka tautan</a>`)}).join("\n")}
+function drawCharts(){document.querySelectorAll("canvas.ch").forEach(c=>{if(c.dataset.done)return;c.dataset.done=1;let d;try{d=JSON.parse(decodeURIComponent(c.dataset.c))}catch(e){return}
+ const v=(d.v||[]).filter(x=>x!=null);if(v.length<2)return;const g=c.getContext("2d"),W=c.width,H=c.height,mn=Math.min(...v),mx=Math.max(...v),pad=34;
+ const up=v[v.length-1]>=v[0],col=up?"#7bc99b":"#e69a9a",mut=getComputedStyle(document.documentElement).getPropertyValue("--mut");
+ g.fillStyle=mut;g.font="22px Segoe UI";g.fillText(d.t||"",12,26);g.textAlign="right";g.fillStyle=col;g.fillText(v[v.length-1].toLocaleString("id-ID",{maximumFractionDigits:2})+" "+(d.u||""),W-12,26);g.textAlign="left";
+ const X=i=>12+(W-24)*i/(v.length-1),Y=x=>H-14-(H-pad-30)*(mx>mn?(x-mn)/(mx-mn):.5);
+ g.strokeStyle="#8883";g.lineWidth=1;for(let k=0;k<4;k++){const y=pad+((H-pad-14)*k/3);g.beginPath();g.moveTo(12,y);g.lineTo(W-12,y);g.stroke()}
+ g.beginPath();v.forEach((x,i)=>i?g.lineTo(X(i),Y(x)):g.moveTo(X(i),Y(x)));g.strokeStyle=col;g.lineWidth=3;g.stroke();g.lineTo(X(v.length-1),H-14);g.lineTo(X(0),H-14);g.fillStyle=col+"22";g.fill();
+ g.fillStyle=mut;g.font="18px Segoe UI";g.fillText(mx.toLocaleString("id-ID",{maximumFractionDigits:2}),12,pad+16);g.fillText(mn.toLocaleString("id-ID",{maximumFractionDigits:2}),12,H-18)})}
+function send(o){return fetch("/api/cmd",{method:"POST",headers:{"x-nova-token":TOKEN,"content-type":"application/json"},body:JSON.stringify(o)})}
+function say(t){if(!t.trim())return;send({Chat:t.trim()});inp.value="";grow();hideSug()}
+function grow(){inp.style.height="38px";if(inp.value)inp.style.height=Math.min(Math.max(inp.scrollHeight,38),140)+"px"}
+function run(cmd,fill,tab,modal){if(modal){openOmni();document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"));return}if(tab){location.href=cmd+(IS_APP?"?app=1":"");document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"));return}if(fill){inp.value=cmd;inp.focus();grow()}else say(cmd);document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"))}
+// menu: 3 kelompok besar (panel lebar berkolom) + Dasbor + Widget + pencarian fitur (Ctrl+K)
+const GROUPS={"Alat":["Aksi","Berkas","Tim","Perkakas","Belajar"],"Sahabat":["Sahabat","Gamifikasi","Karakter"],"Pengaturan":["Pengaturan","Gemini","Persona","Memori","Bantuan"]};
+function applyTheme(t){if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}
+function cycleTheme(){let t="auto";try{t=localStorage.getItem("nova-tema")||"auto"}catch(e){}const n={auto:"dark",dark:"light",light:"auto"}[t]||"auto";try{localStorage.setItem("nova-tema",n)}catch(e){}applyTheme(n);toast("Tema: "+({auto:"otomatis",dark:"gelap",light:"terang"}[n]))}
+try{applyTheme(localStorage.getItem("nova-tema")||"auto")}catch(e){}
+function closeMenus(){document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"))}
+function buildNav(){const nav=$("#nav");nav.innerHTML="";
+ for(const [g,secs] of Object.entries(GROUPS)){const m=document.createElement("div");m.className="m";
+  m.innerHTML=`<button>${g} ▾</button><div class="dd mega">${secs.filter(k=>MENUS[k]).map(k=>`<div class="col"><h5>${k}</h5>${MENUS[k].map((x,i)=>`<button data-k="${k}" data-i="${i}"><span>${x[0]}</span>${x[1]}</button>`).join("")}</div>`).join("")}</div>`;
+  m.firstChild.onclick=e=>{e.stopPropagation();const o=m.classList.contains("open");closeMenus();if(!o)m.classList.add("open")};
+  m.querySelectorAll(".dd button").forEach(b=>b.onclick=()=>{const x=MENUS[b.dataset.k][b.dataset.i];run(x[2],x[3]==="fill",x[3]==="tab",x[3]==="modal")});nav.appendChild(m)}
+ const mk=(t,id,f)=>{const b=document.createElement("button");b.className="btn";b.textContent=t;if(id)b.id=id;b.onclick=f;nav.appendChild(b)};
+ mk("Dasbor",null,()=>run("/dash",false,true,false));mk("Widget","bw",toggleWidget);
+ const sp=document.createElement("div");sp.className="sp";nav.appendChild(sp);mk("◐","bt",cycleTheme);$("#bt").title="Tema: otomatis / gelap / terang";
+ const sb=document.createElement("button");sb.className="btn find";sb.innerHTML='🔍 Cari fitur <kbd>Ctrl K</kbd>';sb.onclick=openPal;nav.appendChild(sb)}
+document.addEventListener("click",closeMenus);
+// palet perintah: semua fitur tetap bisa dicari
+function allItems(){const out=[];for(const [k,items] of Object.entries(MENUS))items.forEach(x=>out.push({k,x}));return out}
+let palI=0,palL=[];
+function openPal(){closeMenus();$("#pal").classList.add("open");$("#pq").value="";palFilter();$("#pq").focus()}
+function closePal(){$("#pal").classList.remove("open");inp.focus()}
+function palFilter(){const q=$("#pq").value.toLowerCase().split(/\s+/).filter(Boolean);palL=allItems().filter(o=>q.every(w=>(o.x[1]+" "+o.k).toLowerCase().includes(w))).slice(0,12);palI=0;palDraw()}
+function palDraw(){$("#pl").innerHTML=palL.map((o,i)=>`<div class="pi ${i===palI?"on":""}" data-i="${i}"><span>${o.x[0]}</span>${esc(o.x[1])}<small>${o.k}</small></div>`).join("")||'<div class="pi">Tidak ada yang cocok — ketik saja sebagai pesan ke NOVA.</div>';
+ $("#pl").querySelectorAll("[data-i]").forEach(d=>d.onclick=()=>palGo(+d.dataset.i))}
+function palGo(i){const o=palL[i];if(!o)return;closePal();run(o.x[2],o.x[3]==="fill",o.x[3]==="tab",o.x[3]==="modal")}
+$("#pq").addEventListener("input",palFilter);
+$("#pq").addEventListener("keydown",e=>{if(e.key==="ArrowDown"){palI=Math.min(palI+1,palL.length-1);palDraw();e.preventDefault()}else if(e.key==="ArrowUp"){palI=Math.max(palI-1,0);palDraw();e.preventDefault()}else if(e.key==="Enter"){if(palL.length)palGo(palI);else{const t=$("#pq").value;closePal();say(t)}}else if(e.key==="Escape")closePal()});
+$("#pal").addEventListener("click",e=>{if(e.target.id==="pal")closePal()});
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openPal()}});
+// saran perintah
+const CMDS=["/pencapaian","/agen","/suara on","/karakter buat ","/omni","/omni pindai","/buddy","/buddy belai","/buddy suara ","/buddy nama ","/ingat","/lupa ","/persona","/persona impor ","/persona reset","/analitik","/lokal","/paksa ","/build ","/latih","/cadangan","/bantuan","/pola","/jadwal","/sholat kota ","/otomatis ","/gemini key ","/gemini tes","/gemini models","/gemini cache","/pilih","/berkas ","/semantik ","/mulai","/cerewet ","/iklan on","/iklan off","/graphify ","/proyek ","/port","/makro","/google","/outlook","/email","/meme","/stop"];
+function hideSug(){$("#sug").style.display="none";sugI=-1}
+function sug(){const v=inp.value;if(!v.startsWith("/")||v.includes(" ")&&!CMDS.some(c=>c.startsWith(v)))return hideSug();const l=CMDS.filter(c=>c.startsWith(v)&&c!==v).slice(0,7);if(!l.length)return hideSug();const s=$("#sug");s.innerHTML=l.map(c=>`<div>${esc(c)}</div>`).join("");s.style.display="block";s.querySelectorAll("div").forEach(d=>d.onclick=()=>{inp.value=d.textContent;inp.focus();sug()});sugI=-1}
+inp.addEventListener("input",()=>{grow();sug()});
+inp.addEventListener("keydown",e=>{const s=$("#sug");if(s.style.display==="block"&&(e.key==="Tab"||e.key==="ArrowDown"||e.key==="ArrowUp")){e.preventDefault();const d=[...s.children];sugI=e.key==="ArrowUp"?(sugI<=0?d.length-1:sugI-1):(sugI+1)%d.length;d.forEach((x,i)=>x.classList.toggle("on",i===sugI));inp.value=d[sugI].textContent;return}
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();say(inp.value)}});
+$("#go").onclick=()=>say(inp.value);
+$("#bn").onclick=()=>{$("#side").classList.toggle("open");seenN=notes;$("#nb").style.display="none"};
+// render
+function bangunKarakter(d){const l=d.karakter_daftar||[];const key=l.join(",")+"|"+d.karakter;if(bangunKarakter.k===key)return;bangunKarakter.k=key;
+ MENUS["Karakter"]=[["🤖","Robot NOVA (bawaan)"+(d.karakter?"":" ✓"),"/karakter nova"],...l.map(n=>["🎭",n.charAt(0).toUpperCase()+n.slice(1)+(d.karakter===n?" ✓":""),"/karakter "+n])];buildNav()}
+function render(d){bangunKarakter(d);
+ state=d;$("#status").textContent=(d.thinking?"berpikir…":d.status||"siap")+(d.mode?" · "+d.mode:"");
+ const atEnd=chat.scrollHeight-chat.scrollTop-chat.clientHeight<420;
+ const last=d.chat.length?d.chat[d.chat.length-1].seq:0, key=last+"|"+(d.approval?1:0)+"|"+(d.ask?d.ask.question:"")+"|"+d.thinking;
+ if(render.k!==key){render.k=key;let h="";
+  if(!d.chat.length)h+=`<div class="sys">Halo Bos! Ketik bebas, atau mulai cepat:</div><div class="chips" style="justify-content:center">${["cek wifi","cuaca","harga bitcoin","bisa tidur 8 jam malam ini","catatan","/buddy"].map(q=>`<button class="chip" data-q="${q}">${q.replace("/buddy","sahabat")}</button>`).join("")}</div><div class="sys">Semua fitur ada di menu atas atau tekan <b>Ctrl K</b> untuk mencari.</div>`;
+  for(const l of d.chat){
+   if(l.who===-1)h+=`<div class="row me"><div class="bub">${fmt(l.text)}</div></div>`;
+   else if(l.who===-2)h+=`<div class="sys">${fmt(l.text)}</div>`;
+   else{const i=l.who%4;h+=`<div class="row">${av(i)}<div class="bub"><div class="who" style="color:${COL[i]}">${NAME[i]}</div>${fmt(l.text)}</div></div>`}}
+  if(d.thinking)h+=`<div class="row">${av(0)}<div class="bub"><span class="dots"><span></span><span></span><span></span></span></div></div>`;
+  if(d.approval)h+=`<div class="card bad"><h4>⚠ Butuh izin Bos</h4><div>${esc(d.approval.reason)}</div><code>${esc(d.approval.tool)} ${esc(d.approval.arg)}</code><div class="chips"><button class="chip p" onclick="send({Approve:true})">✔ Izinkan</button><button class="chip d" onclick="send({Approve:false})">✖ Tolak</button></div></div>`;
+  if(d.ask)h+=`<div class="card"><h4>💡 ${esc(d.ask.question)}</h4><div class="chips">${d.ask.options.map((o,i)=>`<button class="chip ${i?"":"p"}" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
+  chat.innerHTML=h;drawCharts();chat.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>say(b.dataset.o));chat.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>say(b.dataset.q));
+  if(atEnd||render.first!==true){chat.scrollTop=chat.scrollHeight;render.first=true}}
+ if(d.term_seq!==undefined&&d.term_seq!==render.t){if(render.t!==undefined&&d.term){$("#tp").textContent=d.term;$("#term").hidden=false}render.t=d.term_seq}
+ notes=d.notice_seq||0;const nl=$("#nl");nl.innerHTML=(d.notices||[]).map(n=>`<div class="n">${esc(n)}</div>`).join("")||`<div class="n">Belum ada.</div>`;
+ const un=notes-seenN;if(!$("#side").classList.contains("open")&&un>0){$("#nb").textContent=un;$("#nb").style.display="inline"}else if($("#side").classList.contains("open"))seenN=notes;
+}
+async function poll(){try{const r=await fetch("/api/pet",{headers:{"x-nova-token":TOKEN,...(IS_APP?{"x-nova-ui":"1"}:{})}});render(await r.json())}catch(e){$("#status").textContent="terputus — menyambung ulang…"}setTimeout(poll,render.k===undefined?400:900)}
+buildNav();
+$("#tx").onclick=()=>$("#term").hidden=true;
+async function openOmni(){$("#omni").classList.add("open");$("#ores").textContent="memuat…";try{const d=await (await fetch("/api/omni",{headers:{"x-nova-token":TOKEN}})).json();$("#ou").value=d.url||"";$("#ok").value="";$("#ores").innerHTML=(d.models||[]).length?"Model teruji (terbaik dulu):<br>"+d.models.map(m=>esc(m.model)+" · "+m.ms+" ms").join("<br>"):(d.url?"Belum ada model teruji.":"Belum diatur.")+(d.has_key?" Key tersimpan.":"")}catch(e){$("#ores").textContent="gagal memuat"}}
+$("#ocl").onclick=()=>$("#omni").classList.remove("open");
+$("#osv").onclick=async()=>{$("#ores").textContent="menyimpan & memindai model (bisa 30-60 detik)…";try{const r=await (await fetch("/api/omni",{method:"POST",headers:{"x-nova-token":TOKEN,"content-type":"application/json"},body:JSON.stringify({url:$("#ou").value,key:$("#ok").value||null})})).json();$("#ok").value="";$("#ores").innerHTML=esc(r.pesan)+(r.models?"<br>"+r.models.map(m=>esc(m.model)+" · "+m.ms+" ms").join("<br>"):"")}catch(e){$("#ores").textContent="gagal: "+e}};
+$("#odl").onclick=async()=>{await fetch("/api/omni",{method:"POST",headers:{"x-nova-token":TOKEN,"content-type":"application/json"},body:JSON.stringify({url:"x",hapus:true})});$("#ou").value="";$("#ores").textContent="OmniRoute dihapus."};
+
+// ---------- widget ----------
+let wdOpen=false,wdTimer=null;
+function toggleWidget(){wdOpen=!wdOpen;$("#wd").classList.toggle("open",wdOpen);$("#bw").style.background=wdOpen?"var(--panel2)":"";if(wdOpen){loadWidget();wdTimer=setInterval(loadWidget,3000)}else clearInterval(wdTimer)}
+async function wact(o){const r=await (await fetch("/api/widget",{method:"POST",headers:{"x-nova-token":TOKEN,"content-type":"application/json"},body:JSON.stringify(o)})).json();toast(r.pesan);loadWidget()}
+function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2600)}
+function vbar(n,v,c){return `<div class="vb"><span>${n}</span><i><b style="width:${Math.round(v)}%;background:${c}"></b></i><em style="width:34px;font-style:normal;text-align:right">${Math.round(v)}</em></div>`}
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+async function loadWidget(){let d;try{d=await (await fetch("/api/widget",{headers:{"x-nova-token":TOKEN}})).json()}catch(e){return}
+ const v=d.vital,sy=d.sistem,col=x=>x>66?"var(--ok)":x>33?"var(--warn)":"var(--bad)";
+ const act=document.activeElement&&document.activeElement.id==="wti";const keep=act?$("#wti").value:"";
+ $("#wd").innerHTML=`
+ <div class="wc"><h4>🐾 Kondisi sahabat</h4>${vbar("Energi",v.energi,col(v.energi))}${vbar("Fokus",v.fokus,col(v.fokus))}${vbar("Senang",v.senang,col(v.senang))}${vbar("Kenyang",v.kenyang,col(v.kenyang))}
+  <div class="row2"><span class="chip">🪙 ${d.koin}</span><span class="chip">🍖 ${d.makanan}</span>${d.topi_pakai?`<span class="chip">🎩 ${esc(d.topi_pakai)}</span>`:""}</div>
+  <div class="row2"><button class="chip p" onclick="wact({aksi:'beri_makan'})">Beri makan</button><button class="chip" onclick="wact({aksi:'beli',item:'makanan'})">Beli makanan (${d.harga_makan}🪙)</button></div>
+  <details style="margin-top:8px"><summary class="sub" style="cursor:pointer">Toko topi</summary><div class="row2">${d.toko.map(t=>d.topi_dimiliki.includes(t.nama)?`<button class="chip ${d.topi_pakai===t.nama?"p":""}" onclick="wact({aksi:'pakai',item:'${d.topi_pakai===t.nama?"":t.nama}'})">${t.nama}</button>`:`<button class="chip" onclick="wact({aksi:'beli',item:'${t.nama}'})">${t.nama} · ${t.harga}🪙</button>`).join("")}</div></details></div>
+ <div class="wc"><h4>🎯 Fokus (Pomodoro)</h4>${d.fokus?`<div class="big2">${fmtT(d.fokus.sisa)}</div><div class="row2"><button class="chip d" onclick="wact({aksi:'fokus_stop'})">Berhenti</button></div>`:`<div class="sub">Hari ini ${d.fokus_hari} menit · ${d.fokus_sesi} sesi. Selesai satu sesi = koin + XP.</div><div class="row2"><button class="chip p" onclick="wact({aksi:'fokus_mulai',menit:25})">Mulai 25 mnt</button><button class="chip" onclick="wact({aksi:'fokus_mulai',menit:50})">50 mnt</button><button class="chip" onclick="wact({aksi:'fokus_mulai',menit:15})">15 mnt</button></div>`}</div>
+ <div class="wc"><h4>✅ To-Do hari ini</h4>${d.todo.map(t=>`<div class="td ${t.selesai?"dn":""}"><input type="checkbox" ${t.selesai?"checked":""} onchange="wact({aksi:'todo_selesai',id:${t.id}})"><span>${esc(t.teks)}</span><button title="Hapus" onclick="wact({aksi:'todo_hapus',id:${t.id}})">×</button></div>`).join("")||'<div class="sub">Belum ada tugas.</div>'}
+  <input id="wti" class="wi" placeholder="Tambah tugas, Enter…" style="margin-top:8px" value="${esc(keep)}"></div>
+ <div class="wc"><h4>🖥 Sistem</h4>${vbar("CPU",sy.cpu,col(100-sy.cpu))}${vbar("RAM",sy.ram,col(100-sy.ram))}${vbar("Disk",sy.disk,col(100-sy.disk))}<div class="sub">Suhu GPU: ${d.gpu?d.gpu+" °C":"tidak terdeteksi (butuh kartu NVIDIA)"}</div></div>
+ <div class="wc"><h4>🎵 Musik</h4><div class="sub" style="margin-bottom:6px">${d.musik?esc(d.musik):"Spotify tidak terdeteksi (tombol media tetap bekerja untuk pemutar lain)"}</div>
+  <div class="row2"><button class="chip" onclick="wact({aksi:'musik',tombol:'prev'})">⏮</button><button class="chip p" onclick="wact({aksi:'musik',tombol:'play'})">⏯</button><button class="chip" onclick="wact({aksi:'musik',tombol:'next'})">⏭</button></div></div>`;
+ const wi=$("#wti");if(wi){wi.addEventListener("keydown",e=>{if(e.key==="Enter"&&wi.value.trim()){wact({aksi:"todo_tambah",teks:wi.value.trim()});wi.value=""}});if(act){wi.focus();wi.setSelectionRange(keep.length,keep.length)}}}
+poll();inp.focus();
+</script>
+</body>
+</html>

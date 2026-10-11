@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA · Dasbor</title>
+<style>
+:root{--bg:#15171c;--panel:#1b1e25;--panel2:#22262e;--line:#2b303a;--text:#d6dae2;--mut:#8a92a0;--acc:#8ab4f8;--ok:#86d4a8;--warn:#e8c47c;--bad:#ea9a9a}
+@media (prefers-color-scheme:light){:root{--bg:#f5f4f1;--panel:#fffefc;--panel2:#efede8;--line:#e3e0d9;--text:#2a2d33;--mut:#7a7f89;--acc:#3b6fd4;--ok:#2f8f5b;--warn:#a87a1c;--bad:#c25555}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{font-size:18px;margin:0}.sub{color:var(--mut);font-size:12px}.sp{flex:1}
+a.btn{color:var(--acc);text-decoration:none}
+.tabs{display:flex;gap:4px;padding:10px 24px 0}.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mut);padding:8px 14px;font:inherit;cursor:pointer}
+.tabs button.on{color:var(--text);border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;padding:16px 24px 32px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h3{margin:0 0 4px;font-size:14px}.card .sub{margin-bottom:10px}
+.big{font-size:32px;font-weight:700}.row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+canvas{width:100%;height:170px;display:block}
+.bar{height:10px;background:#0003;border-radius:99px;overflow:hidden;margin:6px 0 12px}.bar i{display:block;height:100%;border-radius:99px;background:var(--acc)}
+.app{display:flex;justify-content:space-between;font-size:13px;margin-top:6px}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;background:#0003}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div><h1>📊 Dasbor NOVA</h1><div class="sub" id="upd">memuat…</div></div><div class="sp"></div><a class="btn" href="/ui?app=1">💬 Kembali ke obrolan</a></header>
+<div class="tabs"><button class="on" data-t="me">Tentang saya</button><button data-t="pc">Laptop saya</button><button data-t="ai">Otak NOVA</button></div>
+<div class="grid" id="me">
+  <div class="card"><h3>Tingkat kelelahan</h3><div class="sub">gabungan aturan + jaringan saraf</div><div class="row"><div class="big" id="fat">–</div><div id="fatt" class="sub"></div></div><div class="bar"><i id="fatb" style="width:0"></i></div><div class="sub" id="sesi"></div></div>
+  <div class="card"><h3>Pola jam aktif (rata-rata menit/jam)</h3><div class="sub" id="hari"></div><canvas id="c24"></canvas></div>
+  <div class="card"><h3>Pemakaian 7 hari (jam)</h3><div class="sub">total waktu aktif di laptop</div><canvas id="c7"></canvas></div>
+  <div class="card"><h3>Aplikasi teratas (7 hari)</h3><div id="apps"></div></div>
+</div>
+<div class="grid" id="pc" hidden>
+  <div class="card"><h3>CPU</h3><div class="big" id="cpu">–</div><canvas id="ccpu"></canvas></div>
+  <div class="card"><h3>Memori & Disk</h3><div class="app"><span>RAM</span><span id="ramt"></span></div><div class="bar"><i id="ramb"></i></div><div class="app"><span>Disk</span><span id="diskt"></span></div><div class="bar"><i id="diskb"></i></div><div class="sub" id="up"></div></div>
+  <div class="card"><h3>Proses terberat</h3><div id="procs"></div></div>
+  <div class="card"><h3>Pemblokir iklan</h3><div class="big" id="ads">–</div><div class="sub" id="adst"></div></div>
+</div>
+<div class="grid" id="ai" hidden>
+  <div class="card"><h3>Jaringan saraf (MLP 4-8-1)</h3><div class="sub">memprediksi kapan Bos butuh istirahat</div><div class="row"><div class="big" id="mlacc">–</div><div class="sub" id="mlt"></div></div><span class="pill" id="mlp"></span></div>
+  <div class="card"><h3>Pemahaman perintah</h3><div class="sub">contoh niat yang dipelajari</div><div class="big" id="ex">–</div></div>
+  <div class="card"><h3>🐾 Sahabat NOVA</h3><div class="sub">diadaptasi dari fiorastudio/buddy (MIT)</div><pre id="bd" style="white-space:pre-wrap;margin:0;font:12px/1.5 Consolas,monospace"></pre></div>
+  <div class="card" style="grid-column:1/-1"><h3>Analitik: tipe hari · ramalan disk · anomali</h3><div class="sub">K-Means, regresi tren, deteksi anomali</div><pre id="an" style="white-space:pre-wrap;margin:0;font:inherit"></pre></div>
+  <div class="card"><h3>Memori Gemini (hemat token)</h3><div class="big" id="gc">–</div><div class="sub" id="gct"></div></div>
+</div>
+<script>
+const TOKEN="__TOKEN__";
+const $=s=>document.querySelector(s);
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["me","pc","ai"].forEach(t=>$("#"+t).hidden=t!==b.dataset.t)});
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function bars(id,vals,labels,color,fmt){const c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;const g=c.getContext("2d");g.scale(d,d);const W=r.width,H=r.height,p=22,mx=Math.max(1,...vals);g.clearRect(0,0,W,H);g.font="10px Segoe UI";g.fillStyle=css("--mut");const bw=(W-8)/vals.length;
+ vals.forEach((v,i)=>{const h=(H-p-14)*v/mx;g.fillStyle=color;g.globalAlpha=v?1:.15;g.beginPath();g.roundRect(4+i*bw+2,H-p-h,bw-4,Math.max(h,2),3);g.fill();g.globalAlpha=1;g.fillStyle=css("--mut");if(labels[i]!==""){g.textAlign="center";g.fillText(labels[i],4+i*bw+bw/2,H-6)}if(v&&h>14){g.fillStyle=css("--text");g.fillText(fmt?fmt(v):Math.round(v),4+i*bw+bw/2,H-p-h-4)}})}
+function line(id,vals,color){const c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;const g=c.getContext("2d");g.scale(d,d);const W=r.width,H=r.height;g.clearRect(0,0,W,H);if(vals.length<2)return;g.strokeStyle=css("--line");for(let y=0;y<=4;y++){g.beginPath();g.moveTo(0,10+y*(H-20)/4);g.lineTo(W,10+y*(H-20)/4);g.stroke()}
+ g.strokeStyle=color;g.lineWidth=2;g.beginPath();vals.forEach((v,i)=>{const x=i*W/(vals.length-1),y=H-10-(H-20)*Math.min(v,100)/100;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();g.lineTo(W,H-10);g.lineTo(0,H-10);g.fillStyle=color+"22";g.fill()}
+const fmtH=s=>(s/3600).toFixed(1);
+async function load(){try{const d=await (await fetch("/api/stats",{headers:{"x-nova-token":TOKEN,...(/[?&]app=1/.test(location.search)||document.referrer.includes("app=1")?{"x-nova-ui":"1"}:{})}})).json();
+ $("#upd").textContent="diperbarui "+new Date().toLocaleTimeString();
+ const f=Math.round(d.fatigue*100);$("#fat").textContent=f+"%";$("#fatb").style.width=f+"%";$("#fatb").style.background=f>66?css("--bad"):f>40?css("--warn"):css("--ok");
+ $("#fatt").textContent=f>66?"waktunya istirahat":f>40?"mulai lelah":"segar";$("#sesi").textContent="Sesi aktif sekarang "+d.streak+" menit · sesi tipikal "+(d.sesi||"belum diketahui")+" menit";
+ $("#hari").textContent="berdasarkan "+d.hari+" hari data";bars("#c24",d.per_jam,d.per_jam.map((_,i)=>i%3===0?String(i):""),css("--acc"),v=>Math.round(v));
+ bars("#c7",d.days.map(x=>x[1]),d.days.map(x=>x[0].slice(5)),css("--ok"),v=>fmtH(v));
+ const mx=Math.max(1,...d.apps.map(a=>a[1]));$("#apps").innerHTML=d.apps.map(a=>`<div class="app"><span>${a[0]}</span><span>${fmtH(a[1])} j</span></div><div class="bar"><i style="width:${100*a[1]/mx}%"></i></div>`).join("")||"<div class=sub>Belum ada data.</div>";
+ $("#cpu").textContent=Math.round(d.cpu)+"%";line("#ccpu",d.cpu_hist,css("--acc"));
+ const rp=100*d.ram_used/d.ram_total,dp=100*d.disk_used/d.disk_total;$("#ramt").textContent=(d.ram_used/1024).toFixed(1)+" / "+(d.ram_total/1024).toFixed(1)+" GB";$("#ramb").style.width=rp+"%";$("#diskt").textContent=d.disk_used+" / "+d.disk_total+" GB";$("#diskb").style.width=dp+"%";$("#diskb").style.background=dp>90?css("--bad"):css("--acc");$("#up").textContent="Menyala "+Math.floor(d.uptime/60)+" j "+d.uptime%60+" m";
+ $("#procs").innerHTML=d.procs.map(p=>`<div class="app"><span>${p[0]}</span><span>${p[1].toFixed(0)}% CPU · ${p[2]} MB</span></div>`).join("");
+ $("#ads").textContent=d.ads_blocked;$("#adst").textContent="diblokir dari "+d.ads_total+" permintaan · "+d.ads_listed+" domain";
+ $("#mlacc").textContent=d.ml.samples?d.ml.acc.toFixed(0)+"%":"–";$("#mlt").textContent=d.ml.samples?d.ml.samples+" sampel · pembanding mayoritas "+d.ml.base.toFixed(0)+"%":"belum dilatih (butuh data aktivitas)";$("#mlp").textContent=d.ml.used?"dipakai untuk prediksi":"belum dipakai (belum mengalahkan tebakan mayoritas)";
+ $("#an").textContent=d.analitik;$("#bd").textContent=d.buddy;$("#ex").textContent=d.examples;$("#gc").textContent=d.gcache[0];$("#gct").textContent="entri · dipakai ulang "+d.gcache[1]+" kali (hemat panggilan)";
+}catch(e){$("#upd").textContent="terputus…"}}
+load();setInterval(load,5000);addEventListener("resize",load);
+</script>
+</body>
+</html>

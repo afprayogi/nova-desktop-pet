@@ -1,0 +1,8 @@
+target/
+*.log
+
+# berkas pribadi / data runtime
+grafik_produktivitas.py
+*.db
+api.token
+.env

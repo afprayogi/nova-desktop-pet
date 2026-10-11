@@ -1,0 +1,59 @@
+[package]
+name = "nova"
+version = "0.2.0"
+edition = "2021"
+description = "NOVA: asisten desktop pet untuk Windows dengan memori lokal, otak model berlapis, dan perkakas komputer yang aman."
+authors = ["afprayogi"]
+license = "MIT"
+readme = "README.md"
+rust-version = "1.75"
+
+[dependencies]
+eframe = "0.29"
+axum = "0.7"
+base64 = "0.22"
+image = { version = "0.25", default-features = false, features = ["png"] }
+zip = { version = "2", default-features = false, features = ["deflate"] }
+sha2 = "0.10"
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+webpki-roots = "1"
+regex = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "process", "net", "io-util"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+futures = "0.3"
+rand = "0.8"
+dirs = "5"
+anyhow = "1"
+urlencoding = "2"
+pdf-extract = "0.7"
+lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "builder", "rustls-tls"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+sysinfo = { version = "0.32", default-features = false, features = ["system", "disk"] }
+
+[target.'cfg(windows)'.dependencies]
+tray-icon = { version = "0.19", default-features = false }
+tao = "0.30"
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_SystemInformation",
+    "Win32_Security",
+    "Win32_System_Threading",
+    "Win32_System_Power",
+    "Win32_System_DataExchange",
+    "Win32_System_Memory",
+    "Win32_System_Ole",
+    "Win32_Storage_FileSystem",
+] }
+notify-rust = "4"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+
+[profile.dev]
+debug = "line-tables-only"
