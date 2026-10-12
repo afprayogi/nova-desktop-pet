@@ -136,6 +136,10 @@ impl Engine {
                 let r = tokio::task::spawn_blocking({ let a = arg.to_string(); move || crate::aplikasi::daftar_teks(&a) }).await.unwrap_or_default();
                 self.agent_say(0, &r)
             }
+            "musikjaga" => {
+                let r = crate::musik::set_jaga(!arg.eq_ignore_ascii_case("off") && arg != "0");
+                self.agent_say(0, &r)
+            }
             "musikotomatis" => {
                 let r = crate::musik::set_auto(!arg.eq_ignore_ascii_case("off") && arg != "0");
                 self.agent_say(0, &r)

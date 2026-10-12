@@ -151,7 +151,23 @@ pub fn set_auto(on: bool) -> String {
 }
 
 pub fn buka_url(u: &str) {
+    if u.contains("youtube.com") {
+        let _ = std::fs::write(aktif_file(), now_s().to_string());
+    }
     let _ = std::process::Command::new("explorer.exe").arg(u).spawn();
+}
+
+/// Buka video teratas hasil pencarian `q` di YouTube (cadangan: halaman hasil pencarian).
+fn putar(q: &str) {
+    let search = format!("https://www.youtube.com/results?search_query={}", urlencoding::encode(q));
+    let id = tokio::runtime::Builder::new_current_thread().enable_all().build().ok().and_then(|rt| {
+        rt.block_on(async {
+            let h = reqwest::Client::builder().user_agent("Mozilla/5.0").timeout(std::time::Duration::from_secs(10)).build().ok()?;
+            let html = h.get(&search).header("Accept-Language", "id,en").send().await.ok()?.text().await.ok()?;
+            regex::Regex::new(r#""videoId":"([A-Za-z0-9_-]{11})""#).ok()?.captures(&html).map(|c| c[1].to_string())
+        })
+    });
+    buka_url(&id.map(|i| format!("https://www.youtube.com/watch?v={i}")).unwrap_or(search));
 }
 
 /// Saat Bos mulai aktif (sekali per hari): putar lagu terbanyak di YouTube dan tawarkan lagu sebelumnya.
@@ -165,15 +181,7 @@ pub fn auto(tx: &Tx) {
     }
     let tx = tx.clone();
     std::thread::spawn(move || {
-        let search = format!("https://www.youtube.com/results?search_query={}", urlencoding::encode(&top));
-        let id = tokio::runtime::Builder::new_current_thread().enable_all().build().ok().and_then(|rt| {
-            rt.block_on(async {
-                let h = reqwest::Client::builder().user_agent("Mozilla/5.0").timeout(std::time::Duration::from_secs(10)).build().ok()?;
-                let html = h.get(&search).header("Accept-Language", "id,en").send().await.ok()?.text().await.ok()?;
-                regex::Regex::new(r#""videoId":"([A-Za-z0-9_-]{11})""#).ok()?.captures(&html).map(|c| c[1].to_string())
-            })
-        });
-        buka_url(&id.map(|i| format!("https://www.youtube.com/watch?v={i}")).unwrap_or(search));
+        putar(&top);
         if let Some(p) = prev {
             crate::saran::offer_always(&tx, &format!("Kuputar '{top}'. Mau lagu sebelumnya, '{p}'?"), &format!("putar lagu {p}"), "musik");
         }
@@ -192,4 +200,92 @@ mod riwayat_tests {
         assert_eq!(top, "lagu santai");
         assert_eq!(prev.as_deref(), Some("lofi hip hop"));
     }
+}
+
+// ---------- Penjaga musik browser: lanjutkan bila terjeda, putar ulang bila tab hilang ----------
+
+const PS_JAGA: &str = r#"Add-Type -AssemblyName System.Runtime.WindowsRuntime
+function Aw($op,$t){ $m=([System.WindowsRuntimeSystemExtensions].GetMethods()|Where-Object{$_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0].MakeGenericMethod($t); $k=$m.Invoke($null,@($op)); $k.Wait(-1)|Out-Null; $k.Result }
+$T=[Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime]
+$mg=Aw ($T::RequestAsync()) $T
+foreach($s in $mg.GetSessions()){ $id=$s.SourceAppUserModelId; $st=$s.GetPlaybackInfo().PlaybackStatus
+ if($args[0] -eq 'lanjut' -and $id -match 'chrome|msedge|firefox|brave|opera' -and "$st" -ne 'Playing'){ [void](Aw ($s.TryPlayAsync()) ([bool])) }
+ "$id|$st" }"#;
+
+fn jaga_off_file() -> PathBuf {
+    crate::config::data_dir().join("musik_jaga_off")
+}
+
+fn aktif_file() -> PathBuf {
+    crate::config::data_dir().join("musik_aktif")
+}
+
+fn now_s() -> u64 {
+    std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0)
+}
+
+pub fn set_jaga(on: bool) -> String {
+    if on {
+        let _ = std::fs::remove_file(jaga_off_file());
+        "Penjaga musik: AKTIF. Bila musik YouTube yang kuputar terjeda >20 dtk, kulanjutkan; bila tab musiknya hilang, kuputar ulang (maks 1x/30 menit, hanya 6 jam setelah NOVA memutar musik).".into()
+    } else {
+        let _ = std::fs::write(jaga_off_file(), "");
+        "Penjaga musik: MATI.".into()
+    }
+}
+
+/// Status sesi media Windows (SMTC): daftar "aplikasi|status". `lanjut` juga memutar sesi browser yang tidak sedang Playing.
+fn smtc(mode: &str) -> Option<Vec<String>> {
+    let f = crate::config::data_dir().join("jaga.ps1");
+    std::fs::write(&f, PS_JAGA).ok()?;
+    let mut c = std::process::Command::new("powershell");
+    c.args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-File"]).arg(&f).arg(mode);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        c.creation_flags(0x0800_0000);
+    }
+    let o = c.output().ok()?;
+    Some(String::from_utf8_lossy(&o.stdout).lines().map(|l| l.trim().to_lowercase()).filter(|l| l.contains('|')).collect())
+}
+
+fn browser(l: &str) -> bool {
+    ["chrome", "msedge", "firefox", "brave", "opera"].iter().any(|b| l.contains(b))
+}
+
+/// Dipanggil sekali dari daemon; thread latar memeriksa tiap 20 detik hanya selama musik NOVA aktif (<6 jam).
+pub fn jaga_loop() {
+    std::thread::spawn(|| {
+        let (mut jeda, mut hilang, mut putar_ulang) = (0u32, 0u32, 0u64);
+        loop {
+            std::thread::sleep(std::time::Duration::from_secs(20));
+            let mulai: u64 = std::fs::read_to_string(aktif_file()).ok().and_then(|t| t.trim().parse().ok()).unwrap_or(0);
+            if jaga_off_file().exists() || now_s().saturating_sub(mulai) > 6 * 3600 {
+                (jeda, hilang) = (0, 0);
+                continue;
+            }
+            let Some(v) = smtc("cek") else { continue };
+            let b: Vec<&String> = v.iter().filter(|l| browser(l)).collect();
+            if b.is_empty() {
+                hilang += 1;
+                jeda = 0;
+            } else if b.iter().all(|l| !l.ends_with("|playing")) {
+                jeda += 1;
+                hilang = 0;
+            } else {
+                (jeda, hilang) = (0, 0);
+            }
+            if jeda >= 2 {
+                let _ = smtc("lanjut");
+                jeda = 0;
+            }
+            if hilang >= 2 && now_s().saturating_sub(putar_ulang) > 1800 {
+                if let Some((top, _)) = pilihan() {
+                    putar(&top);
+                    putar_ulang = now_s();
+                }
+                hilang = 0;
+            }
+        }
+    });
 }

@@ -528,6 +528,7 @@ fn tick(tx: &Tx, c: &Connection, s: &Schedule) {
 
 pub async fn run(tx: Tx) {
     let Ok(c) = db() else { return };
+    crate::musik::jaga_loop();
     let _ = c.execute("DELETE FROM usage WHERE day < date('now','-90 day')", []);
     let _ = c.execute("DELETE FROM act WHERE min < ?1", [now_ts() / 60 - 30 * 1440]);
     let _ = c.execute("DELETE FROM fired WHERE key NOT LIKE ?1", [format!("{}%", Local::now().format("%Y-%m-%d"))]);
