@@ -113,6 +113,9 @@ impl Engine {
         if let Some(cmd) = crate::seret::resolve(&t) {
             return self.start_mission(cmd).await;
         }
+        if let Some(m) = crate::teknik::nilai_jawaban(&t) {
+            return self.tx.sys(m);
+        }
         if let Some((goal, pesan)) = crate::putusan::jawab(&t) {
             self.tx.sys(pesan);
             return self.start_mission(goal).await;

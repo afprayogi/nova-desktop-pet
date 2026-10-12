@@ -95,6 +95,13 @@ pub fn teks() -> String {
         let p = ((v as f64 / tg as f64).min(1.0) * 10.0).round() as usize;
         t.push_str(&format!("{:<32} {}{} {}/{}\n", n, "█".repeat(p), "░".repeat(10 - p), v, tg));
     }
+    if let Some(o) = crate::data::json("eskalasi.json", "{}").as_object() {
+        let (p, n) = o.values().fold((0, 0), |a, v| (a.0 + v[0].as_u64().unwrap_or(0), a.1 + v[1].as_u64().unwrap_or(0)));
+        if p + n > 0 {
+            t.push_str(&format!("Pertanyaan pengetahuan: {p} dijawab lokal, {n} naik ke model ({}% perlu model).
+", n * 100 / (p + n)));
+        }
+    }
     t.push_str(&format!("Akurasi prediksi kelelahan: {}% · sisi graf: {}\nBelajar berkelanjutan: tiap hari saat Bos aktif NOVA melatih ulang dan mencatat pertumbuhan; kini {} hari tercatat.", s.akurasi, s.graf_sisi, riwayat().len()));
     t
 }

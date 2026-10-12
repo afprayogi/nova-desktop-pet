@@ -304,6 +304,9 @@ pub fn hybrid_v(q: &str, k: usize, nv: Option<&[f32]>) -> Vec<Doc> {
             .ok()
         })
         .collect();
+    // jawaban yang sudah dinilai benar oleh Bos didahulukan
+    let mut docs = docs;
+    docs.sort_by_key(|d| !d.src.starts_with("terverifikasi-"));
     cache_put(key, docs.clone());
     docs
 }

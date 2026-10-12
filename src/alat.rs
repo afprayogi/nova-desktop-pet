@@ -381,6 +381,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "remind" => crate::assistant::add_reminder(arg),
         "agenda" | "habit" | "tidur" => crate::assistant::report(&c.tool),
         "tanya" => {
+            let out: String = 't: {
             let nv = crate::vektor::tanya(http, arg).await;
             let mut r = crate::teknik::tanya_v(arg, nv.as_deref());
             // Buku berbahasa Inggris: pertanyaan Indonesia juga dicari dalam bentuk Inggris (pencarian berbasis kata tidak lintas bahasa).
@@ -396,13 +397,26 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
             if crate::terjemah::kemungkinan_inggris(&r) {
                 let awal: String = r.chars().take(1500).collect();
                 if let Ok((t, _, _)) = crate::terjemah::terjemahkan(http, &awal, Some("id")).await {
-                    return cut(&format!("🌐 {t}
+                    break 't cut(&format!("🌐 {t}
 
 — teks asli —
 {r}"), 3000);
                 }
             }
             r
+            };
+            if crate::teknik::memuaskan(arg, &out) {
+                crate::teknik::catat_eskalasi(false);
+                crate::teknik::batal_nilai();
+                out
+            } else {
+                // Lokal belum cukup: Gemini (cadangan Llama) menjawab dengan bahan dari otak, hasilnya disimpan agar lain kali dijawab lokal.
+                crate::teknik::catat_eskalasi(true);
+                match crate::teknik::naik(http, arg, &out).await {
+                    Some(j) => cut(&j, 3000),
+                    None => out,
+                }
+            }
         }
         "pelajari" => {
             let p = arg.to_string();

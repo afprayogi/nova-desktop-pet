@@ -307,6 +307,9 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                 self.act(act_kind(&call), "", 2800);
                 let r = alat::run(&call, &self.http).await;
                 self.emit_term(&call, &r);
+                if call.tool == "tanya" && crate::teknik::ada_nilai() {
+                    self.tx.send(Event::Ask { question: "Jawaban dari model tadi benar?".into(), options: vec!["Jawaban benar ✔".into(), "Jawaban salah ✘".into()] });
+                }
                 // Video tidak ada di laptop → tawarkan mencarinya di YouTube dengan kata kunci yang sama.
                 if call.tool == "cari" && r.starts_with("Tidak ketemu") && r.contains("mp4/mkv") {
                     let q = r.split("Kata yang kucari: ").nth(1).and_then(|x| x.split(" · ").next()).unwrap_or("").replace(',', "");

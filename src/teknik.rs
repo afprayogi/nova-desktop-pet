@@ -101,6 +101,7 @@ pub fn tanya(q: &str) -> String {
 
 /// `tanya` dengan embedding makna pertanyaan (lihat `vektor::tanya`).
 pub fn tanya_v(q: &str, nv: Option<&[f32]>) -> String {
+    bersihkan();
     if let Some(a) = calc(q) {
         return a;
     }
@@ -388,4 +389,136 @@ pub fn buku_terpelajari() -> Vec<(String, i64)> {
     c.prepare("SELECT src, COUNT(*) FROM kb WHERE (lower(src) LIKE '%.pdf' OR lower(src) LIKE '%.md' OR lower(src) LIKE '%.txt') AND src NOT LIKE 'id:%' GROUP BY src ORDER BY 2 DESC")
         .and_then(|mut st| st.query_map([], |r| Ok((r.get(0)?, r.get(1)?))).map(|r| r.flatten().collect()))
         .unwrap_or_default()
+}
+
+// ---------- Naik ke model bila jawaban lokal tidak memuaskan; belajar dari hasilnya ----------
+
+const TERBARU: &[&str] = &["hari ini", "terbaru", "sekarang", "harga", "berita", "cuaca", "kurs", "saham", "minggu ini", "bulan ini", "tahun ini", "terkini"];
+static NILAI: std::sync::Mutex<Option<(String, String)>> = std::sync::Mutex::new(None);
+static BERSIH: std::sync::Mutex<String> = std::sync::Mutex::new(String::new());
+
+/// Apakah hasil pencarian lokal `r` benar-benar menjawab `q`? (hasil kosong, atau kata kunci pertanyaan tidak ada di potongan → tidak)
+pub fn memuaskan(q: &str, r: &str) -> bool {
+    if r.starts_with("Belum ada di basis pengetahuan") {
+        return false;
+    }
+    if !r.contains("• ") || !r.contains('[') || r.contains("[terverifikasi-") {
+        return true; // kalkulator, atau jawaban yang sudah dicek Bos
+    }
+    let kata: Vec<String> = terms(q).into_iter().filter(|w| w.len() > 3).collect();
+    let l = r.to_lowercase();
+    // istilah bernomor (standar, tipe, model: "60947") harus ada persis; potongan yang hanya mirip topiknya tidak menjawab
+    if kata.iter().any(|w| w.chars().any(|c| c.is_ascii_digit()) && !l.contains(w.as_str())) {
+        return false;
+    }
+    kata.is_empty() || kata.iter().filter(|w| l.contains(w.as_str())).count() * 3 >= kata.len()
+}
+
+/// Hapus jawaban belajar yang sudah kedaluwarsa (sumber `belajar-x@YYYYMMDD`), sekali per hari per proses.
+pub fn bersihkan() {
+    let hari = chrono::Local::now().format("%Y%m%d").to_string();
+    {
+        let mut b = BERSIH.lock().unwrap();
+        if *b == hari {
+            return;
+        }
+        *b = hari.clone();
+    }
+    if let Ok(c) = open() {
+        let _ = c.execute("DELETE FROM kb WHERE src LIKE 'belajar-%@%' AND substr(src, instr(src,'@')+1) < ?1", [&hari]);
+    }
+}
+
+/// Simpan jawaban model dan tandai menunggu penilaian Bos. Hal "terbaru" (harga, berita, cuaca, …) berlaku 7 hari.
+pub fn simpan_naik(kind: &str, goal: &str, ans: &str) {
+    let (g, a) = (goal.trim(), ans.trim());
+    if a.chars().count() < 40 || g.is_empty() {
+        return;
+    }
+    let l = g.to_lowercase();
+    let src = if TERBARU.iter().any(|k| l.contains(k)) { format!("belajar-{kind}@{}", (chrono::Local::now() + chrono::Duration::days(7)).format("%Y%m%d")) } else { format!("belajar-{kind}") };
+    let judul: String = g.chars().take(80).collect();
+    let isi = format!("Pertanyaan: {g}\nJawaban ({kind}, belum diverifikasi): {}", a.chars().take(1500).collect::<String>());
+    if let Ok(c) = open() {
+        let _ = c.execute("DELETE FROM kb WHERE title=?1 AND (src LIKE 'belajar-%' OR src LIKE 'terverifikasi-%')", [&judul]);
+        let _ = c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,?3)", (&judul, &isi, &src));
+    }
+    *NILAI.lock().unwrap() = Some((judul, src));
+    bersihkan();
+    crate::ingat::clear_cache();
+    crate::graf::ingest("jawaban", &format!("{g} {a}"));
+}
+
+pub fn batal_nilai() {
+    *NILAI.lock().unwrap() = None;
+}
+
+pub fn ada_nilai() -> bool {
+    NILAI.lock().unwrap().is_some()
+}
+
+/// Jawaban Bos atas tombol penilaian: benar → terverifikasi (didahulukan pada pencarian); salah → dibuang.
+pub fn nilai_jawaban(t: &str) -> Option<String> {
+    let benar = t == "Jawaban benar ✔";
+    if !benar && t != "Jawaban salah ✘" {
+        return None;
+    }
+    let (judul, src) = NILAI.lock().unwrap().take()?;
+    let c = open().ok()?;
+    if benar {
+        let _ = c.execute("UPDATE kb SET src = replace(src, 'belajar-', 'terverifikasi-') WHERE title=?1 AND src=?2", (&judul, &src));
+        crate::ingat::clear_cache();
+        Some("📚 Terima kasih — jawaban itu kutandai terverifikasi dan akan kudahulukan lain kali.".into())
+    } else {
+        let _ = c.execute("DELETE FROM kb WHERE title=?1 AND src=?2", (&judul, &src));
+        crate::ingat::clear_cache();
+        Some("🧠 Dicatat salah — jawaban itu kubuang dari otak.".into())
+    }
+}
+
+/// Hitung per hari: [puas lokal, naik ke model] di `eskalasi.json` (untuk menilai seberapa sering lokal belum cukup).
+pub fn catat_eskalasi(naik: bool) {
+    let hari = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let _ = crate::data::ubah("eskalasi.json", "{}", |v| {
+        let a = v[&hari].as_array().cloned().unwrap_or_else(|| vec![0.into(), 0.into()]);
+        let i = naik as usize;
+        let mut a = a;
+        a[i] = (a[i].as_u64().unwrap_or(0) + 1).into();
+        v[&hari] = serde_json::Value::Array(a);
+    });
+}
+
+/// Naik ke model (Gemini; Llama lokal bila Gemini tidak tersedia/gagal) dengan hasil lokal + ingatan sebagai bahan, lalu simpan jawabannya.
+pub async fn naik(http: &reqwest::Client, q: &str, lokal: &str) -> Option<String> {
+    let sys = "Kamu NOVA, asisten pribadi Bos (insinyur listrik) di laptop. Jawab dalam Bahasa Indonesia, ringkas (maks 6 kalimat), akurat, tanpa mengarang. Pakai catatan dari otak bila relevan; bila catatan tidak nyambung abaikan. Bila tidak tahu, katakan tidak tahu.";
+    let user = format!("Pertanyaan: {q}\n\nCatatan hasil pencarian otak (mungkin tidak relevan):\n{}\n\nIngatan:\n{}", crate::research::truncate(lokal, 1000), crate::research::truncate(&crate::ingat::context(q), 900));
+    let (sumber, jawab) = match if crate::gemini::available() { crate::gemini::generate(http, sys, &user, false, false).await.ok() } else { None } {
+        Some(t) => ("gemini", t),
+        None => ("llama", crate::lokal::chat(http, &format!("{sys}\n\n{user}")).await.ok()?),
+    };
+    simpan_naik(sumber, q, &jawab);
+    Some(format!("💡 {jawab}\n(dari {} — belum dicek; nilai lewat tombol agar kuingat dengan benar)", if sumber == "gemini" { "Gemini" } else { "Ollama/Llama" }))
+}
+
+#[cfg(test)]
+mod naik_tests {
+    #[test]
+    fn judges_local_answers() {
+        assert!(!super::memuaskan("apa fungsi transformator", "Belum ada di basis pengetahuan. Ajari saya"));
+        assert!(!super::memuaskan("apa fungsi transformator", "• Dekorator [lxiy:python (x)]: fungsi log memberi tahu kita"));
+        assert!(super::memuaskan("apa fungsi transformator", "• Transformator [wikipedia:Transformator]: Transformator adalah alat"));
+        assert!(!super::memuaskan("apa itu standar iec 60947-4-1", "• IEC starter [x.pdf]: standar iec untuk starter motor"));
+        assert!(super::memuaskan("hitung 2+2", "🧮 2+2 = 4"));
+        assert!(super::memuaskan("apa itu x", "• a [terverifikasi-gemini]: y"));
+    }
+    #[test]
+    fn answer_is_saved_expires_and_can_be_rated() {
+        let q = format!("berapa harga emas hari ini {}", std::process::id());
+        super::simpan_naik("gemini", &q, &"Harga emas hari ini sekitar dua juta rupiah per gram untuk contoh uji. ".repeat(2));
+        assert!(super::ada_nilai());
+        assert!(super::nilai_jawaban("Jawaban benar ✔").unwrap().contains("terverifikasi"));
+        let c = super::open().unwrap();
+        let n: i64 = c.query_row("SELECT COUNT(*) FROM kb WHERE src LIKE 'terverifikasi-gemini@%'", [], |r| r.get(0)).unwrap();
+        assert_eq!(n, 1);
+    }
 }
