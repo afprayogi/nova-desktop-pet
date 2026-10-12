@@ -378,7 +378,8 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "remind" => crate::assistant::add_reminder(arg),
         "agenda" | "habit" | "tidur" => crate::assistant::report(&c.tool),
         "tanya" => {
-            let mut r = crate::teknik::tanya(arg);
+            let nv = crate::vektor::tanya(http, arg).await;
+            let mut r = crate::teknik::tanya_v(arg, nv.as_deref());
             // Buku berbahasa Inggris: pertanyaan Indonesia juga dicari dalam bentuk Inggris (pencarian berbasis kata tidak lintas bahasa).
             if arg.split_whitespace().count() >= 3 && !crate::terjemah::kemungkinan_inggris(arg) && !crate::teknik::buku_terpelajari().is_empty() {
                 if let Ok((en, _, _)) = crate::terjemah::terjemahkan(http, arg, Some("en")).await {
@@ -440,6 +441,13 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                     Err(e) => format!("gagal: {e}"),
                 }
             }
+        }
+        "open" if arg.contains("wikipedia.org/w/index.php?search=") => {
+            // Diminta mencari di Wikipedia: artikelnya juga dimasukkan ke otak, lalu halamannya dibuka.
+            let q = urlencoding::decode(arg.split("search=").nth(1).unwrap_or("")).map(|c| c.into_owned()).unwrap_or_default();
+            let r = crate::wikipedia::cari_simpan(http, &q).await;
+            crate::musik::buka_url(arg);
+            format!("{r} (halaman dibuka di browser)")
         }
         "open" if arg.starts_with("https://www.youtube.com/results?search_query=") => {
             let q = urlencoding::decode(arg.trim_start_matches("https://www.youtube.com/results?search_query=")).map(|c| c.into_owned()).unwrap_or_default();

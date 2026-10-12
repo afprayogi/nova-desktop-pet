@@ -165,6 +165,34 @@ impl Engine {
                 let r = if let Some(sisa) = arg.strip_prefix("tambah ") { crate::aturan::layanan_tambah(sisa) } else { format!("Layanan web: {}. Tambah: /layanan tambah <nama> <kata1,kata2> <url dengan {{q}}>, atau edit layanan.json.", crate::aturan::layanan_daftar().join(", ")) };
                 self.agent_say(0, &r)
             }
+            "wikipedia" | "wiki" => {
+                let r = if arg.to_lowercase().starts_with("isi") {
+                    let n = arg.split_whitespace().nth(1).and_then(|x| x.parse().ok()).unwrap_or(10usize).clamp(1, 40);
+                    self.agent_say(0, &format!("Memuat hingga {n} topik teknik dari Wikipedia Indonesia…"));
+                    crate::wikipedia::isi_topik(&self.http, n).await
+                } else if arg.is_empty() {
+                    "Pakai: /wikipedia <topik> (artikel masuk otak) atau /wikipedia isi [jumlah] (topik teknik dari topik_teknik.json).".into()
+                } else {
+                    crate::wikipedia::cari_simpan(&self.http, arg).await
+                };
+                self.agent_say(0, &r)
+            }
+            "arti" => {
+                let r = crate::wikipedia::kamus(&self.http, arg).await;
+                self.agent_say(0, &r)
+            }
+            "vektor" => {
+                let (a, b) = crate::vektor::status();
+                let r = if arg.eq_ignore_ascii_case("isi") {
+                    match crate::vektor::isi(&self.http, 64).await {
+                        Some((n, sisa)) => format!("{n} potongan di-embed; sisa {sisa}."),
+                        None => "Model embedding lokal tidak tersedia (Ollama 11435 / nomic-embed-text).".into(),
+                    }
+                } else {
+                    format!("Pencarian makna: {a} dari {b} potongan sudah punya vektor. '/vektor isi' mengerjakan 64 potongan; di latar berjalan otomatis.")
+                };
+                self.agent_say(0, &r)
+            }
             "buku" if arg.to_lowercase().starts_with("terjemah") => {
                 let n = arg.split_whitespace().nth(1).and_then(|x| x.parse().ok()).unwrap_or(40usize).clamp(1, 200);
                 self.agent_say(0, &format!("Menerjemahkan {n} potongan buku lewat Google Translate…"));

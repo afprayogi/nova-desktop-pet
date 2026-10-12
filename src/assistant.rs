@@ -530,6 +530,28 @@ pub async fn run(tx: Tx) {
     let Ok(c) = db() else { return };
     crate::musik::jaga_loop();
     tokio::spawn(async {
+        // Pencarian makna: embed potongan pengetahuan bertahap (64 per 5 menit) sampai selesai.
+        let http = crate::research::client(60);
+        tokio::time::sleep(std::time::Duration::from_secs(120)).await;
+        loop {
+            if matches!(crate::vektor::isi(&http, 64).await, Some((_, 0))) {
+                break;
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(300)).await;
+        }
+    });
+    tokio::spawn(async {
+        // Topik teknik dari Wikipedia Indonesia: 5 per 15 menit sampai habis.
+        let http = crate::research::client(40);
+        tokio::time::sleep(std::time::Duration::from_secs(180)).await;
+        loop {
+            if crate::wikipedia::isi_topik(&http, 5).await.starts_with("Semua topik") {
+                break;
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(900)).await;
+        }
+    });
+    tokio::spawn(async {
         // Otak tumbuh sendiri: 20 potongan buku Inggris diterjemahkan tiap 10 menit sampai habis.
         let http = crate::research::client(30);
         loop {

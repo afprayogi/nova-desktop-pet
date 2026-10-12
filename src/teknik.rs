@@ -86,7 +86,7 @@ pub(crate) fn open() -> rusqlite::Result<Connection> {
 }
 
 pub(crate) fn terms(q: &str) -> Vec<String> {
-    const STOP: &[&str] = &["apa", "itu", "yang", "dan", "di", "ke", "dari", "untuk", "adalah", "bagaimana", "jelaskan", "cara", "tanya", "tolong", "dengan", "pada", "ini", "bisa", "kah"];
+    const STOP: &[&str] = &["apa", "itu", "yang", "dan", "di", "ke", "dari", "untuk", "adalah", "bagaimana", "jelaskan", "cara", "tanya", "tolong", "dengan", "pada", "ini", "bisa", "kah", "fungsi", "kerja", "prinsip", "kenapa", "mengapa", "apakah", "siapa", "kapan", "berapa", "rangkaian", "jelasin", "terangkan"];
     q.split(|c: char| !c.is_alphanumeric())
         .map(|w| w.to_lowercase())
         .filter(|w| w.len() > 1 && !STOP.contains(&w.as_str()))
@@ -96,12 +96,17 @@ pub(crate) fn terms(q: &str) -> Vec<String> {
 
 /// Pertanyaan teknik: kalkulator dulu, lalu basis pengetahuan.
 pub fn tanya(q: &str) -> String {
+    tanya_v(q, None)
+}
+
+/// `tanya` dengan embedding makna pertanyaan (lihat `vektor::tanya`).
+pub fn tanya_v(q: &str, nv: Option<&[f32]>) -> String {
     if let Some(a) = calc(q) {
         return a;
     }
     crate::ingat::episode("tanya", q);
     let q = &crate::graf::expand_query(q);
-    let hits = crate::ingat::hybrid(q, 3);
+    let hits = crate::ingat::hybrid_v(q, 3, nv);
     if hits.is_empty() {
         return "Belum ada di basis pengetahuan. Ajari saya lewat misi: pelajari C:/path/buku.pdf".into();
     }

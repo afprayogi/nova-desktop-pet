@@ -231,7 +231,12 @@ pub fn clear_cache() {
 // ---------- Hybrid search (sparse BM25 + dense cosine, RRF) ----------
 
 pub fn hybrid(q: &str, k: usize) -> Vec<Doc> {
-    let key = format!("{k}|{}", q.to_lowercase());
+    hybrid_v(q, k, None)
+}
+
+/// Seperti `hybrid`, dengan embedding makna pertanyaan (`nv`, ternormalisasi) bila tersedia: ranking ketiga dari tabel `kb_emb`.
+pub fn hybrid_v(q: &str, k: usize, nv: Option<&[f32]>) -> Vec<Doc> {
+    let key = format!("{k}|{}|{}", nv.is_some(), q.to_lowercase());
     if let Some(d) = cache_get(&key) {
         return d;
     }
@@ -266,6 +271,25 @@ pub fn hybrid(q: &str, k: usize) -> Vec<Doc> {
     dense.sort_by(|a, b| b.0.total_cmp(&a.0));
     for (rank, (_, id)) in dense.into_iter().take(20).enumerate() {
         *score.entry(id).or_default() += 1.0 / (60.0 + rank as f32);
+    }
+
+    // Makna (nomic-embed-text): bobot lebih besar karena lintas kata/bahasa.
+    if let Some(nv) = nv {
+        let mut sem: Vec<(f32, i64)> = vec![];
+        if let Ok(mut st) = c.prepare("SELECT id, v FROM kb_emb") {
+            if let Ok(rows) = st.query_map([], |r| Ok((r.get::<_, i64>(0)?, r.get::<_, Vec<u8>>(1)?))) {
+                for (id, b) in rows.flatten() {
+                    let s = dot(nv, &crate::vektor::dari_blob(&b));
+                    if s > 0.45 {
+                        sem.push((s, id));
+                    }
+                }
+            }
+        }
+        sem.sort_by(|a, b| b.0.total_cmp(&a.0));
+        for (rank, (_, id)) in sem.into_iter().take(20).enumerate() {
+            *score.entry(id).or_default() += 1.6 / (60.0 + rank as f32);
+        }
     }
 
     let mut ranked: Vec<(i64, f32)> = score.into_iter().collect();
