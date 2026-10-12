@@ -6,6 +6,7 @@ mod adegan;
 mod agents;
 mod ajar;
 mod alat;
+mod alatbaru;
 mod daya;
 mod aplikasi;
 mod api;

@@ -149,6 +149,13 @@ impl Engine {
                 };
                 self.agent_say(0, &r)
             }
+            "kru" => {
+                if arg.is_empty() {
+                    self.agent_say(0, "Pakai: /kru <tujuan>. Kru (peneliti, pelaksana, penulis) mengerjakan tugas berurutan dengan alat aman; yang butuh persetujuan dilaporkan, bukan dijalankan.")
+                } else {
+                    self.kru(arg).await
+                }
+            }
             "otak" | "ingatan" => {
                 let r = if arg.eq_ignore_ascii_case("belajar") {
                     tokio::task::spawn_blocking(|| crate::otak::harian(true)).await.ok().flatten().unwrap_or_default()

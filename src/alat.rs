@@ -69,7 +69,11 @@ ps            : daftar proses
 fetch <url>   : ambil teks halaman web
 shell <cmd>   : jalankan perintah shell (butuh persetujuan Bos)
 write <path>  : tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)
-open <target> : buka URL/file/aplikasi (butuh persetujuan Bos)";
+open <target> : buka URL/file/aplikasi (butuh persetujuan Bos)cariisi <berkas> :: <pertanyaan>: potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)
+github <kata>   : cari repositori GitHub (bintang, bahasa, lisensi)
+tunggu <detik>  : jeda 1-30 detik di antara langkah
+kompres <folder|berkas>: buat zip di sebelahnya (butuh persetujuan)
+";
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Call {
@@ -118,6 +122,10 @@ pub fn assess(c: &Call) -> Risk {
         "pelajari" | "kurikulum" => Risk::Safe,
         "kirim" => Risk::Confirm("mengirim email ke alamat Bos sendiri".into()),
         "otak" => Risk::Safe,
+        "cariisi" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Confirm("path tampak sensitif".into()),
+        "cariisi" | "github" | "tunggu" => Risk::Safe,
+        "kompres" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Block("path sensitif tidak dikompres".into()),
+        "kompres" => Risk::Confirm(format!("membuat berkas zip dari {}", c.arg.trim())),
         "paket" if arg.contains("tangkap") => Risk::Confirm("menangkap paket jaringan ±15 detik (Windows akan meminta UAC)".into()),
         "paket" => Risk::Safe,
         "daya" if matches!(arg.trim(), "kunci" | "batal") => Risk::Safe,
@@ -304,6 +312,16 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "internet" => crate::internet::laporan(http).await,
         "riwayat" => tokio::task::spawn_blocking(crate::riwayat::ringkas).await.unwrap_or_default(),
         "daya" => crate::daya::jalankan(arg),
+        "cariisi" => {
+            let a = arg.to_string();
+            tokio::task::spawn_blocking(move || crate::alatbaru::cari_isi(&a)).await.unwrap_or_default()
+        }
+        "github" => crate::alatbaru::github(http, arg).await,
+        "tunggu" => crate::alatbaru::tunggu(arg).await,
+        "kompres" => {
+            let a = arg.to_string();
+            tokio::task::spawn_blocking(move || crate::alatbaru::kompres(&a)).await.unwrap_or_default()
+        }
         "otak" => tokio::task::spawn_blocking(crate::otak::teks).await.unwrap_or_default(),
         "paket" if arg.contains("tangkap") => crate::paket::tangkap(15).await,
         "paket" => crate::paket::teks_monitor(&crate::paket::monitor().await),

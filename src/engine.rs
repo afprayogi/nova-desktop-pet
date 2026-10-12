@@ -17,6 +17,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::mpsc::error::TryRecvError;
 
 mod chat;
+mod kru;
 mod misi;
 mod slash;
 mod teks;

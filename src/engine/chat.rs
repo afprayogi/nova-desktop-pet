@@ -14,6 +14,12 @@ impl Engine {
             }
             return self.slash(rest).await;
         }
+        // Kru (pola CrewAI): "kru <tujuan>" memecah tugas ke peneliti/pelaksana/penulis.
+        if let Some(g) = t.strip_prefix("kru ").or_else(|| t.strip_prefix("Kru ")).or_else(|| t.to_lowercase().strip_prefix("kerahkan kru untuk ").map(|_| &t[19..])) {
+            let g = g.trim().to_string();
+            self.tx.send(Event::Chat(ChatLine { who: Who::Boss, text: t.clone(), media: Vec::new() }));
+            return self.kru(&g).await;
+        }
         // Jalan pintas: ketik "obrolan"/"chat"/"buka obrolan" langsung membuka layar obrolan besar.
         if ["obrolan", "chat", "buka obrolan", "buka chat", "obrolan besar", "layar obrolan", "ngobrol"].contains(&t.trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase().as_str()) {
             crate::api::OPEN_BIG.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
