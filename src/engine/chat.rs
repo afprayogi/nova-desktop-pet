@@ -56,7 +56,7 @@ impl Engine {
             return;
         }
         if low == "mulai tur" {
-            return self.agent_say(0, GUIDE);
+            return self.agent_say(0, &guide());
         }
         crate::hewan::touch();
         crate::persona::observe(&t);

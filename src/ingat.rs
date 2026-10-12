@@ -18,15 +18,10 @@ pub struct Doc {
     pub src: String,
 }
 
-const STOP: &[&str] = &[
-    "yang", "dan", "di", "ke", "dari", "ini", "itu", "untuk", "pada", "dengan", "adalah", "dalam", "atau", "juga", "akan", "oleh",
-    "the", "of", "and", "to", "in", "is", "for", "that", "on", "with", "as", "by", "are", "be", "an", "it", "or", "at", "from",
-];
-
 fn words(text: &str) -> Vec<String> {
     text.split(|c: char| !c.is_alphanumeric())
         .map(|w| w.to_lowercase())
-        .filter(|w| w.len() > 1 && !STOP.contains(&w.as_str()))
+        .filter(|w| w.len() > 1 && !crate::lex::ada("stop_cari", w))
         .collect()
 }
 

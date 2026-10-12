@@ -530,6 +530,13 @@ pub async fn run(tx: Tx) {
     let Ok(c) = db() else { return };
     crate::musik::jaga_loop();
     tokio::spawn(async {
+        // Folder otak/info: berkas baru/berubah masuk otak, tiap menit.
+        loop {
+            tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+            let _ = tokio::task::spawn_blocking(crate::info::sinkron).await;
+        }
+    });
+    tokio::spawn(async {
         // Pencarian makna: embed potongan pengetahuan bertahap (64 per 5 menit) sampai selesai.
         let http = crate::research::client(60);
         tokio::time::sleep(std::time::Duration::from_secs(120)).await;

@@ -1,0 +1,142 @@
+[
+ {
+  "judul": "Hukum Ohm",
+  "isi": "V = I x R. Daya P = V x I = I^2 x R = V^2 / R. Satuan: V volt, I ampere, R ohm, P watt."
+ },
+ {
+  "judul": "Daya AC satu fasa",
+  "isi": "P = V x I x cos(phi) (watt), S = V x I (VA), Q = V x I x sin(phi) (VAR). S^2 = P^2 + Q^2. Faktor daya = P/S."
+ },
+ {
+  "judul": "Daya AC tiga fasa",
+  "isi": "P = akar3 x V(L-L) x I x cos(phi). S = akar3 x V x I. Tegangan fasa-netral = V(L-L)/akar3 (380 V -> 220 V). Arus saluran = P / (akar3 x V x cos phi)."
+ },
+ {
+  "judul": "Faktor daya dan kapasitor",
+  "isi": "Perbaikan cos phi: Qc (kVAR) = P(kW) x (tan phi1 - tan phi2). Kapasitor mengurangi kVAR reaktif, arus saluran, dan rugi-rugi. Hindari kompensasi berlebih (leading) dan resonansi harmonik; gunakan reaktor detuned bila ada beban nonlinier."
+ },
+ {
+  "judul": "Drop tegangan",
+  "isi": "1 fasa: dV = 2 x rho x L x I / A. 3 fasa: dV = akar3 x rho x L x I x cos phi / A (reaktansi diabaikan). rho tembaga ~0,0175 ohm.mm2/m (20C), aluminium ~0,028. Umumnya batas drop tegangan beban 3-5%; periksa PUIL."
+ },
+ {
+  "judul": "Kemampuan hantar arus (KHA) kabel",
+  "isi": "Kabel dipilih agar KHA (Iz) >= arus beban (Ib) setelah faktor koreksi suhu, pengelompokan, dan cara pemasangan. Pengaman In memenuhi Ib <= In <= Iz. Cek tabel KHA PUIL 2011 / IEC 60364-5-52."
+ },
+ {
+  "judul": "MCB, MCCB, ELCB/RCD",
+  "isi": "MCB: proteksi beban lebih (termal) dan hubung singkat (magnetik); kurva B/C/D menentukan batas trip magnetik. MCCB untuk arus lebih besar dan dapat diatur. RCD/ELCB mendeteksi arus bocor ke tanah (30 mA untuk proteksi manusia) dan TIDAK menggantikan MCB."
+ },
+ {
+  "judul": "Pentanahan (grounding)",
+  "isi": "Fungsi: keselamatan (arus gangguan mengalir ke tanah, pengaman trip) dan referensi tegangan. Elektroda: batang, pelat, pita. Ukur tahanan dengan earth tester. Semua bagian konduktif terbuka dihubungkan ke PE. Nilai tahanan yang diizinkan tergantung sistem (TN/TT/IT): lihat PUIL."
+ },
+ {
+  "judul": "Sistem TN, TT, IT",
+  "isi": "TN: netral sumber ditanahkan, BKT ke netral (TN-S, TN-C-S). TT: BKT punya tanah sendiri, wajib RCD. IT: sumber tak ditanahkan/impedansi tinggi, perlu monitor isolasi."
+ },
+ {
+  "judul": "Warna kabel instalasi",
+  "isi": "Umum PUIL 2011: L1 merah, L2 kuning, L3 hitam, netral biru, PE kuning-hijau. Instalasi lama bisa berbeda; selalu uji dengan alat, jangan hanya percaya warna."
+ },
+ {
+  "judul": "Keselamatan kerja listrik",
+  "isi": "Selalu: matikan, kunci dan beri tanda (LOTO), uji tidak bertegangan dengan tester yang diverifikasi, tanahkan bila perlu, baru bekerja. Gunakan APD sesuai (sarung tangan isolasi, kacamata, sepatu safety). Bekerja bertegangan hanya oleh yang berwenang."
+ },
+ {
+  "judul": "Hubung singkat",
+  "isi": "Arus hubung singkat = V / Z total loop. Pengaman harus mampu memutus (breaking capacity Icu/Icn) lebih besar dari arus hubung singkat di titik pemasangan, dan waktu trip memenuhi syarat sentuh tak langsung."
+ },
+ {
+  "judul": "Motor induksi",
+  "isi": "Kecepatan sinkron ns = 120 x f / p (rpm). Slip s = (ns - n)/ns. Arus beban penuh 3 fasa I = P / (akar3 x V x eta x cos phi). Arus start DOL ~5-8 x In."
+ },
+ {
+  "judul": "Metode start motor",
+  "isi": "DOL (langsung) sederhana tapi arus start besar. Bintang-segitiga mengurangi arus start ~1/3 (motor harus delta di 380 V). Soft starter menaikkan tegangan bertahap. VSD/inverter mengatur frekuensi sehingga torsi dan kecepatan terkontrol dan arus start rendah."
+ },
+ {
+  "judul": "Proteksi motor",
+  "isi": "Perlu: pengaman hubung singkat (MCB/MCCB/fuse), relai beban lebih termal (TOR) atau MPCB, dan opsional proteksi fasa hilang/urutan fasa. Setel TOR sekitar arus nominal pelat nama."
+ },
+ {
+  "judul": "Trafo",
+  "isi": "Rasio V1/V2 = N1/N2 = I2/I1. Arus nominal I = S / (akar3 x V). Rugi besi tetap, rugi tembaga bergantung beban. Impedansi % menentukan arus hubung singkat sekunder: Isc = In / Z%."
+ },
+ {
+  "judul": "Kontaktor dan relai",
+  "isi": "Relai: saklar kecil dikendalikan kumparan, untuk sinyal kontrol. Kontaktor: untuk beban daya, kontak utama + bantu. Pilih kategori AC-1 (resistif), AC-3 (motor). Pasang peredam (snubber/dioda flyback) pada kumparan DC."
+ },
+ {
+  "judul": "Harmonisa",
+  "isi": "Beban nonlinier (VSD, UPS, LED driver) menyebabkan arus harmonik: panas berlebih di netral dan trafo, kapasitor rusak. Ukur THD; mitigasi dengan filter, trafo K-factor, reaktor."
+ },
+ {
+  "judul": "UPS dan baterai",
+  "isi": "Kapasitas baterai (Wh) = V x Ah. Waktu cadangan ~ (Wh x efisiensi x DoD) / beban W. Aki timbal-asam disarankan DoD <=50%. Pilih UPS dengan daya VA >= beban/ (pf) dengan margin 20-25%."
+ },
+ {
+  "judul": "PLTS (solar PV)",
+  "isi": "Daya panel (Wp) x jam matahari efektif (~4 jam di Indonesia) x efisiensi sistem (~0,75) = energi harian. String: jumlah modul seri menentukan Voc total (harus < batas inverter pada suhu dingin). Pasang proteksi DC, SPD, dan pentanahan."
+ },
+ {
+  "judul": "Resistor, kapasitor, induktor",
+  "isi": "R: menghambat arus. C: menyimpan muatan, Xc = 1/(2 pi f C). L: menyimpan energi magnet, XL = 2 pi f L. Seri R: Rt = R1+R2; paralel: 1/Rt = 1/R1+1/R2. Kapasitor seri kebalikannya."
+ },
+ {
+  "judul": "Filter RC dan frekuensi cutoff",
+  "isi": "fc = 1 / (2 pi R C). Low-pass: melewatkan frekuensi rendah; high-pass sebaliknya. Pada fc amplitudo turun ke 70,7% (-3 dB)."
+ },
+ {
+  "judul": "LED dan resistor pembatas",
+  "isi": "R = (Vsumber - Vf) / If. Contoh: 5 V, LED merah Vf 2 V, If 10 mA -> R = 300 ohm (pakai 330). Daya resistor = I^2 x R."
+ },
+ {
+  "judul": "Dioda dan transistor",
+  "isi": "Dioda: konduksi searah, Vf ~0,7 V (Si). Transistor BJT: arus basis mengendalikan Ic = beta x Ib. MOSFET: tegangan gate mengendalikan arus; cocok untuk saklar daya. Pasang dioda flyback pada beban induktif."
+ },
+ {
+  "judul": "Op-amp",
+  "isi": "Penguat inverting: Av = -Rf/Rin. Non-inverting: Av = 1 + Rf/Rin. Op-amp ideal: impedansi masuk tak hingga, input + dan - bertegangan sama pada umpan balik negatif."
+ },
+ {
+  "judul": "PWM",
+  "isi": "Pulse width modulation: duty cycle D = ton/T. Tegangan rata-rata = D x Vsumber. Dipakai untuk dimmer, kontrol kecepatan motor DC, dan konverter daya."
+ },
+ {
+  "judul": "ADC dan resolusi",
+  "isi": "Resolusi LSB = Vref / 2^n. ADC 10 bit, Vref 5 V -> 4,88 mV per langkah. Perhatikan teorema Nyquist: sampling >= 2x frekuensi sinyal tertinggi, dan beri filter anti-aliasing."
+ },
+ {
+  "judul": "PLC dasar",
+  "isi": "PLC bekerja siklus scan: baca input -> jalankan program -> tulis output. Bahasa IEC 61131-3: Ladder (LD), Function Block (FBD), Structured Text (ST), Instruction List, SFC. Input/output digital dan analog; perhatikan sumber (PNP) vs sink (NPN)."
+ },
+ {
+  "judul": "Ladder logic",
+  "isi": "Kontak NO/NC mewakili input; coil mewakili output. Rangkaian seal-in (self-holding): kontak coil paralel dengan tombol START, seri dengan STOP (NC) untuk menahan motor tetap hidup. Gunakan interlock agar dua output berlawanan tak aktif bersamaan."
+ },
+ {
+  "judul": "Sinyal analog 4-20 mA",
+  "isi": "4 mA = 0%, 20 mA = 100%. Nilai di bawah 4 mA menandakan kabel putus (live zero). Skala: nilai = (I - 4)/16 x rentang. Tahan noise dan jarak jauh lebih baik daripada 0-10 V."
+ },
+ {
+  "judul": "Sensor umum",
+  "isi": "Proximity induktif (logam), kapasitif (benda apa saja), fotoelektrik, limit switch, termokopel (tipe K ~41 uV/C), RTD PT100 (100 ohm pada 0C, ~0,385 ohm/C), load cell, encoder."
+ },
+ {
+  "judul": "Komunikasi industri",
+  "isi": "Modbus RTU (RS-485, master-slave, 9600-115200 bps, hingga 32 node tanpa repeater), Modbus TCP, Profibus, Profinet, EtherNet/IP, CAN. RS-485 butuh terminasi 120 ohm di ujung bus dan kabel twisted pair."
+ },
+ {
+  "judul": "IP rating",
+  "isi": "IP + 2 digit: digit1 proteksi padat (0-6), digit2 proteksi air (0-9). IP54: tahan debu terbatas dan cipratan; IP65: kedap debu dan semprotan air; IP67: dapat direndam sementara."
+ },
+ {
+  "judul": "Konversi satuan daya",
+  "isi": "1 HP = 746 W (mekanik), 1 kW = 1,341 HP, 1 PK ~ 735,5 W. kVA = kW / cos phi. 1 kWh = 1000 W selama 1 jam."
+ },
+ {
+  "judul": "Resistivitas bahan",
+  "isi": "Tembaga 0,0175 ohm.mm2/m, aluminium 0,028, besi ~0,10. Resistansi R = rho x L / A. Naik sekitar 0,4% per derajat C untuk tembaga."
+ }
+]

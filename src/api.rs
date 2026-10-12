@@ -614,7 +614,7 @@ mod ui_tests {
     #[test]
     fn menu_commands_exist_in_ui() {
         // semua perintah menu yang berawalan / harus dikenali engine (tercantum di teks bantuan atau daftar saran)
-        let help = [include_str!("engine.rs"), include_str!("engine/slash.rs"), include_str!("engine/teks.rs")].concat();
+        let help = [include_str!("engine.rs"), include_str!("engine/slash.rs"), include_str!("../data/teks.json")].concat();
         for cmd in ["/pola", "/sholat", "/pilih", "/gemini", "/otomatis", "/mulai", "/bantuan", "/latih", "/cadangan", "/build"] {
             assert!(UI_HTML.contains(cmd), "menu UI memuat {cmd}");
             assert!(help.contains(&format!("\"{}\"", cmd.trim_start_matches('/'))) || help.contains(cmd), "engine mengenal {cmd}");

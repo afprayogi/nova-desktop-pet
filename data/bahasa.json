@@ -1,0 +1,256 @@
+{
+ "pengisi": [
+  "halo",
+  "hai",
+  "hi",
+  "hey",
+  "nova",
+  "gemini",
+  "coba",
+  "tolong",
+  "bisa",
+  "bisakah",
+  "kah",
+  "dong",
+  "please",
+  "ya",
+  "yuk",
+  "saya",
+  "aku",
+  "mau",
+  "minta"
+ ],
+ "stop_tanya": [
+  "apa",
+  "itu",
+  "yang",
+  "dan",
+  "di",
+  "ke",
+  "dari",
+  "untuk",
+  "adalah",
+  "bagaimana",
+  "jelaskan",
+  "cara",
+  "tanya",
+  "tolong",
+  "dengan",
+  "pada",
+  "ini",
+  "bisa",
+  "kah",
+  "fungsi",
+  "kerja",
+  "prinsip",
+  "kenapa",
+  "mengapa",
+  "apakah",
+  "siapa",
+  "kapan",
+  "berapa",
+  "rangkaian",
+  "jelasin",
+  "terangkan"
+ ],
+ "stop_cari": [
+  "yang",
+  "dan",
+  "di",
+  "ke",
+  "dari",
+  "ini",
+  "itu",
+  "untuk",
+  "pada",
+  "dengan",
+  "adalah",
+  "dalam",
+  "atau",
+  "juga",
+  "akan",
+  "oleh",
+  "the",
+  "of",
+  "and",
+  "to",
+  "in",
+  "is",
+  "for",
+  "that",
+  "on",
+  "with",
+  "as",
+  "by",
+  "are",
+  "be",
+  "an",
+  "it",
+  "or",
+  "at",
+  "from"
+ ],
+ "stop_niat": [
+  "di",
+  "yang",
+  "saya",
+  "aku",
+  "kamu",
+  "apa",
+  "ke",
+  "dan",
+  "untuk",
+  "tadi",
+  "nama",
+  "siapa",
+  "tolong",
+  "dong",
+  "saja",
+  "itu",
+  "ini",
+  "dengan",
+  "bisa",
+  "coba",
+  "mau",
+  "ada",
+  "tidak",
+  "apakah",
+  "bagaimana",
+  "berapa",
+  "kok",
+  "sih"
+ ],
+ "slang": {
+  "yg": "yang",
+  "gak": "tidak",
+  "ga": "tidak",
+  "nggak": "tidak",
+  "gk": "tidak",
+  "udh": "sudah",
+  "udah": "sudah",
+  "bsk": "besok",
+  "skrg": "sekarang",
+  "tgl": "tanggal",
+  "dgn": "dengan",
+  "utk": "untuk",
+  "krn": "karena",
+  "jg": "juga",
+  "sm": "sama",
+  "dr": "dari",
+  "hrs": "harus",
+  "blm": "belum",
+  "bgt": "banget",
+  "tp": "tapi",
+  "lg": "lagi",
+  "aja": "saja",
+  "gimana": "bagaimana",
+  "kpn": "kapan",
+  "brp": "berapa",
+  "org": "orang"
+ },
+ "sinonim": [
+  {
+   "kata": [
+    "film",
+    "movie",
+    "bioskop"
+   ],
+   "tambah": "film movie"
+  },
+  {
+   "kata": [
+    "murah",
+    "hemat",
+    "diskon"
+   ],
+   "tambah": "murah hemat diskon"
+  },
+  {
+   "kata": [
+    "berita",
+    "kabar",
+    "terbaru"
+   ],
+   "tambah": "berita terbaru"
+  },
+  {
+   "kata": [
+    "laptop",
+    "notebook"
+   ],
+   "tambah": "laptop notebook"
+  },
+  {
+   "kata": [
+    "hp",
+    "ponsel",
+    "smartphone"
+   ],
+   "tambah": "hp ponsel smartphone"
+  },
+  {
+   "kata": [
+    "error",
+    "galat",
+    "bug"
+   ],
+   "tambah": "error galat bug"
+  },
+  {
+   "kata": [
+    "resep",
+    "masakan"
+   ],
+   "tambah": "resep masakan"
+  },
+  {
+   "kata": [
+    "anime",
+    "donghua"
+   ],
+   "tambah": "anime"
+  }
+ ],
+ "lanjut": [
+  "yang",
+  "terus",
+  "lalu",
+  "kalau",
+  "kalo",
+  "bagaimana",
+  "dan",
+  "tapi",
+  "lebih",
+  "yg",
+  "juga",
+  "satu",
+  "coba"
+ ],
+ "buang_koreksi": [
+  "di",
+  "ke",
+  "yang",
+  "itu",
+  "ini",
+  "saja",
+  "aja",
+  "maksudnya",
+  "maksud",
+  "maksudku",
+  "video",
+  "youtube",
+  "yt",
+  "google",
+  "github",
+  "maps",
+  "lagu",
+  "musik",
+  "dong",
+  "kamu",
+  "coba",
+  "salah",
+  "bukan",
+  "jawabannya",
+  "tadi"
+ ]
+}

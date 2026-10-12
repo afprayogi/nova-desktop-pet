@@ -1,0 +1,45 @@
+[
+ {
+  "nama": "kirim-email",
+  "awalan": [
+   "kirim ke email saya",
+   "emailkan ke saya",
+   "kirim email ke saya"
+  ],
+  "alat": "kirim",
+  "arg": "{sisa}"
+ },
+ {
+  "nama": "baca-chrome",
+  "awalan": [
+   "baca dengan chrome",
+   "baca pakai chrome",
+   "buka dan baca"
+  ],
+  "alat": "peramban",
+  "arg": "{sisa}"
+ },
+ {
+  "nama": "mulai-kerja",
+  "awalan": [
+   "mulai kerja",
+   "siap kerja",
+   "ayo kerja"
+  ],
+  "tindakan": [
+   {
+    "alat": "health",
+    "arg": ""
+   },
+   {
+    "alat": "agenda",
+    "arg": ""
+   },
+   {
+    "alat": "tugas",
+    "arg": ""
+   }
+  ],
+  "keterangan": "Makro: cek kesehatan laptop, agenda, lalu tugas utama."
+ }
+]

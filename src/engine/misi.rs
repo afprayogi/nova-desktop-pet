@@ -219,7 +219,7 @@ impl Engine {
         let sys = format!(
             "{}\nBuat rencana MAKSIMAL 4 langkah pendek untuk tujuan Bos, memakai alat berikut:\n{}",
             Self::persona_sys(0, &goal),
-            alat::TOOL_HELP
+            crate::registry::bantuan()
         );
         let plan = self
             .ask(0, sys, goal.clone(), 300)
@@ -271,7 +271,7 @@ impl Engine {
 {{\"tool\":\"nama\",\"arg\":\"...\",\"say\":\"alasan singkat\"}} atau {{\"done\":true,\"say\":\"hasil\"}} bila tujuan tercapai. \
 Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
             Self::persona_sys(0, &m.goal),
-            alat::TOOL_HELP
+            crate::registry::bantuan()
         );
         let user = format!(
             "TUJUAN: {}\nRENCANA: {}\nHASIL SEBELUMNYA:\n{}",

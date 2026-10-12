@@ -37,12 +37,11 @@ fn clean(a: &str) -> String {
 
 /// Buang kata pembuka yang tidak berarti ("halo nova coba tolong ...") agar aturan awalan tetap cocok.
 fn strip_fillers(s: &str) -> &str {
-    const F: &[&str] = &["halo", "hai", "hi", "hey", "nova", "gemini", "coba", "tolong", "bisa", "bisakah", "kah", "dong", "please", "ya", "yuk", "saya", "aku", "mau", "minta"];
     let mut cur = s.trim();
     loop {
         let first = cur.split_whitespace().next().unwrap_or("");
         let w = first.trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase();
-        if !w.is_empty() && F.contains(&w.as_str()) && cur.split_whitespace().count() > 2 {
+        if !w.is_empty() && crate::lex::ada("pengisi", &w) && cur.split_whitespace().count() > 2 {
             cur = cur[first.len()..].trim_start();
         } else {
             return cur;
@@ -161,6 +160,45 @@ pub fn layanan_cadangan(s: &str) -> Option<Call> {
     layanan(&l, Fase::Rendah).map(|u| Call { tool: "open".into(), arg: u })
 }
 
+pub const ATURAN_BAWAAN: &str = include_str!("../data/aturan.json");
+
+fn aturan_json() -> Vec<serde_json::Value> {
+    crate::data::lapis("aturan.json", ATURAN_BAWAAN).as_array().cloned().unwrap_or_default()
+}
+
+/// Daftar tindakan satu aturan: `tindakan` [{alat,arg}] atau `alat`/`arg` tunggal; `{sisa}` diganti sisa kalimat setelah awalan.
+fn tindakan(r: &serde_json::Value, sisa: &str) -> Vec<Call> {
+    let satu = |x: &serde_json::Value| Some(Call { tool: x["alat"].as_str()?.to_string(), arg: x["arg"].as_str().unwrap_or("").replace("{sisa}", sisa) });
+    match r["tindakan"].as_array() {
+        Some(a) => a.iter().filter_map(satu).collect(),
+        None => satu(r).into_iter().collect(),
+    }
+}
+
+fn cocok_awalan(s: &str, l: &str, r: &serde_json::Value) -> Option<String> {
+    let aw: Vec<String> = r["awalan"].as_array()?.iter().filter_map(|x| x.as_str().map(|s| s.to_lowercase())).collect();
+    after(s, l, &aw.iter().map(String::as_str).collect::<Vec<_>>()).map(|x| x.to_string())
+}
+
+/// Aturan satu langkah dari aturan.json (awalan kalimat → alat), mis. "kirim ke email saya …".
+fn json_rule(s: &str, l: &str) -> Option<Call> {
+    aturan_json().iter().find_map(|r| {
+        let sisa = cocok_awalan(s, l, r)?;
+        let t = tindakan(r, &sisa);
+        (t.len() == 1).then(|| t.into_iter().next()).flatten()
+    })
+}
+
+/// Makro dari aturan.json: satu kalimat → beberapa tindakan berurutan (kalimat harus PERSIS awalan, tanpa sisa).
+pub fn makro(goal: &str) -> Option<Vec<Call>> {
+    let g = goal.trim().to_lowercase();
+    let g = g.trim_matches(|c: char| !c.is_alphanumeric());
+    aturan_json().iter().find_map(|r| {
+        let t = tindakan(r, "");
+        (t.len() > 1 && r["awalan"].as_array()?.iter().filter_map(|x| x.as_str()).any(|a| a.to_lowercase() == g)).then_some(t)
+    })
+}
+
 /// Aturan ajaran Bos (dasbor Belajar) didahulukan, lalu aturan bawaan.
 pub fn rule(s: &str) -> Option<Call> {
     crate::ajar::cocok(s).or_else(|| rule_dasar(s))
@@ -169,26 +207,8 @@ pub fn rule(s: &str) -> Option<Call> {
 pub fn rule_dasar(s: &str) -> Option<Call> {
     let s = strip_fillers(s);
     let l = s.to_ascii_lowercase();
-    if let Some(r) = after(s, &l, &["kirim ke email saya", "emailkan ke saya", "kirim email ke saya"]) {
-        return Some(Call { tool: "kirim".into(), arg: r.to_string() });
-    }
-    if let Some(r) = after(s, &l, &["baca dengan chrome", "baca pakai chrome", "buka dan baca"]) {
-        return Some(Call { tool: "peramban".into(), arg: clean(r) });
-    }
-    if ["cek internet", "jalur internet", "koneksi internet", "internet lambat", "internet lemot", "internet mati", "kenapa internet", "cek jaringan", "wifi lemot", "diagnosa internet"].iter().any(|k| l.contains(k)) {
-        return Some(Call { tool: "internet".into(), arg: String::new() });
-    }
-    if l.starts_with("riwayat chrome") || l.starts_with("riwayat browser") || l.contains("history chrome") {
-        return Some(Call { tool: "riwayat".into(), arg: String::new() });
-    }
-    if ["tangkap paket", "capture paket", "sniff paket"].iter().any(|k| l.contains(k)) {
-        return Some(Call { tool: "paket".into(), arg: "tangkap".into() });
-    }
-    if ["wireshark", "lalu lintas jaringan", "koneksi aktif", "siapa yang memakai internet", "siapa yang pakai internet", "monitor koneksi", "aplikasi apa yang pakai internet"].iter().any(|k| l.contains(k)) {
-        return Some(Call { tool: "paket".into(), arg: String::new() });
-    }
-    if ["tingkat otak", "otak nova", "seberapa pintar", "kemajuan belajar", "peta ingatan", "sampai mana belajar"].iter().any(|k| l.contains(k)) {
-        return Some(Call { tool: "otak".into(), arg: String::new() });
+    if let Some(c) = json_rule(s, &l) {
+        return Some(c);
     }
     if let Some(a) = crate::daya::dari_kalimat(&l) {
         return Some(Call { tool: "daya".into(), arg: a.into() });

@@ -18,7 +18,7 @@ impl Engine {
         match cmd.to_lowercase().as_str() {
             "bantuan" | "help" | "?" => {
                 if arg.is_empty() {
-                    self.tx.sys(HELP)
+                    self.tx.sys(help())
                 } else {
                     self.tx.sys(crate::cli::find(arg))
                 }
@@ -73,7 +73,7 @@ impl Engine {
                 }
             }
             "llm" => self.llm_cmd(arg).await,
-            "mulai" => self.agent_say(0, GUIDE),
+            "mulai" => self.agent_say(0, &guide()),
             "otomatis" => {
                 let r = tokio::task::spawn_blocking({
                     let a = arg.to_string();
@@ -163,6 +163,15 @@ impl Engine {
             }
             "layanan" => {
                 let r = if let Some(sisa) = arg.strip_prefix("tambah ") { crate::aturan::layanan_tambah(sisa) } else { format!("Layanan web: {}. Tambah: /layanan tambah <nama> <kata1,kata2> <url dengan {{q}}>, atau edit layanan.json.", crate::aturan::layanan_daftar().join(", ")) };
+                self.agent_say(0, &r)
+            }
+            "info" => {
+                let r = if arg.eq_ignore_ascii_case("sinkron") {
+                    let s = tokio::task::spawn_blocking(crate::info::sinkron).await.unwrap_or_default();
+                    if s.is_empty() { "Tidak ada perubahan di folder info.".to_string() } else { s }
+                } else {
+                    crate::info::daftar()
+                };
                 self.agent_say(0, &r)
             }
             "penasaran" => {

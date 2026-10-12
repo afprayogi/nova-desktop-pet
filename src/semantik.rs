@@ -10,28 +10,15 @@ use std::time::Duration;
 const MODEL: &str = "gemini-embedding-001";
 const DIM: usize = 256;
 
-/// Contoh kalimat bawaan per niat (ditambah contoh yang dipelajari dari pemakaian).
-const SEEDS: &[(&str, &[&str])] = &[
-    ("baterai", &["kapan baterai habis", "baterai tinggal berapa persen", "sisa baterai laptop saya", "berapa lama lagi baterainya bertahan", "cek daya baterai", "laptop saya masih berapa persen"]),
-    ("kesehatan", &["cek kesehatan laptop", "bagaimana kondisi komputer saya", "laptop saya sehat tidak", "periksa cpu ram dan disk", "apakah laptop saya lemot", "status sistem sekarang"]),
-    ("proses", &["aplikasi apa yang paling berat", "proses apa yang makan memori", "kenapa laptop saya lambat", "program apa yang memakai cpu paling banyak", "lihat proses yang berjalan"]),
-    ("agenda", &["apa agenda saya hari ini", "jadwal saya hari ini apa saja", "ada acara apa besok", "tampilkan agenda", "kegiatan hari ini apa"]),
-    ("habit", &["bagaimana kebiasaan kerja saya", "ringkasan kebiasaan saya", "pola pemakaian laptop saya", "berapa jam saya memakai laptop hari ini", "aplikasi apa yang paling sering saya pakai"]),
-    ("tidur", &["tidur saya semalam bagaimana", "apakah saya cukup tidur", "laporan tidur", "berapa jam saya tidur", "kualitas tidur saya"]),
-    ("jadwal", &["bisa tidur 8 jam tidak malam ini", "atur jadwal supaya tidur cukup", "apakah saya masih sempat tidur delapan jam", "rencana tidur malam ini", "jam berapa saya harus berhenti kerja agar tidur cukup"]),
-    ("layar", &["baca layar saya", "apa yang ada di layar", "tolong baca teks di layar", "ocr layar", "tangkap layar lalu baca"]),
-    ("berita", &["ada berita apa hari ini", "berita terbaru", "kabar terkini tentang listrik", "tampilkan headline", "apa yang sedang ramai diberitakan"]),
-    ("email", &["ada email baru", "cek surel masuk", "apakah ada pesan email belum dibaca", "ringkas email saya", "periksa kotak masuk gmail"]),
-    ("waktu", &["jam berapa sekarang", "hari ini tanggal berapa", "sekarang hari apa", "tolong sebutkan waktu saat ini", "tanggal hari ini"]),
-    ("musik", &["putar musik", "mainkan lagu", "setel lagu santai", "jeda musik", "lagu berikutnya", "putar lagu favorit saya"]),
-    ("apps", &["tutup aplikasi yang tidak dipakai", "matikan aplikasi yang tidak perlu", "bersihkan aplikasi yang menggantung", "hentikan program yang tidak saya pakai"]),
-    ("meme", &["kasih meme", "ceritakan lelucon", "hibur saya dong", "ada humor lucu", "bikin saya tertawa"]),
-    ("wifi", &["cek wifi disini apa saja", "jaringan wifi apa yang tersedia", "wifi yang tersambung apa", "kekuatan sinyal wifi saya", "daftar wifi sekitar"]),
-    ("port", &["cek port yang aktif", "port apa yang sedang terbuka", "lihat port listening", "aplikasi apa yang memakai port 3000"]),
-    ("cari", &["carikan file laporan pdf", "cari berkas skripsi saya", "di mana file gambar kemarin", "tolong cari dokumen excel anggaran", "temukan file yang saya unduh kemarin"]),
-    ("rapikan", &["rapikan folder download", "bereskan folder unduhan", "susun berkas di desktop", "kelompokkan file berdasarkan jenis"]),
-    ("kurikulum", &["buat rencana belajar dari buku ini", "susun kurikulum belajar tiga minggu", "jadwal belajar dari pdf"]),
-];
+pub const CONTOH_BAWAAN: &str = include_str!("../data/contoh_niat.json");
+
+/// Contoh kalimat per niat: bawaan (data/contoh_niat.json) + tambahan Bos (otak/contoh_niat.json), ditambah contoh yang dipelajari dari pemakaian.
+fn contoh_niat() -> Vec<(String, String)> {
+    crate::data::lapis("contoh_niat.json", CONTOH_BAWAAN)
+        .as_object()
+        .map(|o| o.iter().flat_map(|(l, ex)| ex.as_array().into_iter().flatten().filter_map(|e| e.as_str().map(|e| (l.clone(), e.to_string()))).collect::<Vec<_>>()).collect())
+        .unwrap_or_default()
+}
 
 fn cosine(a: &[f32], b: &[f32]) -> f32 {
     a.iter().zip(b).map(|(x, y)| x * y).sum()
@@ -117,7 +104,7 @@ fn set_used(m: &str) {
 /// Pastikan semua contoh (bawaan + dipelajari) punya vektor tersimpan.
 async fn ensure_index(http: &reqwest::Client) -> Result<()> {
     let c = db().ok_or_else(|| anyhow!("database tidak tersedia"))?;
-    let mut all: Vec<(String, String)> = SEEDS.iter().flat_map(|(l, ex)| ex.iter().map(move |e| (l.to_string(), e.to_string()))).collect();
+    let mut all: Vec<(String, String)> = contoh_niat().into_iter().collect();
     if let Ok(k) = crate::teknik::open() {
         if let Ok(mut st) = k.prepare("SELECT label, text FROM intent_ex") {
             if let Ok(rows) = st.query_map([], |r| Ok((r.get::<_, String>(0)?, r.get::<_, String>(1)?))) {
@@ -177,8 +164,7 @@ pub async fn classify(http: &reqwest::Client, text: &str) -> Option<(String, f32
         return None;
     }
     // Pagar leksikal: embedding bisa "mirip" secara semu; kalimat harus berbagi minimal satu kata isi dengan contoh niat itu.
-    const STOP: &[&str] = &["di", "yang", "saya", "aku", "kamu", "apa", "ke", "dan", "untuk", "tadi", "nama", "siapa", "tolong", "dong", "saja", "itu", "ini", "dengan", "bisa", "coba", "mau", "ada", "tidak", "apakah", "bagaimana", "berapa", "kok", "sih"];
-    let words = |t: &str| -> std::collections::HashSet<String> { t.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2 && !STOP.contains(w)).map(String::from).collect() };
+    let words = |t: &str| -> std::collections::HashSet<String> { t.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2 && !crate::lex::ada("stop_niat", w)).map(String::from).collect() };
     let q = words(text);
     let c = db()?;
     let label = top.0.clone();

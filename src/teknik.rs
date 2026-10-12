@@ -5,46 +5,36 @@ use rusqlite::Connection;
 
 const WARN: &str = "\n⚠ Indikatif. Verifikasi ke PUIL 2011/SNI/standar resmi sebelum dipakai di lapangan.";
 
-const KB: &[(&str, &str)] = &[
-    ("Hukum Ohm", "V = I x R. Daya P = V x I = I^2 x R = V^2 / R. Satuan: V volt, I ampere, R ohm, P watt."),
-    ("Daya AC satu fasa", "P = V x I x cos(phi) (watt), S = V x I (VA), Q = V x I x sin(phi) (VAR). S^2 = P^2 + Q^2. Faktor daya = P/S."),
-    ("Daya AC tiga fasa", "P = akar3 x V(L-L) x I x cos(phi). S = akar3 x V x I. Tegangan fasa-netral = V(L-L)/akar3 (380 V -> 220 V). Arus saluran = P / (akar3 x V x cos phi)."),
-    ("Faktor daya dan kapasitor", "Perbaikan cos phi: Qc (kVAR) = P(kW) x (tan phi1 - tan phi2). Kapasitor mengurangi kVAR reaktif, arus saluran, dan rugi-rugi. Hindari kompensasi berlebih (leading) dan resonansi harmonik; gunakan reaktor detuned bila ada beban nonlinier."),
-    ("Drop tegangan", "1 fasa: dV = 2 x rho x L x I / A. 3 fasa: dV = akar3 x rho x L x I x cos phi / A (reaktansi diabaikan). rho tembaga ~0,0175 ohm.mm2/m (20C), aluminium ~0,028. Umumnya batas drop tegangan beban 3-5%; periksa PUIL."),
-    ("Kemampuan hantar arus (KHA) kabel", "Kabel dipilih agar KHA (Iz) >= arus beban (Ib) setelah faktor koreksi suhu, pengelompokan, dan cara pemasangan. Pengaman In memenuhi Ib <= In <= Iz. Cek tabel KHA PUIL 2011 / IEC 60364-5-52."),
-    ("MCB, MCCB, ELCB/RCD", "MCB: proteksi beban lebih (termal) dan hubung singkat (magnetik); kurva B/C/D menentukan batas trip magnetik. MCCB untuk arus lebih besar dan dapat diatur. RCD/ELCB mendeteksi arus bocor ke tanah (30 mA untuk proteksi manusia) dan TIDAK menggantikan MCB."),
-    ("Pentanahan (grounding)", "Fungsi: keselamatan (arus gangguan mengalir ke tanah, pengaman trip) dan referensi tegangan. Elektroda: batang, pelat, pita. Ukur tahanan dengan earth tester. Semua bagian konduktif terbuka dihubungkan ke PE. Nilai tahanan yang diizinkan tergantung sistem (TN/TT/IT): lihat PUIL."),
-    ("Sistem TN, TT, IT", "TN: netral sumber ditanahkan, BKT ke netral (TN-S, TN-C-S). TT: BKT punya tanah sendiri, wajib RCD. IT: sumber tak ditanahkan/impedansi tinggi, perlu monitor isolasi."),
-    ("Warna kabel instalasi", "Umum PUIL 2011: L1 merah, L2 kuning, L3 hitam, netral biru, PE kuning-hijau. Instalasi lama bisa berbeda; selalu uji dengan alat, jangan hanya percaya warna."),
-    ("Keselamatan kerja listrik", "Selalu: matikan, kunci dan beri tanda (LOTO), uji tidak bertegangan dengan tester yang diverifikasi, tanahkan bila perlu, baru bekerja. Gunakan APD sesuai (sarung tangan isolasi, kacamata, sepatu safety). Bekerja bertegangan hanya oleh yang berwenang."),
-    ("Hubung singkat", "Arus hubung singkat = V / Z total loop. Pengaman harus mampu memutus (breaking capacity Icu/Icn) lebih besar dari arus hubung singkat di titik pemasangan, dan waktu trip memenuhi syarat sentuh tak langsung."),
-    ("Motor induksi", "Kecepatan sinkron ns = 120 x f / p (rpm). Slip s = (ns - n)/ns. Arus beban penuh 3 fasa I = P / (akar3 x V x eta x cos phi). Arus start DOL ~5-8 x In."),
-    ("Metode start motor", "DOL (langsung) sederhana tapi arus start besar. Bintang-segitiga mengurangi arus start ~1/3 (motor harus delta di 380 V). Soft starter menaikkan tegangan bertahap. VSD/inverter mengatur frekuensi sehingga torsi dan kecepatan terkontrol dan arus start rendah."),
-    ("Proteksi motor", "Perlu: pengaman hubung singkat (MCB/MCCB/fuse), relai beban lebih termal (TOR) atau MPCB, dan opsional proteksi fasa hilang/urutan fasa. Setel TOR sekitar arus nominal pelat nama."),
-    ("Trafo", "Rasio V1/V2 = N1/N2 = I2/I1. Arus nominal I = S / (akar3 x V). Rugi besi tetap, rugi tembaga bergantung beban. Impedansi % menentukan arus hubung singkat sekunder: Isc = In / Z%."),
-    ("Kontaktor dan relai", "Relai: saklar kecil dikendalikan kumparan, untuk sinyal kontrol. Kontaktor: untuk beban daya, kontak utama + bantu. Pilih kategori AC-1 (resistif), AC-3 (motor). Pasang peredam (snubber/dioda flyback) pada kumparan DC."),
-    ("Harmonisa", "Beban nonlinier (VSD, UPS, LED driver) menyebabkan arus harmonik: panas berlebih di netral dan trafo, kapasitor rusak. Ukur THD; mitigasi dengan filter, trafo K-factor, reaktor."),
-    ("UPS dan baterai", "Kapasitas baterai (Wh) = V x Ah. Waktu cadangan ~ (Wh x efisiensi x DoD) / beban W. Aki timbal-asam disarankan DoD <=50%. Pilih UPS dengan daya VA >= beban/ (pf) dengan margin 20-25%."),
-    ("PLTS (solar PV)", "Daya panel (Wp) x jam matahari efektif (~4 jam di Indonesia) x efisiensi sistem (~0,75) = energi harian. String: jumlah modul seri menentukan Voc total (harus < batas inverter pada suhu dingin). Pasang proteksi DC, SPD, dan pentanahan."),
-    ("Resistor, kapasitor, induktor", "R: menghambat arus. C: menyimpan muatan, Xc = 1/(2 pi f C). L: menyimpan energi magnet, XL = 2 pi f L. Seri R: Rt = R1+R2; paralel: 1/Rt = 1/R1+1/R2. Kapasitor seri kebalikannya."),
-    ("Filter RC dan frekuensi cutoff", "fc = 1 / (2 pi R C). Low-pass: melewatkan frekuensi rendah; high-pass sebaliknya. Pada fc amplitudo turun ke 70,7% (-3 dB)."),
-    ("LED dan resistor pembatas", "R = (Vsumber - Vf) / If. Contoh: 5 V, LED merah Vf 2 V, If 10 mA -> R = 300 ohm (pakai 330). Daya resistor = I^2 x R."),
-    ("Dioda dan transistor", "Dioda: konduksi searah, Vf ~0,7 V (Si). Transistor BJT: arus basis mengendalikan Ic = beta x Ib. MOSFET: tegangan gate mengendalikan arus; cocok untuk saklar daya. Pasang dioda flyback pada beban induktif."),
-    ("Op-amp", "Penguat inverting: Av = -Rf/Rin. Non-inverting: Av = 1 + Rf/Rin. Op-amp ideal: impedansi masuk tak hingga, input + dan - bertegangan sama pada umpan balik negatif."),
-    ("PWM", "Pulse width modulation: duty cycle D = ton/T. Tegangan rata-rata = D x Vsumber. Dipakai untuk dimmer, kontrol kecepatan motor DC, dan konverter daya."),
-    ("ADC dan resolusi", "Resolusi LSB = Vref / 2^n. ADC 10 bit, Vref 5 V -> 4,88 mV per langkah. Perhatikan teorema Nyquist: sampling >= 2x frekuensi sinyal tertinggi, dan beri filter anti-aliasing."),
-    ("PLC dasar", "PLC bekerja siklus scan: baca input -> jalankan program -> tulis output. Bahasa IEC 61131-3: Ladder (LD), Function Block (FBD), Structured Text (ST), Instruction List, SFC. Input/output digital dan analog; perhatikan sumber (PNP) vs sink (NPN)."),
-    ("Ladder logic", "Kontak NO/NC mewakili input; coil mewakili output. Rangkaian seal-in (self-holding): kontak coil paralel dengan tombol START, seri dengan STOP (NC) untuk menahan motor tetap hidup. Gunakan interlock agar dua output berlawanan tak aktif bersamaan."),
-    ("Sinyal analog 4-20 mA", "4 mA = 0%, 20 mA = 100%. Nilai di bawah 4 mA menandakan kabel putus (live zero). Skala: nilai = (I - 4)/16 x rentang. Tahan noise dan jarak jauh lebih baik daripada 0-10 V."),
-    ("Sensor umum", "Proximity induktif (logam), kapasitif (benda apa saja), fotoelektrik, limit switch, termokopel (tipe K ~41 uV/C), RTD PT100 (100 ohm pada 0C, ~0,385 ohm/C), load cell, encoder."),
-    ("Komunikasi industri", "Modbus RTU (RS-485, master-slave, 9600-115200 bps, hingga 32 node tanpa repeater), Modbus TCP, Profibus, Profinet, EtherNet/IP, CAN. RS-485 butuh terminasi 120 ohm di ujung bus dan kabel twisted pair."),
-    ("IP rating", "IP + 2 digit: digit1 proteksi padat (0-6), digit2 proteksi air (0-9). IP54: tahan debu terbatas dan cipratan; IP65: kedap debu dan semprotan air; IP67: dapat direndam sementara."),
-    ("Konversi satuan daya", "1 HP = 746 W (mekanik), 1 kW = 1,341 HP, 1 PK ~ 735,5 W. kVA = kW / cos phi. 1 kWh = 1000 W selama 1 jam."),
-    ("Resistivitas bahan", "Tembaga 0,0175 ohm.mm2/m, aluminium 0,028, besi ~0,10. Resistansi R = rho x L / A. Naik sekitar 0,4% per derajat C untuk tembaga."),
-];
-
 /// Penanaman data awal secara atomik (aman bila beberapa tugas membuka basis pengetahuan bersamaan).
+pub const DASAR_BAWAAN: &str = include_str!("../data/pengetahuan_dasar.json");
+pub const TEKS_BAWAAN: &str = include_str!("../data/teks.json");
+
+/// Teks bantuan, panduan, dan balasan obrolan (data/teks.json + otak/teks.json milik Bos).
+pub fn teks_json() -> std::sync::Arc<serde_json::Value> {
+    crate::data::lapis("teks.json", TEKS_BAWAAN)
+}
+
+/// Pengetahuan dasar (data/pengetahuan_dasar.json + otak/pengetahuan_dasar.json) disalin ke kb sebagai sumber `bawaan` bila isinya berubah.
+fn sinkron_dasar(c: &Connection) -> rusqlite::Result<()> {
+    let v = crate::data::lapis("pengetahuan_dasar.json", DASAR_BAWAAN);
+    let sig = format!("{:x}", v.to_string().bytes().fold(0xcbf29ce484222325u64, |h, b| (h ^ b as u64).wrapping_mul(0x100000001b3)));
+    c.execute_batch("CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT);")?;
+    if c.query_row("SELECT v FROM meta WHERE k='dasar'", [], |r| r.get::<_, String>(0)).ok().as_deref() == Some(sig.as_str()) {
+        return Ok(());
+    }
+    c.execute("DELETE FROM kb WHERE src='bawaan'", [])?;
+    for e in v.as_array().into_iter().flatten() {
+        if let (Some(t), Some(b)) = (e["judul"].as_str(), e["isi"].as_str()) {
+            c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,'bawaan')", (t, b))?;
+        }
+    }
+    c.execute("INSERT OR REPLACE INTO meta VALUES('dasar',?1)", [&sig])?;
+    Ok(())
+}
+
 fn seed(c: &Connection) -> rusqlite::Result<()> {
+    // pengetahuan dasar selalu diselaraskan (Bos bisa menambah di otak/pengetahuan_dasar.json)
+    let _ = sinkron_dasar(c);
     let count = |src: &str| c.query_row("SELECT COUNT(*) FROM kb WHERE src=?1", [src], |r| r.get::<_, i64>(0));
     if count("bawaan")? > 0 && count("pemrograman")? > 0 {
         return Ok(());
@@ -52,9 +42,7 @@ fn seed(c: &Connection) -> rusqlite::Result<()> {
     c.execute_batch("BEGIN IMMEDIATE")?;
     let r = (|| -> rusqlite::Result<()> {
         if count("bawaan")? == 0 {
-            for (t, b) in KB {
-                c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,'bawaan')", (t, b))?;
-            }
+            sinkron_dasar(c)?;
         }
         if count("pemrograman")? == 0 {
             for (t, b) in crate::kode::KB {
@@ -86,10 +74,9 @@ pub(crate) fn open() -> rusqlite::Result<Connection> {
 }
 
 pub(crate) fn terms(q: &str) -> Vec<String> {
-    const STOP: &[&str] = &["apa", "itu", "yang", "dan", "di", "ke", "dari", "untuk", "adalah", "bagaimana", "jelaskan", "cara", "tanya", "tolong", "dengan", "pada", "ini", "bisa", "kah", "fungsi", "kerja", "prinsip", "kenapa", "mengapa", "apakah", "siapa", "kapan", "berapa", "rangkaian", "jelasin", "terangkan"];
     q.split(|c: char| !c.is_alphanumeric())
         .map(|w| w.to_lowercase())
-        .filter(|w| w.len() > 1 && !STOP.contains(&w.as_str()))
+        .filter(|w| w.len() > 1 && !crate::lex::ada("stop_tanya", w))
         .take(8)
         .collect()
 }

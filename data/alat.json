@@ -1,0 +1,332 @@
+[
+ {
+  "nama": "kurikulum",
+  "arg": "<buku|topik> [N hari|minggu] [N menit|jam]",
+  "deskripsi": "jadwal belajar dari buku + pengingat"
+ },
+ {
+  "nama": "berita",
+  "arg": "[topik]",
+  "deskripsi": "berita terbaru sesuai minat (butuh internet)"
+ },
+ {
+  "nama": "kepribadian",
+  "arg": "",
+  "deskripsi": "preferensi yang sudah kupelajari tentang Bos"
+ },
+ {
+  "nama": "cari",
+  "arg": "<apa>",
+  "deskripsi": "cari file di komputer (nama, jenis, waktu, atau 'berisi kata')"
+ },
+ {
+  "nama": "rapikan",
+  "arg": "<folder>",
+  "deskripsi": "pratinjau merapikan folder per jenis file (dijalankan setelah Bos membalas ya)"
+ },
+ {
+  "nama": "apps",
+  "arg": "",
+  "deskripsi": "pratinjau aplikasi berat yang tidak dipakai (ditutup sopan setelah Bos membalas ya)"
+ },
+ {
+  "nama": "urungkan",
+  "arg": "",
+  "deskripsi": "kembalikan file hasil rapikan terakhir"
+ },
+ {
+  "nama": "meme",
+  "arg": "[topik]",
+  "deskripsi": "hibur dengan meme"
+ },
+ {
+  "nama": "bukapath",
+  "arg": "<jalur>",
+  "deskripsi": "buka berkas/folder yang baru Bos seret/pilih (hanya jalur itu)"
+ },
+ {
+  "nama": "jadwal",
+  "arg": "",
+  "deskripsi": "rencana tidur — apakah masih bisa tidur 8 jam dengan jadwal/pengingat/acara yang ada"
+ },
+ {
+  "nama": "otomatis",
+  "arg": "<kecerahan|suara> <on|off>",
+  "deskripsi": "atur kecerahan/suara otomatis menurut jam & kebiasaan"
+ },
+ {
+  "nama": "wifi",
+  "arg": "",
+  "deskripsi": "Wi-Fi tersambung + jaringan di sekitar"
+ },
+ {
+  "nama": "port",
+  "arg": "",
+  "deskripsi": "port yang sedang listening beserta prosesnya"
+ },
+ {
+  "nama": "bukafile",
+  "arg": "<nama>",
+  "deskripsi": "cari berkas lalu BUKA langsung (dokumen/gambar/media; yang bisa dieksekusi hanya ditunjukkan foldernya)"
+ },
+ {
+  "nama": "cli",
+  "arg": "<alat> [sub]",
+  "deskripsi": "bantuan perintah CLI (git, cargo, docker, ollama, npm, python, winget, ping, dll.; hanya --help)"
+ },
+ {
+  "nama": "atur",
+  "arg": "<kecerahan|volume> <N|+N|-N|mute|unmute|?>",
+  "deskripsi": "atur kecerahan layar / volume suara"
+ },
+ {
+  "nama": "waktu",
+  "arg": "",
+  "deskripsi": "jam, hari, tanggal sekarang"
+ },
+ {
+  "nama": "web",
+  "arg": "<tanya>",
+  "deskripsi": "cari informasi terbaru di internet"
+ },
+ {
+  "nama": "harga",
+  "arg": "<aset>",
+  "deskripsi": "harga + grafik 30 hari (saham bbca/AAPL, kurs dolar, emas, bitcoin, ihsg)"
+ },
+ {
+  "nama": "pantau",
+  "arg": "<aset> di atas|di bawah <angka>",
+  "deskripsi": "kabari saat harga melewati ambang; cuacapantau <kota>: pengingat hujan/panas"
+ },
+ {
+  "nama": "gitringkas",
+  "arg": "[folder]",
+  "deskripsi": "ringkasan repo git (status, commit terakhir, diff) + saran pesan commit"
+ },
+ {
+  "nama": "halaman",
+  "arg": "<url>",
+  "deskripsi": "ringkas isi halaman web; csv <jalur.csv>: analisis cepat berkas CSV"
+ },
+ {
+  "nama": "hitung",
+  "arg": "<ekspresi>",
+  "deskripsi": "kalkulator (+ - * / ^ %, sqrt, sin, cos, ln, pi), mis. hitung 12*(3+4)^2"
+ },
+ {
+  "nama": "konversi",
+  "arg": "<angka> <satuan> ke <satuan>",
+  "deskripsi": "panjang, massa, daya, tekanan, energi, suhu, dll."
+ },
+ {
+  "nama": "zona",
+  "arg": "<kota/jam>",
+  "deskripsi": "waktu di kota lain atau konversi jam, mis. jam 14:00 wib di london"
+ },
+ {
+  "nama": "ohm",
+  "arg": "<V= I= R= P=>",
+  "deskripsi": "hukum Ohm dari dua nilai; fase3 <P= V= cos=>: arus 3 fase"
+ },
+ {
+  "nama": "hari",
+  "arg": "<tanggal>",
+  "deskripsi": "berapa hari lagi/yang lalu; password [panjang]: kata sandi acak"
+ },
+ {
+  "nama": "catat",
+  "arg": "<teks> | catatan [kata|hapus N]",
+  "deskripsi": "catatan cepat"
+ },
+ {
+  "nama": "cuaca",
+  "arg": "[kota]",
+  "deskripsi": "cuaca & prakiraan 3 hari; kurs <jumlah> <MATA> ke <MATA>: nilai tukar"
+ },
+ {
+  "nama": "wiki",
+  "arg": "<topik>",
+  "deskripsi": "ringkasan Wikipedia; berpikir <masalah>: penalaran langkah demi langkah; terjemah <teks> ke <bahasa>"
+ },
+ {
+  "nama": "jurnal",
+  "arg": "<topik [tahun]>",
+  "deskripsi": "cari jurnal/makalah ilmiah (OpenAlex), mis. semantic 2026 kurang 5 tahun"
+ },
+ {
+  "nama": "gambar",
+  "arg": "<kata kunci>",
+  "deskripsi": "cari gambar di internet (thumbnail + tautan sumber)"
+ },
+ {
+  "nama": "bersih",
+  "arg": "",
+  "deskripsi": "bersihkan cache aman (Temp, npm, pip, Hugging Face) — butuh persetujuan"
+ },
+ {
+  "nama": "kode",
+  "arg": "<nama folder>",
+  "deskripsi": "buka folder proyek di VS Code (dicari otomatis di D:/repo, Documents, dll.)"
+ },
+ {
+  "nama": "winapp",
+  "arg": "<nama>",
+  "deskripsi": "buka aplikasi bawaan Windows (kalkulator, notepad, paint, pengaturan wifi, dll.)"
+ },
+ {
+  "nama": "tugas",
+  "arg": "<teks>",
+  "deskripsi": "set/lihat tugas utama hari ini ('selesai' untuk menandai)"
+ },
+ {
+  "nama": "musik",
+  "arg": "",
+  "deskripsi": "putar musik fokus (folder Musik atau pencarian browser)"
+ },
+ {
+  "nama": "bukahasil",
+  "arg": "<n>",
+  "deskripsi": "buka folder hasil pencarian ke-n di Explorer"
+ },
+ {
+  "nama": "ingatan",
+  "arg": "<topik>",
+  "deskripsi": "apa yang pernah kita bahas tentang topik (graf ingatan jangka panjang)"
+ },
+ {
+  "nama": "graphify",
+  "arg": "<folder>",
+  "deskripsi": "petakan folder kode/dokumen ke graf ingatan"
+ },
+ {
+  "nama": "email",
+  "arg": "",
+  "deskripsi": "ringkasan email belum dibaca di semua akun (Google + IMAP)"
+ },
+ {
+  "nama": "baterai",
+  "arg": "",
+  "deskripsi": "sisa baterai + prediksi habis/penuh (model belajar per konteks)"
+ },
+ {
+  "nama": "ngobrol",
+  "arg": "<teks>",
+  "deskripsi": "sapaan/obrolan ringan"
+ },
+ {
+  "nama": "tanya",
+  "arg": "<teks>",
+  "deskripsi": "pertanyaan/hitungan teknik listrik, elektronika, PLC (kalkulator + basis pengetahuan)"
+ },
+ {
+  "nama": "pelajari",
+  "arg": "<path>",
+  "deskripsi": "serap PDF/txt/md ke basis pengetahuan (untuk dijawab lewat tanya)"
+ },
+ {
+  "nama": "remind",
+  "arg": "<teks>",
+  "deskripsi": "pengingat, mis. 'jam 15:30 rapat' atau '20 menit lagi minum'"
+ },
+ {
+  "nama": "agenda",
+  "arg": "",
+  "deskripsi": "agenda hari ini / kebiasaan / laporan tidur"
+ },
+ {
+  "nama": "habit",
+  "arg": "",
+  "deskripsi": "agenda hari ini / kebiasaan / laporan tidur"
+ },
+ {
+  "nama": "tidur",
+  "arg": "",
+  "deskripsi": "agenda hari ini / kebiasaan / laporan tidur"
+ },
+ {
+  "nama": "layar",
+  "arg": "",
+  "deskripsi": "baca isi layar dengan OCR Tesseract lokal (butuh izin Bos); arg 'ringkas' untuk ringkasan"
+ },
+ {
+  "nama": "pdf",
+  "arg": "<path>",
+  "deskripsi": "ambil teks PDF/txt/md (untuk diringkas)"
+ },
+ {
+  "nama": "ringkas",
+  "arg": "<path>",
+  "deskripsi": "ringkasan ekstraktif PDF/txt/md tanpa model"
+ },
+ {
+  "nama": "health",
+  "arg": "",
+  "deskripsi": "kondisi CPU/RAM/disk dan proses terberat"
+ },
+ {
+  "nama": "info",
+  "arg": "",
+  "deskripsi": "info OS, folder kerja, waktu"
+ },
+ {
+  "nama": "ls",
+  "arg": "<path>",
+  "deskripsi": "isi folder"
+ },
+ {
+  "nama": "read",
+  "arg": "<path>",
+  "deskripsi": "baca file teks"
+ },
+ {
+  "nama": "ps",
+  "arg": "",
+  "deskripsi": "daftar proses"
+ },
+ {
+  "nama": "fetch",
+  "arg": "<url>",
+  "deskripsi": "ambil teks halaman web"
+ },
+ {
+  "nama": "shell",
+  "arg": "<cmd>",
+  "deskripsi": "jalankan perintah shell (butuh persetujuan Bos)"
+ },
+ {
+  "nama": "write",
+  "arg": "<path>",
+  "deskripsi": "tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)"
+ },
+ {
+  "nama": "open",
+  "arg": "<target>",
+  "deskripsi": "buka URL/file/aplikasi (butuh persetujuan Bos)"
+ },
+ {
+  "nama": "grafik",
+  "arg": "",
+  "deskripsi": "grafik pemakaian RAM dan CPU laptop hari ini (dari data pemantauan) beserta penilaian kesehatan RAM"
+ },
+ {
+  "nama": "cariisi",
+  "arg": "<berkas> :: <pertanyaan>",
+  "deskripsi": "potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)"
+ },
+ {
+  "nama": "github",
+  "arg": "<kata>",
+  "deskripsi": "cari repositori GitHub (bintang, bahasa, lisensi)"
+ },
+ {
+  "nama": "tunggu",
+  "arg": "<detik>",
+  "deskripsi": "jeda 1-30 detik di antara langkah"
+ },
+ {
+  "nama": "kompres",
+  "arg": "<folder|berkas>",
+  "deskripsi": "buat zip di sebelahnya (butuh persetujuan)"
+ }
+]

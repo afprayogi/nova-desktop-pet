@@ -4,13 +4,20 @@
 use super::*;
 use serde_json::json;
 
-const PERAN: &[(&str, &str, &str)] = &[
-    ("peneliti", "Peneliti", "Tujuan: menemukan informasi akurat. Latar: teliti; membaca sumber (web, berkas, dokumen) sebelum menyimpulkan."),
-    ("pelaksana", "Pelaksana", "Tujuan: menjalankan tindakan di laptop dengan aman. Latar: hati-hati; memeriksa hasil tiap langkah."),
-    ("penulis", "Penulis", "Tujuan: merangkum hasil menjadi jawaban singkat dan jelas dalam bahasa Indonesia. Tidak memakai alat."),
-];
+pub const PERAN_BAWAAN: &str = include_str!("../../data/peran.json");
 
-const PLANNER: &str = "Kamu manajer kru asisten laptop. Pecah tujuan menjadi 2-4 tugas BERURUTAN (hasil tugas awal dipakai tugas berikutnya). Peran: peneliti (mencari/membaca informasi), pelaksana (menjalankan alat di laptop), penulis (merangkum hasil akhir; selalu terakhir). Balas HANYA JSON: {\"tugas\":[{\"peran\":\"peneliti\",\"deskripsi\":\"...\",\"hasil\":\"hasil yang diharapkan\"}]}";
+/// (nama, judul, tugas, latar) dari peran.json (bawaan + peran tambahan Bos).
+fn daftar_peran() -> Vec<(String, String, String, String)> {
+    crate::data::lapis("peran.json", PERAN_BAWAAN)
+        .as_array()
+        .map(|a| a.iter().filter_map(|x| Some((x["nama"].as_str()?.to_lowercase(), x["judul"].as_str().unwrap_or("").to_string(), x["tugas"].as_str().unwrap_or("").to_string(), x["latar"].as_str().unwrap_or("").to_string()))).collect())
+        .unwrap_or_default()
+}
+
+fn planner() -> String {
+    let r: Vec<String> = daftar_peran().iter().map(|(n, _, t, _)| format!("{n} ({t})")).collect();
+    format!("Kamu manajer kru asisten laptop. Pecah tujuan menjadi 2-4 tugas BERURUTAN (hasil tugas awal dipakai tugas berikutnya). Peran: {}. Peran penulis selalu terakhir. Balas HANYA JSON: {{\"tugas\":[{{\"peran\":\"peneliti\",\"deskripsi\":\"...\",\"hasil\":\"hasil yang diharapkan\"}}]}}", r.join(", "))
+}
 
 /// Ambil objek JSON pertama dari balasan model (toleran terhadap teks di sekitarnya).
 pub(super) fn ambil_json(raw: &str) -> Option<Value> {
@@ -27,7 +34,7 @@ pub(super) fn urai_rencana(v: &Value) -> Vec<(String, String, String)> {
                 .filter_map(|t| {
                     let d = t["deskripsi"].as_str()?.trim().to_string();
                     let p = t["peran"].as_str().unwrap_or("pelaksana").to_lowercase();
-                    let p = if PERAN.iter().any(|(k, _, _)| *k == p) { p } else { "pelaksana".into() };
+                    let p = if daftar_peran().iter().any(|(k, _, _, _)| *k == p) { p } else { "pelaksana".into() };
                     (!d.is_empty()).then(|| (p, d, t["hasil"].as_str().unwrap_or("").to_string()))
                 })
                 .take(4)
@@ -53,17 +60,19 @@ async fn tanya_json(http: &reqwest::Client, sys: &str, user: &str) -> Option<Val
 impl Engine {
     pub(super) async fn kru(&mut self, tujuan: &str) {
         let http = self.http.clone();
-        let alat_txt: String = alat::TOOL_HELP.lines().map(|l| l.chars().take(120).collect::<String>()).collect::<Vec<_>>().join("\n");
+        let alat_txt: String = crate::registry::bantuan().lines().map(|l| l.chars().take(120).collect::<String>()).collect::<Vec<_>>().join("\n");
         self.tx.send(Event::Thinking(Some(0)));
         self.agent_say(0, &format!("🧑‍🤝‍🧑 Kru bekerja untuk: {tujuan}"));
-        let mut tugas = tanya_json(&http, PLANNER, &format!("Tujuan: {tujuan}")).await.map(|v| urai_rencana(&v)).unwrap_or_default();
+        let mut tugas = tanya_json(&http, &planner(), &format!("Tujuan: {tujuan}")).await.map(|v| urai_rencana(&v)).unwrap_or_default();
         if tugas.is_empty() {
             tugas = vec![("pelaksana".into(), tujuan.to_string(), "jawaban untuk tujuan".into())];
         }
         self.agent_say(0, &format!("Rencana: {}", tugas.iter().enumerate().map(|(i, (p, d, _))| format!("{}. {p}: {d}", i + 1)).collect::<Vec<_>>().join(" → ")));
         let (mut konteks, mut butuh_izin, mut terakhir) = (String::new(), Vec::<String>::new(), String::new());
         for (peran, desc, hasil) in &tugas {
-            let (_, nama, latar) = PERAN.iter().find(|(k, _, _)| k == peran).copied().unwrap_or(PERAN[1]);
+            let roles = daftar_peran();
+            let (nama, latar) = roles.iter().find(|r| r.0 == *peran).or_else(|| roles.iter().find(|r| r.0 == "pelaksana")).map(|r| (r.1.clone(), r.3.clone())).unwrap_or_default();
+            let (nama, latar) = (nama.as_str(), latar.as_str());
             self.agent_say(0, &format!("▶ [{nama}] {desc}"));
             let (mut obs, mut dipakai, mut jawab) = (String::new(), HashSet::<(String, String)>::new(), String::new());
             for _ in 0..4 {

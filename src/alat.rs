@@ -10,73 +10,6 @@ pub static LOCKED: AtomicBool = AtomicBool::new(false);
 /// True bila rencana terakhir dari plan_offline hanya hasil tebakan ML (bukan aturan pasti): Gemini lebih diutamakan.
 pub static FROM_ML: AtomicBool = AtomicBool::new(false);
 
-pub const TOOL_HELP: &str = "\
-kurikulum <buku|topik> [N hari|minggu] [N menit|jam]: jadwal belajar dari buku + pengingat
-berita [topik]: berita terbaru sesuai minat (butuh internet)
-kepribadian   : preferensi yang sudah kupelajari tentang Bos
-cari <apa>    : cari file di komputer (nama, jenis, waktu, atau 'berisi kata')
-rapikan <folder>: pratinjau merapikan folder per jenis file (dijalankan setelah Bos membalas ya)
-apps          : pratinjau aplikasi berat yang tidak dipakai (ditutup sopan setelah Bos membalas ya)
-urungkan      : kembalikan file hasil rapikan terakhir
-meme [topik]  : hibur dengan meme
-bukapath <jalur>: buka berkas/folder yang baru Bos seret/pilih (hanya jalur itu)
-jadwal        : rencana tidur — apakah masih bisa tidur 8 jam dengan jadwal/pengingat/acara yang ada
-otomatis <kecerahan|suara> <on|off>: atur kecerahan/suara otomatis menurut jam & kebiasaan
-wifi          : Wi-Fi tersambung + jaringan di sekitar
-port          : port yang sedang listening beserta prosesnya
-bukafile <nama>: cari berkas lalu BUKA langsung (dokumen/gambar/media; yang bisa dieksekusi hanya ditunjukkan foldernya)
-cli <alat> [sub]: bantuan perintah CLI (git, cargo, docker, ollama, npm, python, winget, ping, dll.; hanya --help)
-atur <kecerahan|volume> <N|+N|-N|mute|unmute|?>: atur kecerahan layar / volume suara
-waktu         : jam, hari, tanggal sekarang
-web <tanya>   : cari informasi terbaru di internet
-harga <aset>: harga + grafik 30 hari (saham bbca/AAPL, kurs dolar, emas, bitcoin, ihsg)
-pantau <aset> di atas|di bawah <angka>: kabari saat harga melewati ambang; cuacapantau <kota>: pengingat hujan/panas
-gitringkas [folder]: ringkasan repo git (status, commit terakhir, diff) + saran pesan commit
-halaman <url>: ringkas isi halaman web; csv <jalur.csv>: analisis cepat berkas CSV
-hitung <ekspresi>: kalkulator (+ - * / ^ %, sqrt, sin, cos, ln, pi), mis. hitung 12*(3+4)^2
-konversi <angka> <satuan> ke <satuan>: panjang, massa, daya, tekanan, energi, suhu, dll.
-zona <kota/jam>: waktu di kota lain atau konversi jam, mis. jam 14:00 wib di london
-ohm <V= I= R= P=>: hukum Ohm dari dua nilai; fase3 <P= V= cos=>: arus 3 fase
-hari <tanggal>: berapa hari lagi/yang lalu; password [panjang]: kata sandi acak
-catat <teks> | catatan [kata|hapus N]: catatan cepat
-cuaca [kota]: cuaca & prakiraan 3 hari; kurs <jumlah> <MATA> ke <MATA>: nilai tukar
-wiki <topik>: ringkasan Wikipedia; berpikir <masalah>: penalaran langkah demi langkah; terjemah <teks> ke <bahasa>
-jurnal <topik [tahun]>: cari jurnal/makalah ilmiah (OpenAlex), mis. semantic 2026 kurang 5 tahun
-gambar <kata kunci>: cari gambar di internet (thumbnail + tautan sumber)
-bersih        : bersihkan cache aman (Temp, npm, pip, Hugging Face) — butuh persetujuan
-kode <nama folder>: buka folder proyek di VS Code (dicari otomatis di D:/repo, Documents, dll.)
-winapp <nama> : buka aplikasi bawaan Windows (kalkulator, notepad, paint, pengaturan wifi, dll.)
-tugas <teks>   : set/lihat tugas utama hari ini ('selesai' untuk menandai)
-musik         : putar musik fokus (folder Musik atau pencarian browser)
-bukahasil <n> : buka folder hasil pencarian ke-n di Explorer
-ingatan <topik>: apa yang pernah kita bahas tentang topik (graf ingatan jangka panjang)
-graphify <folder>: petakan folder kode/dokumen ke graf ingatan
-email         : ringkasan email belum dibaca di semua akun (Google + IMAP)
-baterai       : sisa baterai + prediksi habis/penuh (model belajar per konteks)
-ngobrol <teks>: sapaan/obrolan ringan
-tanya <teks>  : pertanyaan/hitungan teknik listrik, elektronika, PLC (kalkulator + basis pengetahuan)
-pelajari <path>: serap PDF/txt/md ke basis pengetahuan (untuk dijawab lewat tanya)
-remind <teks> : pengingat, mis. 'jam 15:30 rapat' atau '20 menit lagi minum'
-agenda / habit / tidur : agenda hari ini / kebiasaan / laporan tidur
-layar         : baca isi layar dengan OCR Tesseract lokal (butuh izin Bos); arg 'ringkas' untuk ringkasan
-pdf <path>    : ambil teks PDF/txt/md (untuk diringkas)
-ringkas <path>: ringkasan ekstraktif PDF/txt/md tanpa model
-health        : kondisi CPU/RAM/disk dan proses terberat
-info          : info OS, folder kerja, waktu
-ls <path>     : isi folder
-read <path>   : baca file teks
-ps            : daftar proses
-fetch <url>   : ambil teks halaman web
-shell <cmd>   : jalankan perintah shell (butuh persetujuan Bos)
-write <path>  : tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)
-open <target> : buka URL/file/aplikasi (butuh persetujuan Bos)
-grafik         : grafik pemakaian RAM dan CPU laptop hari ini (dari data pemantauan) beserta penilaian kesehatan RAM
-cariisi <berkas> :: <pertanyaan>: potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)
-github <kata>   : cari repositori GitHub (bintang, bahasa, lisensi)
-tunggu <detik>  : jeda 1-30 detik di antara langkah
-kompres <folder|berkas>: buat zip di sebelahnya (butuh persetujuan)
-";
-
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Call {
     pub tool: String,
@@ -653,6 +586,9 @@ pub fn summarize(text: &str, n: usize) -> String {
 /// Rencana tanpa model: kata kunci -> alat. None jika ada bagian yang tidak dipahami.
 pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     FROM_ML.store(false, Ordering::Relaxed);
+    if let Some(m) = crate::aturan::makro(goal) {
+        return Some(m);
+    }
     let mut segs = vec![goal.to_string()];
     for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " dan buat ", " dan buatkan ", " dan tampilkan ", " dan beri ", " dan berikan ", " serta buat ", " habis itu ", " abis itu ", " selanjutnya ", ";", " then "] {
         segs = segs.iter().flat_map(|s| s.split(sep).map(String::from).collect::<Vec<_>>()).collect();
@@ -771,22 +707,20 @@ pub fn call_for(label: &str, text: &str) -> Option<Call> {
 /// Obrolan ringan tanpa model.
 fn ngobrol(t: &str) -> String {
     let l = t.to_lowercase();
-    let h = chrono::Timelike::hour(&chrono::Local::now());
-    let _ = h;
-    let sapa = crate::sistem::salam();
-    if l.contains("terima kasih") || l.contains("makasih") {
-        "Sama-sama, Bos! Kabari kalau butuh yang lain.".into()
-    } else if l.contains("siapa kamu") || l.contains("kamu siapa") {
-        format!("Aku {}, asisten pribadi Bos. Di dalamku ada 4 persona: NOVA (koordinator), VOLT (teknik dan kode), SENTRY (kesehatan laptop dan keamanan), MEMO (ingatan dan jadwal).", crate::agents::NAME)
-    } else if l.contains("bisa apa") || l.contains("bantu") {
-        "Aku bisa: cek kesehatan/baterai laptop, pantau kebiasaan dan mengingatkan jadwal/minum/tidur, jawab pertanyaan teknik listrik dan pemrograman, hitung (drop tegangan, kabel/MCB, dll.), ringkas PDF, baca layar (OCR), membantu saat Bos menyalin error di VS Code, dan memberi tahu email/kalender Google. Ketik /bantuan untuk daftar perintah.".into()
-    } else if l.contains("apa kabar") {
-        format!("Baik! {}", crate::monitor::summary().split(" | ").take(3).collect::<Vec<_>>().join(" · "))
-    } else if ["halo", "hai", "hi", "selamat", "pagi", "siang", "sore", "malam"].iter().any(|k| l.split_whitespace().any(|w| w == *k)) {
-        format!("Selamat {sapa}, Bos! Ada yang bisa kubantu?")
-    } else {
-        "Siap, Bos. Ketik /bantuan untuk melihat yang bisa kulakukan.".into()
+    let cfg = crate::teknik::teks_json();
+    let kata: Vec<&str> = l.split_whitespace().collect();
+    // aturan paling akhir (tambahan Bos) dicek paling dulu
+    for r in cfg["ngobrol"].as_array().map(|a| a.iter().rev()).into_iter().flatten() {
+        let cocok = r["pemicu"].as_array().is_some_and(|p| p.iter().filter_map(|x| x.as_str()).any(|k| l.contains(k))) || r["kata"].as_array().is_some_and(|p| p.iter().filter_map(|x| x.as_str()).any(|k| kata.contains(&k)));
+        if cocok {
+            let b = r["balasan"].as_str().unwrap_or("");
+            return b
+                .replace("{nama}", crate::agents::NAME)
+                .replace("{sapa}", &crate::sistem::salam())
+                .replace("{ringkas}", &if b.contains("{ringkas}") { crate::monitor::summary().split(" | ").take(3).collect::<Vec<_>>().join(" · ") } else { String::new() });
+        }
     }
+    cfg["ngobrol_lainnya"].as_str().unwrap_or("Siap, Bos.").to_string()
 }
 
 #[cfg(test)]
@@ -807,6 +741,14 @@ mod tests {
     }
 
     /// Penjaga urutan aturan: tiap kalimat harus menghasilkan alat yang diharapkan (aturan baru tak boleh menimpa yang lama).
+    #[test]
+    fn json_macro_and_ngobrol() {
+        let m = plan_offline("mulai kerja").unwrap();
+        assert_eq!(m.iter().map(|c| c.tool.as_str()).collect::<Vec<_>>(), ["health", "agenda", "tugas"]);
+        assert_eq!(plan_offline("kirim ke email saya laporan | isi").unwrap()[0].tool, "kirim");
+        assert!(ngobrol("makasih ya").starts_with("Sama-sama"));
+        assert!(ngobrol("siapa kamu").contains("NOVA") || ngobrol("siapa kamu").contains("asisten"));
+    }
     #[test]
     fn ordered_steps() {
         let p = plan_offline("buka youtube cari lagu santai setelah itu cek baterai lalu agenda").unwrap();

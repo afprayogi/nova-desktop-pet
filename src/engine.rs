@@ -21,7 +21,7 @@ mod kru;
 mod misi;
 mod slash;
 mod teks;
-use teks::{GUIDE, HELP};
+use teks::{guide, help};
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 // ---------- Pesan antara GUI dan mesin ----------

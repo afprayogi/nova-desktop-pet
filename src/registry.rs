@@ -1,9 +1,11 @@
-//! Satu daftar alat berskema (sumber tunggal): nama, petunjuk argumen, deskripsi, dan tingkat risiko, diturunkan otomatis dari
-//! `alat::TOOL_HELP` + `gemini::EXTRA_TOOLS`. Dipakai untuk (1) prompt perencana Gemini, (2) pencarian alat relevan bagi Llama
-//! kecil (embedding), dan (3) ekspor berbentuk MCP (`tools/list`: name, description, inputSchema, annotations) sebagai fondasi
-//! klien/server MCP. Alat baru cukup ditambah satu baris deskripsi; tidak perlu aturan kata kunci.
+//! Satu daftar alat berskema (sumber tunggal): nama, petunjuk argumen, deskripsi, dan tingkat risiko. Bawaan dari `data/alat.json`
+//! (tertanam); `otak/alat.json` milik Bos menambah atau menimpa per nama dan terbaca ulang otomatis. Dipakai untuk (1) prompt
+//! perencana Gemini/Llama, (2) pencarian alat relevan bagi Llama kecil (embedding), dan (3) ekspor berbentuk MCP (`tools/list`).
+//! Alat baru cukup ditambah satu entri; penilaian risiko dan eksekusinya tetap di `alat.rs`.
 use serde::Serialize;
-use std::sync::OnceLock;
+use std::sync::{Arc, Mutex};
+
+pub const BAWAAN: &str = include_str!("../data/alat.json");
 
 #[derive(Serialize, Clone, Debug)]
 pub struct Skema {
@@ -13,60 +15,65 @@ pub struct Skema {
     pub risiko: String,
 }
 
-fn titik_dua(s: &str) -> Option<usize> {
-    let b = s.as_bytes();
-    (0..b.len()).find(|&i| b[i] == b':' && (i == 0 || b[i - 1] != b':') && b.get(i + 1) != Some(&b':'))
+struct Isi {
+    skema: Vec<Skema>,
+    vek: Vec<Vec<f32>>,
 }
 
-fn nama_sah(w: &str) -> bool {
-    !w.is_empty() && w.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
-}
+static C: Mutex<Option<(Arc<serde_json::Value>, Arc<Isi>)>> = Mutex::new(None);
 
-/// Urai satu baris "nama <arg> : deskripsi" (boleh beberapa nama dipisah '/', berbagi deskripsi).
-pub fn urai_baris(l: &str) -> Vec<Skema> {
-    let Some(i) = titik_dua(l) else { return vec![] };
-    let (kiri, desk) = (l[..i].trim(), l[i + 1..].trim());
-    if desk.is_empty() {
-        return vec![];
+fn isi() -> Arc<Isi> {
+    let v = crate::data::lapis("alat.json", BAWAAN);
+    let mut c = C.lock().unwrap();
+    if let Some((k, i)) = c.as_ref() {
+        if Arc::ptr_eq(k, &v) {
+            return i.clone();
+        }
     }
-    kiri.split(" / ")
-        .filter_map(|seg| {
-            let seg = seg.trim();
-            let (n, arg) = seg.split_once(char::is_whitespace).map(|(a, b)| (a, b.trim())).unwrap_or((seg, ""));
-            nama_sah(n).then(|| {
-                let r = match crate::alat::assess(&crate::alat::Call { tool: n.into(), arg: "x".into() }) {
-                    crate::alat::Risk::Safe => "aman",
-                    crate::alat::Risk::Confirm(_) => "butuh persetujuan",
-                    crate::alat::Risk::Block(_) => "bergantung argumen", // probe "x" ditolak validasi argumen, bukan alatnya
-                };
-                Skema { nama: n.into(), arg: arg.into(), deskripsi: desk.into(), risiko: r.into() }
-            })
+    let mut skema: Vec<Skema> = v
+        .as_array()
+        .map(|a| {
+            a.iter()
+                .filter_map(|x| {
+                    let n = x["nama"].as_str()?.trim().to_lowercase();
+                    if n.is_empty() || !n.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_') {
+                        return None;
+                    }
+                    let r = match crate::alat::assess(&crate::alat::Call { tool: n.clone(), arg: "x".into() }) {
+                        crate::alat::Risk::Safe => "aman",
+                        crate::alat::Risk::Confirm(_) => "butuh persetujuan",
+                        crate::alat::Risk::Block(_) => "bergantung argumen", // probe "x" ditolak validasi argumen, bukan alatnya
+                    };
+                    Some(Skema { nama: n, arg: x["arg"].as_str().unwrap_or("").into(), deskripsi: x["deskripsi"].as_str().unwrap_or("").into(), risiko: r.into() })
+                })
+                .collect()
         })
-        .collect()
+        .unwrap_or_default();
+    skema.sort_by(|a, b| a.nama.cmp(&b.nama));
+    skema.dedup_by(|a, b| a.nama == b.nama);
+    let vek = skema.iter().map(|s| crate::ingat::embed(&format!("{} {} {}", s.nama, s.arg, s.deskripsi))).collect();
+    let i = Arc::new(Isi { skema, vek });
+    *c = Some((v, i.clone()));
+    i
 }
 
-pub fn semua() -> &'static Vec<Skema> {
-    static R: OnceLock<Vec<Skema>> = OnceLock::new();
-    R.get_or_init(|| {
-        let mut v: Vec<Skema> = crate::alat::TOOL_HELP.lines().chain(crate::gemini::EXTRA_TOOLS.lines()).flat_map(urai_baris).collect();
-        v.sort_by(|a, b| a.nama.cmp(&b.nama));
-        v.dedup_by(|a, b| a.nama == b.nama);
-        v
-    })
+pub fn semua() -> Vec<Skema> {
+    isi().skema.clone()
 }
 
-fn vektor() -> &'static Vec<Vec<f32>> {
-    static V: OnceLock<Vec<Vec<f32>>> = OnceLock::new();
-    V.get_or_init(|| semua().iter().map(|s| crate::ingat::embed(&format!("{} {} {}", s.nama, s.arg, s.deskripsi))).collect())
+pub fn ada(nama: &str) -> bool {
+    isi().skema.iter().any(|s| s.nama == nama)
 }
 
 /// `k` alat paling relevan untuk kalimat `q` (cosine embedding hashing + tumpang-tindih kata).
-pub fn relevan(q: &str, k: usize) -> Vec<&'static Skema> {
+pub fn relevan(q: &str, k: usize) -> Vec<Skema> {
+    let i = isi();
     let qv = crate::ingat::embed(q);
     let kata: Vec<String> = q.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2).map(String::from).collect();
-    let mut s: Vec<(f32, &Skema)> = semua()
+    let mut s: Vec<(f32, &Skema)> = i
+        .skema
         .iter()
-        .zip(vektor())
+        .zip(&i.vek)
         .map(|(sk, v)| {
             let cos: f32 = v.iter().zip(&qv).map(|(a, b)| a * b).sum();
             let teks = format!("{} {}", sk.nama, sk.deskripsi).to_lowercase();
@@ -75,19 +82,20 @@ pub fn relevan(q: &str, k: usize) -> Vec<&'static Skema> {
         })
         .collect();
     s.sort_by(|a, b| b.0.total_cmp(&a.0));
-    s.into_iter().take(k).map(|(_, sk)| sk).collect()
+    s.into_iter().take(k).map(|(_, sk)| sk.clone()).collect()
 }
 
 pub fn baris(s: &Skema) -> String {
     format!("{}{}: {}{}", s.nama, if s.arg.is_empty() { String::new() } else { format!(" {}", s.arg) }, s.deskripsi, if s.risiko == "butuh persetujuan" { " [butuh persetujuan]".to_string() } else { String::new() })
 }
 
-/// Teks daftar alat untuk prompt: semua alat, atau hanya `daftar` (hasil `relevan`).
-pub fn teks(daftar: Option<&[&Skema]>) -> String {
-    match daftar {
-        Some(d) => d.iter().map(|s| baris(s)).collect::<Vec<_>>().join("\n"),
-        None => semua().iter().map(baris).collect::<Vec<_>>().join("\n"),
-    }
+/// Semua alat, satu baris per alat (untuk prompt model).
+pub fn teks(_: Option<()>) -> String {
+    bantuan()
+}
+
+pub fn bantuan() -> String {
+    isi().skema.iter().map(baris).collect::<Vec<_>>().join("\n")
 }
 
 /// Bentuk MCP `tools/list`: tiap alat punya satu parameter string `arg`.
@@ -104,21 +112,12 @@ pub fn mcp() -> serde_json::Value {
 mod tests {
     use super::*;
     #[test]
-    fn parses_lines() {
-        let v = urai_baris("wifi / port / bukafile <nama>: lihat Wi-Fi, port aktif, buka berkas");
-        assert_eq!(v.iter().map(|s| s.nama.as_str()).collect::<Vec<_>>(), ["wifi", "port", "bukafile"]);
-        assert_eq!(v[2].arg, "<nama>");
-        let c = urai_baris("cariisi <berkas> :: <pertanyaan>: potongan relevan");
-        assert_eq!(c[0].nama, "cariisi");
-        assert_eq!(c[0].deskripsi, "potongan relevan");
-        assert!(urai_baris("tanpa titik dua").is_empty());
-    }
-    #[test]
     fn registry_covers_tools_and_retrieves() {
-        assert!(semua().len() > 30);
+        assert!(semua().len() > 50);
         assert!(semua().iter().any(|s| s.nama == "kompres" && s.risiko == "butuh persetujuan"));
-        let top: Vec<&str> = relevan("cek sisa baterai laptop", 6).iter().map(|s| s.nama.as_str()).collect();
-        assert!(top.contains(&"baterai"), "{top:?}");
+        assert!(ada("cariisi") && ada("wifi") && ada("bukafile"));
+        let top: Vec<String> = relevan("cek sisa baterai laptop", 6).into_iter().map(|s| s.nama).collect();
+        assert!(top.contains(&"baterai".to_string()), "{top:?}");
         assert_eq!(mcp()["tools"][0]["inputSchema"]["type"], "object");
     }
 }

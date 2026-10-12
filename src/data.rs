@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
-pub const BERKAS: &[&str] = &["kamus_aksi.json", "cli.json", "layanan.json", "ajar.json", "putusan.json", "kasus.json", "penasaran.json"];
+pub const BERKAS: &[&str] = &["kamus_aksi.json", "cli.json", "layanan.json", "ajar.json", "putusan.json", "kasus.json", "penasaran.json", "alat.json", "bahasa.json", "contoh_niat.json", "teks.json", "pengetahuan_dasar.json", "aturan.json", "peran.json"];
 
 type Isi = (Option<SystemTime>, Arc<Value>, String);
 static CACHE: Mutex<Option<HashMap<String, Isi>>> = Mutex::new(None);
@@ -39,6 +39,59 @@ pub fn json(nama: &str, bawaan: &str) -> Arc<Value> {
     let v = Arc::new(v);
     m.insert(nama.to_string(), (mtime(nama), v.clone(), galat));
     v
+}
+
+fn id_entri(v: &Value) -> Option<String> {
+    ["nama", "kalimat", "pola", "topik", "judul"].iter().find_map(|k| v.get(*k).and_then(|x| x.as_str())).map(|s| s.to_lowercase())
+}
+
+/// Gabungkan bawaan `a` dengan tambahan Bos `b`: objek per kunci (daftar disatukan), daftar objek per `nama`/`judul`/`kalimat`/`pola`/`topik`, lainnya ditimpa.
+pub fn gabung(a: Value, b: Value) -> Value {
+    match (a, b) {
+        (Value::Object(mut x), Value::Object(y)) => {
+            for (k, v) in y {
+                let nv = match x.remove(&k) {
+                    Some(old) => gabung(old, v),
+                    None => v,
+                };
+                x.insert(k, nv);
+            }
+            Value::Object(x)
+        }
+        (Value::Array(mut x), Value::Array(y)) => {
+            for v in y {
+                match id_entri(&v).and_then(|k| x.iter().position(|o| id_entri(o).as_deref() == Some(k.as_str()))) {
+                    Some(i) => x[i] = v,
+                    None if !x.contains(&v) => x.push(v),
+                    None => {}
+                }
+            }
+            Value::Array(x)
+        }
+        (_, b) => b,
+    }
+}
+
+type Lapis = HashMap<String, (Arc<Value>, Arc<Value>)>;
+static LAPIS: Mutex<Option<Lapis>> = Mutex::new(None);
+
+/// Data berlapis: `bawaan` (tertanam di program, ikut pembaruan) + `otak/<nama>` milik Bos yang MENAMBAH/menimpa. Berkas Bos dibuat kosong
+/// bila belum ada, dan salinan bawaan ditulis ke `otak/<nama>.bawaan.json` sebagai contoh isi. Hasil digabung di-cache sampai berkas Bos berubah.
+pub fn lapis(nama: &str, bawaan: &str) -> Arc<Value> {
+    let kosong = if bawaan.trim_start().starts_with('[') { "[]" } else { "{}" };
+    let user = json(nama, kosong);
+    let mut g = LAPIS.lock().unwrap();
+    let m = g.get_or_insert_with(HashMap::new);
+    if let Some((u, merged)) = m.get(nama) {
+        if Arc::ptr_eq(u, &user) {
+            return merged.clone();
+        }
+    }
+    let base: Value = serde_json::from_str(bawaan).unwrap_or(Value::Null);
+    let _ = std::fs::write(path(&nama.replace(".json", ".bawaan.json")), serde_json::to_string_pretty(&base).unwrap_or_default());
+    let merged = Arc::new(gabung(base, (*user).clone()));
+    m.insert(nama.to_string(), (user, merged.clone()));
+    merged
 }
 
 /// Ubah berkas lewat `f` (mulai dari isi sekarang), lalu tulis kembali rapi. Mengembalikan galat penulisan bila ada.
@@ -80,6 +133,18 @@ pub fn folder() -> std::path::PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn overlay_merges_lists_objects_and_entries_by_name() {
+        let base = serde_json::json!({"stop": ["a", "b"], "slang": {"yg": "yang"}, "alat": [{"nama": "x", "d": 1}]});
+        let user = serde_json::json!({"stop": ["b", "c"], "slang": {"gk": "tidak"}, "alat": [{"nama": "x", "d": 2}, {"nama": "y", "d": 3}]});
+        let m = gabung(base, user);
+        assert_eq!(m["stop"], serde_json::json!(["a", "b", "c"]));
+        assert_eq!(m["slang"]["yg"], "yang");
+        assert_eq!(m["slang"]["gk"], "tidak");
+        assert_eq!(m["alat"].as_array().unwrap().len(), 2);
+        assert_eq!(m["alat"][0]["d"], 2);
+    }
+
     #[test]
     fn creates_default_reloads_and_survives_broken_json() {
         let n = format!("uji_data_{}.json", std::process::id());

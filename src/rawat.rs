@@ -4,34 +4,15 @@ use std::sync::Mutex;
 
 static TURNS: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
-const SLANG: &[(&str, &str)] = &[
-    ("yg", "yang"), ("gak", "tidak"), ("ga", "tidak"), ("nggak", "tidak"), ("gk", "tidak"), ("udh", "sudah"), ("udah", "sudah"),
-    ("bsk", "besok"), ("skrg", "sekarang"), ("tgl", "tanggal"), ("dgn", "dengan"), ("utk", "untuk"), ("krn", "karena"),
-    ("jg", "juga"), ("sm", "sama"), ("dr", "dari"), ("hrs", "harus"), ("blm", "belum"), ("bgt", "banget"), ("tp", "tapi"),
-    ("lg", "lagi"), ("aja", "saja"), ("gimana", "bagaimana"), ("kpn", "kapan"), ("brp", "berapa"), ("org", "orang"),
-];
-
-const SINONIM: &[(&[&str], &str)] = &[
-    (&["film", "movie", "bioskop"], "film movie"),
-    (&["murah", "hemat", "diskon"], "murah hemat diskon"),
-    (&["berita", "kabar", "terbaru"], "berita terbaru"),
-    (&["laptop", "notebook"], "laptop notebook"),
-    (&["hp", "ponsel", "smartphone"], "hp ponsel smartphone"),
-    (&["error", "galat", "bug"], "error galat bug"),
-    (&["resep", "masakan"], "resep masakan"),
-    (&["anime", "donghua"], "anime"),
-];
-
-/// Kata sambung yang menandakan kalimat melanjutkan topik sebelumnya.
-const LANJUT: &[&str] = &["yang", "terus", "lalu", "kalau", "kalo", "bagaimana", "dan", "tapi", "lebih", "yg", "juga", "satu", "coba"];
 
 /// Singkatan/slang → baku, per kata utuh. Tanda baca dan huruf besar kata lain dibiarkan.
 pub fn normalisasi(s: &str) -> String {
+    let lex = crate::lex::bahasa();
     s.split_whitespace()
         .map(|w| {
             let core = w.trim_matches(|c: char| !c.is_alphanumeric());
-            match SLANG.iter().find(|(k, _)| core.eq_ignore_ascii_case(k)) {
-                Some((_, v)) => w.replace(core, v),
+            match lex.slang.get(&core.to_lowercase()) {
+                Some(v) => w.replace(core, v),
                 None => match crate::kata::baku(core) {
                     Some(b) => w.replace(core, &b),
                     None => w.to_string(),
@@ -47,8 +28,8 @@ pub fn perluas(q: &str) -> String {
     let l = q.to_lowercase();
     let words: Vec<&str> = l.split(|c: char| !c.is_alphanumeric()).collect();
     let mut out = q.trim().to_string();
-    for (keys, ext) in SINONIM {
-        if keys.iter().any(|k| words.contains(k)) {
+    for (keys, ext) in &crate::lex::bahasa().sinonim {
+        if keys.iter().any(|k| words.contains(&k.as_str())) {
             for e in ext.split(' ') {
                 if !words.contains(&e) && !out.to_lowercase().contains(e) {
                     out.push(' ');
@@ -60,11 +41,8 @@ pub fn perluas(q: &str) -> String {
     out
 }
 
-/// Kata yang tidak membawa topik baru; kalimat koreksi yang hanya berisi kata-kata ini memang meminta topik sebelumnya.
-const BUANG: &[&str] = &["di", "ke", "yang", "itu", "ini", "saja", "aja", "maksudnya", "maksud", "maksudku", "video", "youtube", "yt", "google", "github", "maps", "lagu", "musik", "dong", "kamu", "coba", "salah", "bukan", "jawabannya", "tadi"];
-
 fn punya_isi(l: &str) -> bool {
-    l.split(|c: char| !c.is_alphanumeric()).any(|w| w.len() > 2 && !BUANG.contains(&w) && crate::kata::aksi(w).is_empty())
+    l.split(|c: char| !c.is_alphanumeric()).any(|w| w.len() > 2 && !crate::lex::ada("buang_koreksi", w) && crate::kata::aksi(w).is_empty())
 }
 
 /// Sambung ke giliran sebelumnya hanya bila kalimat ini tidak membawa topik/objek sendiri: koreksi tanpa isi ("carikan di youtube maksudnya"),
@@ -78,7 +56,7 @@ fn tindak_lanjut(l: &str) -> bool {
     if koreksi {
         return !punya_isi(l);
     }
-    LANJUT.contains(&w[0]) && w[0] != "coba" && crate::kata::aksi(l).is_empty()
+    crate::lex::ada("lanjut", w[0]) && w[0] != "coba" && crate::kata::aksi(l).is_empty()
 }
 
 static ASLI: Mutex<Vec<(String, String)>> = Mutex::new(Vec::new());

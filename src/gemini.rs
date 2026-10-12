@@ -428,13 +428,6 @@ fn recent_turns() -> String {
     TURNS.lock().map(|t| t.iter().map(|(u, o)| format!("Bos: {u}\nNOVA: {o}")).collect::<Vec<_>>().join("\n")).unwrap_or_default()
 }
 
-pub(crate) const EXTRA_TOOLS: &str = "\
-atur <kecerahan|volume> <N|+N|-N|mute|unmute|?> : atur kecerahan layar / volume suara (persen)
-waktu         : jam, hari, dan tanggal sekarang
-web <pertanyaan>: cari informasi terbaru di internet lalu rangkum
-wifi / port / bukafile <nama> / cli <alat>: lihat Wi-Fi, port aktif, buka berkas langsung, bantuan CLI
-winapp <nama> : buka aplikasi bawaan Windows (kalkulator, notepad, paint, snipping tool, task manager, pengaturan wifi/bluetooth/suara/tampilan, windows update, control panel, alarm, kalender, foto, cuaca, device manager)";
-
 /// Petakan ucapan Bos ke rencana alat NOVA (maks 4) atau jawaban langsung.
 pub async fn plan(http: &reqwest::Client, goal: &str) -> Result<Plan> {
     // Kalimat yang bergantung pada percakapan sebelumnya tidak dicache.
@@ -483,16 +476,7 @@ Alat (nama argumen: deskripsi [risiko]):\n{}\n\nKonteks: aplikasi di depan = {}.
 
 /// Nama semua alat yang boleh dipanggil (untuk membatasi keluaran terstruktur model lokal).
 pub fn tool_names() -> Vec<String> {
-    let mut v: Vec<String> = crate::alat::TOOL_HELP
-        .lines()
-        .chain(EXTRA_TOOLS.lines())
-        .filter_map(|l| l.split(|c: char| c.is_whitespace() || c == ':').next())
-        .filter(|w| !w.is_empty() && w.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_'))
-        .map(String::from)
-        .collect();
-    v.sort();
-    v.dedup();
-    v
+    crate::registry::semua().into_iter().map(|s| s.nama).collect()
 }
 
 fn parse_plan(raw: &str) -> Option<Plan> {

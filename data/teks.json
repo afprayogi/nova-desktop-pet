@@ -1,0 +1,47 @@
+{
+ "guide": "Mulai di sini (5 langkah):\n1) Ketik langsung di kotak bawah peliharaan lalu Enter. Jawaban muncul sebagai popup; tombol 'Obrolan' membuka layar besar (Esc menutup).\n2) Pasang otak cloud gratis: buat key di aistudio.google.com/apikey lalu ketik /gemini key <kunci>. Model dipilih otomatis; hasilnya disimpan agar hemat kuota.\n3) Seret berkas/folder ke peliharaan (atau klik +) untuk info lengkap + tombol Buka/Ringkas/Petakan.\n4) Coba: 'cek wifi', 'bisa tidur 8 jam?', 'diskusi lembur vs istirahat', 'carikan file pdf motor', 'kecerahan 40', 'otomatiskan kecerahan'.\n5) Ketik /bantuan <kata> untuk mencari perintah; Tab melengkapi, panah atas membuka riwayat. Hotkey Ctrl+Alt+N memfokuskan kotak ketik.",
+ "help": "Ketik bebas, mis.: 'kapan baterai habis', 'tanya apa itu borrow checker', 'hitung drop tegangan panjang 50 m luas 2.5 mm2 arus 13.6 a tegangan 220 v', 'ringkas pdf C:/a.pdf', 'pelajari C:/buku.pdf', 'ingatkan jam 15:30 rapat', 'agenda', 'tidur', 'baca layar', 'isi folder C:/x'. Perintah bebas: 'carikan file laporan pdf kemarin', 'rapikan folder download', 'matikan aplikasi yang tidak dipakai', 'kasih meme'. Lainnya: 'berita', 'kurikulum C:/buku.pdf selama 3 minggu 45 menit', 'kepribadian'. Perintah: /ollama (hubungkan model lokal), /url, /key, /scan, /google (tambah akun Gmail lewat browser; /google akun | /google putus <email>), /outlook (tambah akun Outlook/Microsoft 365; /outlook akun | /outlook putus <email>), /email (ringkasan semua akun; /email imap auto <alamat> <sandi-aplikasi>; /email buka <alamat>; /email hapus <alamat>), /ocr on|off, /llm on|off|pasang, /gemini key <kunci>, /sholat kota <nama> (jadwal & pengingat sholat), /build [folder] (build + laporan), /pencapaian, dasbor 'Belajar' (bedah kalimat & ajarkan aturan langsung), /penasaran [topik] atau 'tanya aku' (NOVA bertanya, jawabanmu masuk otak), /putusan (hasil verifikasi model yang diingat), /wikipedia <topik>|isi (artikel Wikipedia masuk otak), /arti <kata> (Wiktionary Indonesia), /vektor [isi] (pencarian makna), /data [buka] (berkas JSON yang bisa diedit: kamus_aksi, cli, layanan), /kamusaksi tambah <aksi> <kata>, /layanan tambah <nama> <kata> <url>, /cli tambah <nama>, /buku (buku yang sudah dipelajari), /cli [belajar] (alat CLI terpasang), /kamus [muat] (kamus gaul→baku), /katalog [muat|kata] (alat dari ekosistem MCP, diunduh dari GitHub ke pengetahuan), /kru <tujuan> (tim peneliti-pelaksana-penulis ala CrewAI), alat baru: cariisi, github, tunggu, kompres, /otak [belajar] (peta otak: seberapa jauh NOVA belajar), /paket [tangkap] (monitor koneksi & penangkap paket mini), /panelmusik on|off, /internet (diagnosa jalur internet: Wi-Fi → router → ISP → DNS → web), /riwayat on|off (baca riwayat Chrome/Edge, opt-in), /musikjaga on|off (lanjutkan musik YouTube yang terjeda, putar ulang bila tab hilang), /musikotomatis on|off (putar lagu YouTube terbanyak saat mulai aktif), 'tidurkan laptop', 'matikan laptop', 'restart komputer', 'kunci layar' (matikan/restart/tidur minta persetujuan), /aplikasi [kata] (aplikasi terpasang yang bisa dibuka), /smtp auto <alamat> <sandi-aplikasi> (lalu 'kirim ke email saya <judul | isi>'), 'baca dengan chrome <url>', /agen (token dimakan & status agen AI), /suara on|off, /karakter buat <nama> <gambar> (generator paket karakter), /karakter [nama|pasang <folder>] (ganti tampilan robot dengan karakter Shimeji), /buddy (sahabat NOVA: kartu, level, belai, suara, nama), /ingat (fakta tentang Bos, gaya mem0), /lupa <kata>, /persona (kartu karakter, kepribadian berkembang, impor SillyTavern), /omni (status/pindai OmniRoute; atur lewat menu Pengaturan), /analitik (tipe hari, ramalan disk, anomali), /gemini status, bersihkan cache aman, carikan gambar <kata>, /lokal (model Llama & embedding lokal), /latih (latih ML), /paksa on|off (laptop tidur otomatis bila kelelahan >80%), /cadangan, urungkan (batalkan perubahan terakhir), /otomatis kecerahan|suara on|off, /jadwal (bisakah tidur 8 jam), diskusi <topik>, /cerewet 0|1|2, /bantuan <kata>, bantu <alat cli>, ketik 'obrolan' (buka layar obrolan besar), Ctrl+Alt+N (obrolan cepat; Tab melengkapi, ↑ riwayat), /iklan on|off|update, /indeks [bangun], /graf [topik|lihat], /graphify <folder>, /bec on|off|sekarang, /meme [topik], /urungkan, /minat a, b, /suka, /tidak, /diam [menit], /stop. Asisten koding: /proyek <folder>, /log <file>, /makro [nama|commit pesan], /port, /killport <port>, /scaffold <template> <Nama>, /bahasa.",
+ "ngobrol": [
+  {
+   "pemicu": [
+    "terima kasih",
+    "makasih"
+   ],
+   "balasan": "Sama-sama, Bos! Kabari kalau butuh yang lain."
+  },
+  {
+   "pemicu": [
+    "siapa kamu",
+    "kamu siapa"
+   ],
+   "balasan": "Aku {nama}, asisten pribadi Bos di laptop ini: satu NOVA yang membantu urusan komputer, kerja, dan belajar."
+  },
+  {
+   "pemicu": [
+    "bisa apa",
+    "bantu"
+   ],
+   "balasan": "Aku bisa: cek kesehatan/baterai laptop, pantau kebiasaan dan mengingatkan jadwal/minum/tidur, jawab pertanyaan teknik listrik dan pemrograman dari buku dan Wikipedia, hitung (drop tegangan, kabel/MCB, dll.), ringkas PDF, baca layar (OCR), membuka aplikasi/video/lagu, menerjemahkan, dan memberi tahu email/kalender. Ketik /bantuan untuk daftar perintah."
+  },
+  {
+   "pemicu": [
+    "apa kabar"
+   ],
+   "balasan": "Baik! {ringkas}"
+  },
+  {
+   "kata": [
+    "halo",
+    "hai",
+    "hi",
+    "selamat",
+    "pagi",
+    "siang",
+    "sore",
+    "malam"
+   ],
+   "balasan": "Selamat {sapa}, Bos! Ada yang bisa kubantu?"
+  }
+ ],
+ "ngobrol_lainnya": "Siap, Bos. Ketik /bantuan untuk melihat yang bisa kulakukan."
+}

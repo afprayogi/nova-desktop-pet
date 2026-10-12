@@ -1,0 +1,133 @@
+{
+ "baterai": [
+  "kapan baterai habis",
+  "baterai tinggal berapa persen",
+  "sisa baterai laptop saya",
+  "berapa lama lagi baterainya bertahan",
+  "cek daya baterai",
+  "laptop saya masih berapa persen"
+ ],
+ "kesehatan": [
+  "cek kesehatan laptop",
+  "bagaimana kondisi komputer saya",
+  "laptop saya sehat tidak",
+  "periksa cpu ram dan disk",
+  "apakah laptop saya lemot",
+  "status sistem sekarang"
+ ],
+ "proses": [
+  "aplikasi apa yang paling berat",
+  "proses apa yang makan memori",
+  "kenapa laptop saya lambat",
+  "program apa yang memakai cpu paling banyak",
+  "lihat proses yang berjalan"
+ ],
+ "agenda": [
+  "apa agenda saya hari ini",
+  "jadwal saya hari ini apa saja",
+  "ada acara apa besok",
+  "tampilkan agenda",
+  "kegiatan hari ini apa"
+ ],
+ "habit": [
+  "bagaimana kebiasaan kerja saya",
+  "ringkasan kebiasaan saya",
+  "pola pemakaian laptop saya",
+  "berapa jam saya memakai laptop hari ini",
+  "aplikasi apa yang paling sering saya pakai"
+ ],
+ "tidur": [
+  "tidur saya semalam bagaimana",
+  "apakah saya cukup tidur",
+  "laporan tidur",
+  "berapa jam saya tidur",
+  "kualitas tidur saya"
+ ],
+ "jadwal": [
+  "bisa tidur 8 jam tidak malam ini",
+  "atur jadwal supaya tidur cukup",
+  "apakah saya masih sempat tidur delapan jam",
+  "rencana tidur malam ini",
+  "jam berapa saya harus berhenti kerja agar tidur cukup"
+ ],
+ "layar": [
+  "baca layar saya",
+  "apa yang ada di layar",
+  "tolong baca teks di layar",
+  "ocr layar",
+  "tangkap layar lalu baca"
+ ],
+ "berita": [
+  "ada berita apa hari ini",
+  "berita terbaru",
+  "kabar terkini tentang listrik",
+  "tampilkan headline",
+  "apa yang sedang ramai diberitakan"
+ ],
+ "email": [
+  "ada email baru",
+  "cek surel masuk",
+  "apakah ada pesan email belum dibaca",
+  "ringkas email saya",
+  "periksa kotak masuk gmail"
+ ],
+ "waktu": [
+  "jam berapa sekarang",
+  "hari ini tanggal berapa",
+  "sekarang hari apa",
+  "tolong sebutkan waktu saat ini",
+  "tanggal hari ini"
+ ],
+ "musik": [
+  "putar musik",
+  "mainkan lagu",
+  "setel lagu santai",
+  "jeda musik",
+  "lagu berikutnya",
+  "putar lagu favorit saya"
+ ],
+ "apps": [
+  "tutup aplikasi yang tidak dipakai",
+  "matikan aplikasi yang tidak perlu",
+  "bersihkan aplikasi yang menggantung",
+  "hentikan program yang tidak saya pakai"
+ ],
+ "meme": [
+  "kasih meme",
+  "ceritakan lelucon",
+  "hibur saya dong",
+  "ada humor lucu",
+  "bikin saya tertawa"
+ ],
+ "wifi": [
+  "cek wifi disini apa saja",
+  "jaringan wifi apa yang tersedia",
+  "wifi yang tersambung apa",
+  "kekuatan sinyal wifi saya",
+  "daftar wifi sekitar"
+ ],
+ "port": [
+  "cek port yang aktif",
+  "port apa yang sedang terbuka",
+  "lihat port listening",
+  "aplikasi apa yang memakai port 3000"
+ ],
+ "cari": [
+  "carikan file laporan pdf",
+  "cari berkas skripsi saya",
+  "di mana file gambar kemarin",
+  "tolong cari dokumen excel anggaran",
+  "temukan file yang saya unduh kemarin"
+ ],
+ "rapikan": [
+  "rapikan folder download",
+  "bereskan folder unduhan",
+  "susun berkas di desktop",
+  "kelompokkan file berdasarkan jenis"
+ ],
+ "kurikulum": [
+  "buat rencana belajar dari buku ini",
+  "susun kurikulum belajar tiga minggu",
+  "jadwal belajar dari pdf"
+ ]
+}
