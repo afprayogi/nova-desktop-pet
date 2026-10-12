@@ -401,19 +401,6 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                 }
             }
         }
-        "open" if arg.starts_with("https://") || arg.starts_with("http://") => {
-            // URL dibuka lewat penangan protokol Windows tanpa shell (aman dari injeksi perintah)
-            let a = arg.to_string();
-            let mut c = std::process::Command::new("rundll32");
-            c.args(["url.dll,FileProtocolHandler", &a]);
-            #[cfg(windows)]
-            {
-                use std::os::windows::process::CommandExt;
-                c.creation_flags(0x0800_0000);
-            }
-            let _ = c.spawn();
-            format!("dibuka: {arg}")
-        }
         "open" if arg.starts_with("https://www.youtube.com/results?search_query=") => {
             let q = urlencoding::decode(arg.trim_start_matches("https://www.youtube.com/results?search_query=")).map(|c| c.into_owned()).unwrap_or_default();
             crate::musik::catat(&q);
@@ -425,6 +412,19 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                 return format!("memutar di YouTube: {q}");
             }
             crate::musik::buka_url(arg);
+            format!("dibuka: {arg}")
+        }
+        "open" if arg.starts_with("https://") || arg.starts_with("http://") => {
+            // URL dibuka lewat penangan protokol Windows tanpa shell (aman dari injeksi perintah)
+            let a = arg.to_string();
+            let mut c = std::process::Command::new("rundll32");
+            c.args(["url.dll,FileProtocolHandler", &a]);
+            #[cfg(windows)]
+            {
+                use std::os::windows::process::CommandExt;
+                c.creation_flags(0x0800_0000);
+            }
+            let _ = c.spawn();
             format!("dibuka: {arg}")
         }
         "open" if !arg.contains(['/', '\\', ':', '.']) && !arg.is_empty() => {
