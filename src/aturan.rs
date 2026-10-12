@@ -90,17 +90,53 @@ pub fn layanan_tambah(arg: &str) -> String {
     }
 }
 
+#[derive(Clone, Copy, PartialEq)]
+enum Fase {
+    /// Pemicu berupa merek/situs (claude, tokopedia, spotify, "buka music ...", youtube): boleh mendahului semua aturan lokal.
+    Tinggi,
+    /// Pemicu umum (cuaca, kurs, agenda, tips, ...): hanya cadangan setelah aturan lokal dan pemahaman makna tidak mengenali kalimat,
+    /// supaya kemampuan lokal NOVA (cuaca, kurs, hitung, agenda, pengingat, buku) tidak terdorong ke pencarian web.
+    Rendah,
+}
+
+/// Entri bawaan yang pemicunya kata umum tetapi memang harus mendahului (sama seperti perilaku sebelumnya).
+const LAYANAN_UTAMA: &[&str] = &["lagu", "youtube", "video", "maps", "github", "google"];
+
+fn host(url: &str) -> String {
+    url.split("://").nth(1).unwrap_or(url).split('/').next().unwrap_or("").to_lowercase()
+}
+
+/// Kata/frasa pemicu dianggap merek bila salah satu token (≥3 huruf) muncul di nama situs tujuan.
+fn merek(pemicu: &str, host: &str) -> bool {
+    pemicu.split(|c: char| !c.is_alphanumeric()).any(|t| t.len() >= 3 && host.contains(t))
+}
+
+fn pertanyaan_info(l: &str) -> bool {
+    let awal = l.split_whitespace().next().unwrap_or("");
+    l.trim_end().ends_with('?') || ["apa", "siapa", "bagaimana", "gimana", "kenapa", "mengapa", "jelaskan", "apakah", "berapa", "kapan", "mengapa"].contains(&awal)
+}
+
 /// Layanan web: kalimat → URL pencarian, berdasarkan layanan.json. Dibuka di browser lewat alat `open`.
-fn layanan(l: &str) -> Option<String> {
+fn layanan(l: &str, fase: Fase) -> Option<String> {
     let cfg = crate::data::json("layanan.json", LAYANAN_BAWAAN);
     let teks = |v: &serde_json::Value| -> Vec<String> { v.as_array().map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_lowercase())).collect()).unwrap_or_default() };
+    if fase == Fase::Rendah && pertanyaan_info(l) {
+        return None; // pertanyaan pengetahuan dijawab dari otak (buku) atau model, bukan dilempar ke mesin pencari
+    }
     let abaikan = teks(&cfg["abaikan"]);
     let w: Vec<&str> = l.split(|c: char| !c.is_alphanumeric()).filter(|x| !x.is_empty()).collect();
     let has = |k: &str| w.contains(&k);
     let aksi = crate::kata::aksi(l);
     for e in cfg["layanan"].as_array()? {
+        let nama = e["nama"].as_str().unwrap_or("");
+        let h = host(e["url"].as_str().unwrap_or(""));
+        let utama = LAYANAN_UTAMA.contains(&nama) || e["prioritas"].as_str() == Some("tinggi");
         let (pemicu, awal, frasa) = (teks(&e["pemicu"]), teks(&e["pemicu_awal"]), teks(&e["pemicu_frasa"]));
-        let hit = pemicu.iter().any(|k| has(k)) || awal.iter().any(|k| l.starts_with(k.as_str())) || frasa.iter().any(|k| l.contains(k.as_str()));
+        let (mut hit_merek, mut hit_umum) = (false, false);
+        for k in pemicu.iter().filter(|k| has(k)).chain(awal.iter().filter(|k| l.starts_with(k.as_str()))).chain(frasa.iter().filter(|k| l.contains(k.as_str()))) {
+            if utama || merek(k, &h) { hit_merek = true } else { hit_umum = true }
+        }
+        let hit = if fase == Fase::Tinggi { hit_merek } else { hit_umum && !hit_merek };
         let (butuh_aksi, butuh_kata, tolak, buang) = (teks(&e["butuh_aksi"]), teks(&e["butuh_kata"]), teks(&e["tolak"]), teks(&e["buang"]));
         if !hit || (!butuh_aksi.is_empty() && !butuh_aksi.iter().any(|a| aksi.contains(a))) || (!butuh_kata.is_empty() && !butuh_kata.iter().any(|k| has(k))) || tolak.iter().any(|k| has(k)) {
             continue;
@@ -109,7 +145,7 @@ fn layanan(l: &str) -> Option<String> {
         if q.is_empty() {
             continue;
         }
-        let url = e["url"].as_str().filter(|u| u.starts_with("https://") || u.starts_with("http://") )?;
+        let url = e["url"].as_str().filter(|u| u.starts_with("https://") || u.starts_with("http://"))?;
         let q = match e["awalan"].as_str() {
             Some(a) if !a.is_empty() => format!("{a} {q}"),
             _ => q,
@@ -117,6 +153,12 @@ fn layanan(l: &str) -> Option<String> {
         return Some(url.replace("{q}", &urlencoding::encode(&q)));
     }
     None
+}
+
+/// Cadangan: layanan dengan pemicu umum (fase Rendah). Dipanggil perencana setelah aturan lokal dan pemahaman makna tidak cocok.
+pub fn layanan_cadangan(s: &str) -> Option<Call> {
+    let l = s.to_lowercase();
+    layanan(&l, Fase::Rendah).map(|u| Call { tool: "open".into(), arg: u })
 }
 
 /// Aturan ajaran Bos (dasbor Belajar) didahulukan, lalu aturan bawaan.
@@ -151,7 +193,7 @@ pub fn rule_dasar(s: &str) -> Option<Call> {
     if let Some(a) = crate::daya::dari_kalimat(&l) {
         return Some(Call { tool: "daya".into(), arg: a.into() });
     }
-    if let Some(u) = layanan(&l) {
+    if let Some(u) = layanan(&l, Fase::Tinggi) {
         return Some(Call { tool: "open".into(), arg: u });
     }
     if let Some((tool, arg)) = crate::perkakas::rule(s, &l) {

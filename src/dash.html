@@ -202,6 +202,7 @@ async function bedah(llm){const q=$("#aq").value.trim();if(!q)return;$("#atr").t
  $("#atr").innerHTML=row(1,"Kalimat dibersihkan",esc(r.norm),false)+row(2,"Aturan yang kamu ajarkan",cl(r.ajar),ok("aturan yang kamu"))+row(3,"Aturan bahasa bawaan",cl(r.aturan),ok("aturan bahasa"))
   +row(4,"Makna (embedding)",r.semantik?r.semantik.map(x=>esc(x[0])+" "+x[1]).join(" · ")+(r.semantik_jelas?" → cukup yakin: "+esc(r.semantik_jelas[0]):" → kurang yakin"):"belum tersedia",ok("pemahaman"))
   +row(5,"Tebakan ML",r.ml?esc(r.ml[0])+" "+Number(r.ml[1]).toFixed(2):"–",ok("tebakan"))
+  +row(5.5,"Layanan web cadangan",cl(r.cadangan),ok("layanan web"))
   +(r.llm?row(6,"Rencana Llama",r.llm.galat?esc(r.llm.galat):(r.llm.calls.map(cl).join("<br>")||"tanpa alat")+" — "+esc(r.llm.balasan||""),false):"")
   +`<div class="flag ${ok("tidak")?"":"ok"}" style="margin-top:10px">Diputuskan oleh: <b>${esc(r.keputusan)}</b>. Kalau hasilnya salah, ajarkan di bawah.</div>`;
  if(!$("#ap").value)$("#ap").value=r.norm.toLowerCase()}catch(e){$("#atr").textContent="Gagal membedah."}}

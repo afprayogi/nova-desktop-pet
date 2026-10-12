@@ -351,6 +351,7 @@ async fn bedah_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extra
     } else {
         serde_json::Value::Null
     };
+    let cad = crate::aturan::layanan_cadangan(&norm).map(|c| cj(&c));
     let keputusan = if ajar.is_some() {
         "aturan yang kamu ajarkan"
     } else if dasar.is_some() {
@@ -359,10 +360,12 @@ async fn bedah_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extra
         "pemahaman makna (embedding)"
     } else if ml.is_some() {
         "tebakan ML dari contoh"
+    } else if cad.is_some() {
+        "layanan web cadangan (layanan.json, pemicu umum)"
     } else {
         "tidak dikenali lokal: diserahkan ke model bahasa (Gemini, lalu Llama)"
     };
-    Ok(Json(json!({"norm": norm, "ajar": ajar, "aturan": dasar, "semantik": sem, "semantik_jelas": sem_jelas, "ml": ml, "llm": llm, "keputusan": keputusan})))
+    Ok(Json(json!({"norm": norm, "ajar": ajar, "aturan": dasar, "semantik": sem, "semantik_jelas": sem_jelas, "ml": ml, "cadangan": cad, "llm": llm, "keputusan": keputusan})))
 }
 
 async fn ajar_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {

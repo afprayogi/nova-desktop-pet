@@ -46,6 +46,12 @@ pub struct Alat {
     pub nama: String,
     pub bantuan: String,
     pub deskripsi: String,
+    /// Boleh dijalankan `<nama> <bantuan>`: hanya alat bawaan terverifikasi, atau entri dengan `"aman": true` di cli.json.
+    pub aman: bool,
+}
+
+fn bawaan_aman() -> Vec<String> {
+    serde_json::from_str::<Vec<serde_json::Value>>(CLI_BAWAAN).unwrap_or_default().iter().filter_map(|x| x["nama"].as_str().map(String::from)).collect()
 }
 
 pub fn daftar() -> Vec<Alat> {
@@ -56,7 +62,8 @@ pub fn daftar() -> Vec<Alat> {
                 .filter_map(|x| {
                     let nama = clean_word(x["nama"].as_str()?)?;
                     let f = x["bantuan"].as_str().unwrap_or("--help");
-                    Some(Alat { nama, bantuan: if FLAG_AMAN.contains(&f) { f.to_string() } else { "--help".into() }, deskripsi: x["deskripsi"].as_str().unwrap_or("").to_string() })
+                    let aman = x["aman"].as_bool().unwrap_or_else(|| bawaan_aman().contains(&nama));
+                    Some(Alat { nama, bantuan: if FLAG_AMAN.contains(&f) { f.to_string() } else { "--help".into() }, deskripsi: x["deskripsi"].as_str().unwrap_or("").to_string(), aman })
                 })
                 .collect()
         })
@@ -117,27 +124,33 @@ pub const SLASH: &[(&str, &str)] = &[
     ("/pasang", "pasang model Ollama"),
 ];
 
-/// Alat CLI di daftar putih yang benar-benar ada di PATH laptop ini.
+/// Alat di cli.json yang benar-benar ada di PATH laptop ini (PATH dipindai sekali; tidak menjalankan proses apa pun).
 pub fn terpasang() -> Vec<String> {
-    nama_alat()
-        .into_iter()
-        .filter(|t| {
-            let mut c = Command::new("where");
-            c.arg(t).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
-            #[cfg(windows)]
-            {
-                use std::os::windows::process::CommandExt;
-                c.creation_flags(0x0800_0000);
+    let mut ada = std::collections::HashSet::new();
+    for dir in std::env::var("PATH").unwrap_or_default().split(';').filter(|d| !d.is_empty()) {
+        if let Ok(rd) = std::fs::read_dir(dir) {
+            for e in rd.flatten() {
+                let p = e.path();
+                if p.extension().and_then(|x| x.to_str()).is_some_and(|x| ["exe", "cmd", "bat", "com"].contains(&x.to_lowercase().as_str())) {
+                    if let Some(st) = p.file_stem().and_then(|x| x.to_str()) {
+                        ada.insert(st.to_lowercase());
+                    }
+                }
             }
-            c.status().map(|s| s.success()).unwrap_or(false)
-        })
-        .collect()
+        }
+    }
+    // perintah bawaan cmd (dir) selalu ada
+    ada.insert("dir".into());
+    nama_alat().into_iter().filter(|n| ada.contains(n)).collect()
 }
 
-/// Baca `--help` semua alat CLI terpasang (paralel) dan simpan ke pengetahuan agar NOVA tahu cara memakainya.
+/// Masukkan alat CLI terpasang ke pengetahuan. Hanya alat bertanda aman yang dijalankan (`--help`, paralel, maks 40);
+/// sisanya dicatat dari deskripsi di cli.json tanpa menjalankan apa pun.
 pub fn belajar_semua() -> String {
     let ada = terpasang();
-    let hs: Vec<_> = ada.iter().map(|t| { let t = t.to_string(); std::thread::spawn(move || (t.clone(), help(&t))) }).collect();
+    let semua = daftar();
+    let (aman, lain): (Vec<&String>, Vec<&String>) = ada.iter().partition(|n| semua.iter().any(|a| &a.nama == *n && a.aman));
+    let hs: Vec<_> = aman.iter().take(40).map(|t| { let t = t.to_string(); std::thread::spawn(move || (t.clone(), help(&t))) }).collect();
     let (mut ok, mut n) = (0, 0);
     for h in hs {
         if let Ok((t, teks)) = h.join() {
@@ -147,7 +160,11 @@ pub fn belajar_semua() -> String {
             }
         }
     }
-    format!("{} alat CLI terpasang ({}); {ok} dipelajari ke pengetahuan ({n} potongan). Tanya mis. 'cara pakai git stash'.", ada.len(), ada.join(", "))
+    let catatan: String = lain.iter().filter_map(|t| semua.iter().find(|a| &a.nama == *t)).filter(|a| !a.deskripsi.is_empty()).map(|a| format!("{}: {}", a.nama, a.deskripsi)).collect::<Vec<_>>().join("; ");
+    if !catatan.is_empty() {
+        n += crate::teknik::ingest("cli:daftar", &format!("Alat CLI terpasang di laptop ini (hanya deskripsi, tidak dijalankan): {catatan}"));
+    }
+    format!("{} alat CLI terpasang; {ok} dibaca bantuannya (aman), {} hanya dicatat deskripsinya; {n} potongan masuk pengetahuan.", ada.len(), lain.len())
 }
 
 pub fn is_tool(w: &str) -> bool {
@@ -182,6 +199,9 @@ pub fn help(arg: &str) -> String {
     let Some(entri) = daftar().into_iter().find(|a| a.nama == *tool) else {
         return format!("'{tool}' tidak ada di daftar alat CLI yang kuizinkan ({}). Tambahkan lewat /cli tambah atau cli.json.", nama_alat().join(", "));
     };
+    if !entri.aman {
+        return format!("📟 {}: {}. (Bantuannya tidak dijalankan otomatis karena belum ditandai aman; tambahkan \"aman\": true pada entri ini di cli.json bila yakin alat ini menampilkan bantuan untuk {}.)", entri.nama, if entri.deskripsi.is_empty() { "tanpa deskripsi" } else { &entri.deskripsi }, entri.bantuan);
+    }
     let flag = entri.bantuan.as_str();
     let mut c = Command::new(if tool == "dir" { "cmd" } else { tool.as_str() });
     if tool == "dir" {
@@ -196,11 +216,23 @@ pub fn help(arg: &str) -> String {
         c.creation_flags(0x0800_0000);
     }
     let Ok(child) = c.spawn() else { return format!("'{tool}' tidak terpasang di laptop ini (atau tidak ada di PATH).") };
+    let pid = child.id();
     let (tx, rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {
         let _ = tx.send(child.wait_with_output());
     });
-    let Ok(Ok(o)) = rx.recv_timeout(Duration::from_secs(8)) else { return format!("'{tool}' tidak merespons (batas 8 detik).") };
+    let Ok(Ok(o)) = rx.recv_timeout(Duration::from_secs(8)) else {
+        // jangan biarkan proses yang tidak merespons tetap hidup
+        let mut k = Command::new("taskkill");
+        k.args(["/F", "/T", "/PID", &pid.to_string()]).stdout(Stdio::null()).stderr(Stdio::null());
+        #[cfg(windows)]
+        {
+            use std::os::windows::process::CommandExt;
+            k.creation_flags(0x0800_0000);
+        }
+        let _ = k.status();
+        return format!("'{tool}' tidak merespons (batas 8 detik); proses dihentikan.");
+    };
     let text = String::from_utf8_lossy(if o.stdout.is_empty() { &o.stderr } else { &o.stdout }).to_string();
     let lines: Vec<&str> = text.lines().map(|l| l.trim_end()).filter(|l| !l.trim().is_empty()).take(28).collect();
     if lines.is_empty() {

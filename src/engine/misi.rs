@@ -23,6 +23,13 @@ impl Engine {
                 }
             }
         }
+        // Layanan web berpemicu umum (layanan.json): hanya bila tidak ada kemampuan lokal yang cocok (atau hanya aturan "cari/buka" yang lemah).
+        if offline.as_ref().is_none_or(|p| p.len() == 1 && ["open", "cari"].contains(&p[0].tool.as_str())) {
+            if let Some(c) = crate::aturan::layanan_cadangan(&goal) {
+                offline = Some(vec![c]);
+                from_ml = false;
+            }
+        }
         if offline.is_none() && !crate::gemini::available() {
             use crate::niat::Intent;
             match crate::niat::classify(&self.http, &goal).await {
