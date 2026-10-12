@@ -137,6 +137,18 @@ pub async fn berpikir(http: &reqwest::Client, masalah: &str) -> String {
 }
 
 pub async fn terjemah(http: &reqwest::Client, text: &str) -> String {
+    // Penerjemah daring dulu (cepat, tanpa model); model bahasa hanya cadangan bila layanan tidak terjangkau.
+    let (mut isi, tl) = crate::terjemah::pisah_target(text);
+    for v in ["terjemahkan", "terjemah", "translate", "artikan"] {
+        if isi.to_lowercase().starts_with(v) {
+            isi = isi[v.len()..].trim_start_matches([':', ' ']).to_string();
+            break;
+        }
+    }
+    if let Ok((t, asal, tujuan)) = crate::terjemah::terjemahkan(http, &isi, tl).await {
+        return format!("🌐 {t}
+({asal} → {tujuan})");
+    }
     let sys = "Kamu penerjemah profesional. Terjemahkan teks pengguna ke bahasa yang diminta (bila tidak disebut: ke Inggris jika teks berbahasa Indonesia, ke Indonesia jika bukan). Balas HANYA hasil terjemahan.";
     match llm(http, sys, text).await {
         Ok(t) => format!("🌐 {t}"),

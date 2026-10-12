@@ -93,6 +93,7 @@ mod solusi;
 mod teknik;
 mod tugas;
 #[cfg(windows)]
+mod terjemah;
 mod tray;
 
 /// Port API lokal (hanya 127.0.0.1) antara proses tray dan peliharaan.
