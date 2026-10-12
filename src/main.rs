@@ -77,6 +77,7 @@ mod omniroute;
 mod ekstra;
 mod buddy;
 mod lokal;
+mod pdfteks;
 mod persona;
 mod belajar;
 mod jurnal;

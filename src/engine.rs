@@ -653,7 +653,10 @@ Gunakan Bahasa Indonesia, singkat, jangan mengarang hasil. Pakai konteks di bawa
         let kb = research::truncate(&crate::teknik::tanya(&goal), 700);
         let sys = format!("{}\nJawab dalam Bahasa Indonesia, maksimal 4 kalimat, langsung ke inti. Catatan referensi berikut hanya dipakai bila relevan dengan pertanyaan, abaikan bila tidak:\n{kb}", Self::persona_sys(agent, &goal));
         match self.ask(agent, sys, goal.clone(), 260).await {
-            Some(t) => self.agent_say(agent, &research::truncate(&t, 1200)),
+            Some(t) => {
+                crate::teknik::simpan_jawaban("llama", &goal, &t);
+                self.agent_say(agent, &research::truncate(&t, 1200))
+            }
             None => {
                 self.tx.sys("🧠 Model lokal tidak merespons; kujawab dari ingatan.");
                 let r = crate::teknik::tanya(&goal);

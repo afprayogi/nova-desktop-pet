@@ -198,7 +198,8 @@ fn new_books() -> Vec<std::path::PathBuf> {
                 continue;
             }
             let mt = e.metadata().and_then(|m| m.modified()).ok().and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok()).map(|d| d.as_secs()).unwrap_or(0);
-            let key = format!("{}|{mt}", p.display());
+            // "v2": buku yang dulu gagal dibaca (dan terlanjur dianggap sudah dilihat) dicoba lagi dengan pembaca baru.
+            let key = format!("{}|{mt}|v2", p.display());
             if c.execute("INSERT OR IGNORE INTO buku_seen VALUES(?1)", [&key]).map(|n| n == 1).unwrap_or(false) {
                 out.push(p);
             }
@@ -215,6 +216,11 @@ pub async fn process_new(tx: &crate::engine::Tx) {
         tx.sys(format!("📚 Buku baru terdeteksi: {name}. Menyusun kurikulum..."));
         let path = b.to_string_lossy().to_string();
         let plan = tokio::task::spawn_blocking(move || run(&path)).await.unwrap_or_else(|_| "gagal membuat kurikulum".into());
+        if plan.starts_with("gagal") {
+            // Jangan pura-pura berhasil: beri tahu alasannya dan cara mencoba manual.
+            tx.sys(format!("⚠ Buku '{name}' belum bisa dipelajari: {plan}. Coba manual: pelajari <path buku>."));
+            continue;
+        }
         crate::notify::toast("NOVA - kurikulum baru", &format!("Kurikulum untuk '{name}' sudah siap."));
         crate::adegan::play(tx, vec![(3, format!("📚 Buku baru: {name}. Kurikulumnya sudah kusiapkan:")), (3, plan.chars().take(1800).collect())]);
     }
@@ -226,7 +232,7 @@ pub fn run(arg: &str) -> String {
     let daily = daily.unwrap_or(60);
     let start = (Local::now() + Duration::days(1)).date_naive();
     if !path.is_empty() {
-        let text = match crate::alat::read_doc(&path) {
+        let text = match crate::alat::read_doc_max(&path, 3_000_000) {
             Ok(t) => t,
             Err(e) => return format!("gagal membaca buku: {e}"),
         };

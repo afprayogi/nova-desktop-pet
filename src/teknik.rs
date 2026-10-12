@@ -122,12 +122,12 @@ pub fn tanya(q: &str) -> String {
 
 /// Pelajari dokumen (PDF/txt/md): dipotong dan disimpan ke disk, tidak ditahan di RAM.
 pub fn pelajari(path: &str) -> String {
-    let text = match crate::alat::read_doc(path) {
+    let text = match crate::alat::read_doc_max(path, 6_000_000) {
         Ok(t) => t,
         Err(e) => return format!("gagal: {e}"),
     };
     let src = std::path::Path::new(path.trim()).file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "dokumen".into());
-    let n = ingest(&src, &text);
+    let n = ingest_max(&src, &text, 20_000);
     format!("Dipelajari: {n} potongan dari '{src}'. Tanyakan lewat misi: tanya <pertanyaan>")
 }
 
@@ -139,13 +139,18 @@ pub fn pecah(text: &str) -> Vec<&str> {
 /// Potong teks per `pecah` dan simpan ke disk.
 /// Mengganti catatan lama dengan label `src` yang sama. Mengembalikan jumlah potongan.
 pub fn ingest(src: &str, text: &str) -> usize {
+    ingest_max(src, text, 3000)
+}
+
+/// Seperti `ingest` dengan batas jumlah potongan sendiri (buku tebal ≈ ribuan potongan).
+pub fn ingest_max(src: &str, text: &str, maks: usize) -> usize {
     let Ok(mut c) = open() else { return 0 };
     let Ok(tx) = c.transaction() else { return 0 };
     let _ = tx.execute("DELETE FROM kb WHERE src=?1", [src]);
     let mut n = 0usize;
     for body in pecah(text) {
         let body = body.trim();
-        if body.len() > 40 && n < 3000 {
+        if body.len() > 40 && n < maks {
             let title: String = body.trim_start_matches(|c: char| c == '#' || c.is_whitespace()).lines().next().unwrap_or("").chars().take(50).collect();
             let _ = tx.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,?3)", (title, body, src));
             n += 1;
@@ -331,5 +336,43 @@ mod pecah_tests {
         let v = super::pecah(&t);
         assert!(v.len() > 2 && v.iter().all(|c| c.len() <= 800));
         assert!(v.iter().all(|c| c.trim_end().ends_with('.')));
+    }
+}
+
+/// Simpan jawaban Gemini/Llama atau hasil pencarian web ke otak (kb + graf) agar bisa dipakai lagi tanpa memanggil model.
+/// Hanya jawaban atas pertanyaan (atau hasil web) yang cukup panjang; ditandai belum diverifikasi; maks 400 per sumber.
+pub fn simpan_jawaban(kind: &str, goal: &str, ans: &str) {
+    let (g, a) = (goal.trim(), ans.trim());
+    if a.chars().count() < 120 || g.chars().count() < 8 || a.starts_with("gagal") {
+        return;
+    }
+    let l = g.to_lowercase();
+    let tanya = l.contains('?') || ["apa", "siapa", "bagaimana", "kenapa", "mengapa", "kapan", "berapa", "jelaskan", "apakah", "cara", "bedanya", "rumus"].iter().any(|k| l.starts_with(k)) && !l.contains("kabar");
+    if kind != "web" && !tanya {
+        return;
+    }
+    let src = format!("belajar-{kind}");
+    let judul: String = g.chars().take(80).collect();
+    let isi: String = format!("Pertanyaan: {g}\nJawaban ({kind}, belum diverifikasi): {}", a.chars().take(1500).collect::<String>());
+    if let Ok(c) = open() {
+        let _ = c.execute("DELETE FROM kb WHERE src=?1 AND title=?2", (&src, &judul));
+        let _ = c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,?3)", (&judul, &isi, &src));
+        let _ = c.execute("DELETE FROM kb WHERE src=?1 AND rowid NOT IN (SELECT rowid FROM kb WHERE src=?1 ORDER BY rowid DESC LIMIT 400)", [&src]);
+    }
+    crate::ingat::clear_cache();
+    crate::graf::ingest("jawaban", &format!("{g} {a}"));
+}
+
+#[cfg(test)]
+mod simpan_tests {
+    #[test]
+    fn stores_answers_only_when_useful() {
+        let panjang = "Kabel NYY 4x16 mm2 memiliki kemampuan hantar arus sekitar 76 ampere pada pemasangan dalam tanah dan cocok untuk feeder panel utama. ".repeat(2);
+        super::simpan_jawaban("gemini", "berapa kuat hantar arus kabel nyy 4x16?", &panjang);
+        super::simpan_jawaban("gemini", "halo apa kabar kamu hari ini", &panjang); // bukan pertanyaan
+        super::simpan_jawaban("web", "x", &panjang); // terlalu pendek
+        let c = super::open().unwrap();
+        let n: i64 = c.query_row("SELECT COUNT(*) FROM kb WHERE src='belajar-gemini'", [], |r| r.get(0)).unwrap();
+        assert_eq!(n, 1);
     }
 }

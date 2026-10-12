@@ -504,22 +504,51 @@ pub fn parse_json(t: &str) -> Option<serde_json::Value> {
     serde_json::from_str(t.get(a..=b)?).ok()
 }
 
-/// Teks dari PDF (atau file teks biasa). Dibatasi agar RAM kecil aman.
+/// Teks dari PDF (atau file teks biasa), maks 300.000 karakter (aman untuk RAM kecil).
 pub(crate) fn read_doc(path: &str) -> Result<String, String> {
+    read_doc_max(path, 300_000)
+}
+
+/// PDF per halaman lewat lopdf: halaman yang gagal dilewati (PDF tebal/aneh sering membuat pdf-extract panik di satu halaman).
+fn pdf_per_halaman(path: &str, max: usize) -> Result<String, String> {
+    // Pengurai toleran sendiri dulu (peta ToUnicode rusak tidak menggagalkan halaman); lopdf bawaan sebagai cadangan.
+    if let Ok(t) = crate::pdfteks::dokumen(path, max) {
+        if t.trim().len() > 200 {
+            return Ok(t);
+        }
+    }
+    let doc = lopdf::Document::load(path).map_err(|e| e.to_string())?;
+    let mut out = String::new();
+    for n in doc.get_pages().keys().copied().collect::<Vec<u32>>() {
+        if out.chars().count() >= max {
+            break;
+        }
+        if let Ok(Ok(t)) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| doc.extract_text(&[n]))) {
+            out.push_str(t.trim());
+            out.push_str("\n\n");
+        }
+    }
+    Ok(out)
+}
+
+/// Seperti `read_doc` tetapi dengan batas karakter sendiri (buku tebal perlu jauh lebih dari 300.000).
+pub(crate) fn read_doc_max(path: &str, max: usize) -> Result<String, String> {
     let path = path.trim();
     let lower = path.to_ascii_lowercase();
     let text = if lower.ends_with(".pdf") {
         let p = path.to_string();
-        std::panic::catch_unwind(move || pdf_extract::extract_text(&p))
-            .map_err(|_| "PDF tidak bisa diurai".to_string())?
-            .map_err(|e| e.to_string())?
+        let utama = std::panic::catch_unwind(move || pdf_extract::extract_text(&p)).ok().and_then(|r| r.ok()).filter(|t| t.trim().len() > 200);
+        match utama {
+            Some(t) => t,
+            None => pdf_per_halaman(path, max)?,
+        }
     } else {
         String::from_utf8_lossy(&std::fs::read(path).map_err(|e| e.to_string())?).into_owned()
     };
     if text.trim().is_empty() {
         return Err("tidak ada teks (PDF hasil scan/gambar butuh OCR)".into());
     }
-    Ok(text.chars().take(300_000).collect())
+    Ok(text.chars().take(max).collect())
 }
 
 const STOP: &[&str] = &[

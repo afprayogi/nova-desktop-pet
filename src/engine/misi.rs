@@ -60,6 +60,7 @@ impl Engine {
                     crate::ingat::episode("misi", &goal);
                     let _ = self.mem.add_message("BOS", &goal);
                     let txt = research::truncate(&p.reply, 1500);
+                    crate::teknik::simpan_jawaban("gemini", &goal, &p.reply);
                     return self.agent_say(0, &if p.cached { format!("💾 {txt}") } else { txt });
                 }
                 Ok(_) => {}
