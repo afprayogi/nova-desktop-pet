@@ -25,6 +25,8 @@ use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
 
 /// Dinaikkan oleh menu tray agar peliharaan membuka bilah obrolan.
 pub static OPEN_CHAT: AtomicU64 = AtomicU64::new(0);
+/// Naik tiap kali Bos mengetik "obrolan": peliharaan membuka layar obrolan besar.
+pub static OPEN_BIG: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Serialize)]
 struct ChatDto {
@@ -142,6 +144,7 @@ struct PetDto {
     approval: Option<Approval>,
     thinking: bool,
     open_chat: u64,
+    open_big: u64,
     emo: String,
     emo_level: f32,
     /// Detik sejak emosi terdeteksi (-1 = tidak ada).
@@ -235,6 +238,7 @@ async fn pet(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<Pe
         approval: g.approval.clone(),
         thinking: g.thinking,
         open_chat: OPEN_CHAT.load(Ordering::Relaxed),
+        open_big: OPEN_BIG.load(Ordering::Relaxed),
         emo: g.emo.clone(),
         emo_level: g.emo_level,
         emo_age: g.emo_at.map(|t| t.elapsed().as_secs_f32()).unwrap_or(-1.0),

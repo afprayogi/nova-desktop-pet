@@ -50,6 +50,8 @@ struct Poll {
     approval: Option<Appr>,
     thinking: bool,
     open_chat: u64,
+    #[serde(default)]
+    open_big: u64,
     emo: String,
     emo_age: f32,
     feedback: bool,
@@ -124,6 +126,7 @@ struct Pet {
     input: String,
     focus_next: bool,
     open_seen: u64,
+    big_seen: Option<u64>,
     wink_until: Option<Instant>,
     bec: Option<BecRun>,
     bec_rx: Receiver<Option<bec::TestSet>>,
@@ -285,6 +288,7 @@ impl Pet {
             input: String::new(),
             focus_next: false,
             open_seen: 0,
+            big_seen: None,
             wink_until: None,
             bec: None,
             bec_rx,
@@ -613,6 +617,12 @@ impl eframe::App for Pet {
                     self.ever = true;
                     self.fails = 0;
                     self.polled_at = Instant::now();
+                    // "obrolan" diketik: buka layar obrolan besar (nilai awal tidak dihitung agar tidak terbuka saat start).
+                    match self.big_seen {
+                        Some(b) if b != p.open_big && !self.chat_open => self.set_chat(ctx, true),
+                        _ => {}
+                    }
+                    self.big_seen = Some(p.open_big);
                     if p.open_chat != self.open_seen {
                         if self.open_seen != 0 || p.open_chat > 0 {
                             self.focus_next = true;

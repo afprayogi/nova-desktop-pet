@@ -14,6 +14,11 @@ impl Engine {
             }
             return self.slash(rest).await;
         }
+        // Jalan pintas: ketik "obrolan"/"chat"/"buka obrolan" langsung membuka layar obrolan besar.
+        if ["obrolan", "chat", "buka obrolan", "buka chat", "obrolan besar", "layar obrolan", "ngobrol"].contains(&t.trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase().as_str()) {
+            crate::api::OPEN_BIG.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            return;
+        }
         self.tx.send(Event::Chat(ChatLine { who: Who::Boss, text: t.clone(), media: Vec::new() }));
         crate::bandit::engaged(); // Bos merespons: hadiah untuk tindakan proaktif barusan
         crate::graf::ingest("chat", &t);
