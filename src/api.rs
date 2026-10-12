@@ -391,6 +391,22 @@ async fn ajar_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Js
 }
 
 /// Daftar alat berskema (bentuk MCP `tools/list`).
+async fn putusan_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    Ok(Json(serde_json::to_value(crate::putusan::daftar()).unwrap_or_default()))
+}
+
+/// `{i, aksi: setuju|tolak|hapus}` atas putusan tersimpan.
+async fn putusan_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    let ok = crate::putusan::aksi(r["i"].as_u64().unwrap_or(u64::MAX) as usize, r["aksi"].as_str().unwrap_or(""));
+    Ok(Json(serde_json::json!({"ok": ok})))
+}
+
 async fn alat_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
     if !authorized(&headers, &s) {
         return Err(StatusCode::UNAUTHORIZED);
@@ -562,7 +578,7 @@ pub async fn serve(cfg: Config, port: u16) -> anyhow::Result<()> {
             s2.snap.lock().unwrap_or_else(|e| e.into_inner()).apply(&e);
         }
     });
-    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/alat", get(alat_get)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
+    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/alat", get(alat_get)).route("/api/putusan", get(putusan_get).post(putusan_post)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
     let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
     axum::serve(listener, app).await?;
     Ok(())

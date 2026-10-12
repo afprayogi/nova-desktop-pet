@@ -64,6 +64,7 @@ mod niat;
 mod otak;
 mod paket;
 mod peramban;
+mod putusan;
 mod rawat;
 mod registry;
 mod riwayat;

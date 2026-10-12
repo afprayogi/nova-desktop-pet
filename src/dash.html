@@ -85,6 +85,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;p
   <div class="lead">Pola boleh memakai <code>*</code> untuk bagian yang berubah-ubah, dan <code>{*}</code> di argumen untuk memakainya lagi. Contoh: pola <code>buka music *</code>, alat <code>open</code>, argumen <code>https://www.youtube.com/results?search_query=lagu {*}</code>.</div>
   <div style="display:grid;grid-template-columns:1fr 160px 1.4fr auto;gap:8px;margin-top:8px;max-width:980px"><input id="ap" placeholder="pola kalimat" aria-label="Pola kalimat"><select id="aa" aria-label="Alat" style="background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:3px"></select><input id="ag" placeholder="argumen" aria-label="Argumen"><button id="asv">Simpan</button></div>
   <div class="lead" id="amsg"></div>
+  <h3>Keputusan yang diverifikasi model</h3><div class="lead">NOVA menguji tebakan lokalnya dengan Gemini/Llama. Sepakat = terverifikasi; dua kali sepakat atau kamu setujui = jadi aturan. Yang salah, tolak.</div><div id="plist" class="lead">Belum ada.</div>
   <h3>Aturan yang sudah diajarkan</h3><div id="alist" class="lead">Belum ada.</div>
 </section>
 
@@ -213,6 +214,11 @@ $("#arun").onclick=async()=>{const q=$("#aq").value.trim();if(!q)return;$("#aout
 $("#asv").onclick=async()=>{const pola=$("#ap").value.trim(),alat=$("#aa").value,arg=$("#ag").value;if(!pola)return;
  const r=await (await fetch("/api/ajar",{method:"POST",headers:{...H.headers,"content-type":"application/json"},body:JSON.stringify({pola,alat,arg})})).json();$("#amsg").textContent=r.pesan||"";if(r.ok){ajarMuat();if($("#aq").value)bedah(false)}};
 document.querySelector('[data-s="ajar"]').addEventListener("click",ajarMuat);ajarMuat();
+async function putusanMuat(){try{const r=await (await fetch("/api/putusan",H)).json();
+ $("#plist").innerHTML=r.length?"<table><tr><th>Kalimat</th><th>Alat</th><th>Status</th><th>Sumber</th><th>x</th><th></th></tr>"+r.map((e,i)=>`<tr><td>${esc(e.kalimat)}</td><td>${esc(e.alat)} ${esc(e.arg.slice(0,40))}</td><td>${esc(e.status)}</td><td>${esc(e.sumber)}</td><td>${e.hitung}</td><td><button data-p="setuju" data-i="${i}">Setuju</button> <button data-p="tolak" data-i="${i}">Tolak</button> <button data-p="hapus" data-i="${i}">Hapus</button></td></tr>`).reverse().join("")+"</table>":"Belum ada.";
+ $("#plist").querySelectorAll("[data-p]").forEach(b=>b.onclick=async()=>{await fetch("/api/putusan",{method:"POST",headers:{...H.headers,"content-type":"application/json"},body:JSON.stringify({i:+b.dataset.i,aksi:b.dataset.p})});putusanMuat();ajarMuat()})}catch(e){}}
+document.querySelector('[data-s="ajar"]').addEventListener("click",putusanMuat);
+
 load();setInterval(load,5000);addEventListener("resize",load);
 {const h=(location.hash||"").slice(1);show(["ringkas","otak","ajar","net","pc"].includes(h)?h:"ringkas")}
 fetch("/api/otak",H).then(r=>r.json()).then(r=>$("#n2").textContent=r.tingkat+"%").catch(()=>{});

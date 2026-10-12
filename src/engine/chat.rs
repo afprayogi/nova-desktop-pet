@@ -113,6 +113,10 @@ impl Engine {
         if let Some(cmd) = crate::seret::resolve(&t) {
             return self.start_mission(cmd).await;
         }
+        if let Some((goal, pesan)) = crate::putusan::jawab(&t) {
+            self.tx.sys(pesan);
+            return self.start_mission(goal).await;
+        }
         // Penilaian tebakan ML terakhir: "Salah"/"bukan itu" -> catat sebagai negatif lalu coba lagi (lewat Gemini bila ada).
         if let Some((q, l)) = self.last_ml.clone() {
             let w = low.trim_matches(|c: char| !c.is_alphanumeric() && c != ' ');
@@ -127,6 +131,10 @@ impl Engine {
                 crate::ml::learn(&l, &q);
                 return self.tx.sys("🧠 Terima kasih — kujadikan contoh belajar.");
             }
+        }
+        if let Some(goal) = crate::putusan::koreksi(&t) {
+            self.tx.sys("🧠 Dicatat: tebakan tadi salah. Kutanyakan ke model dan kuingat jawabannya…");
+            return self.start_mission(goal).await;
         }
         for k in ["diskusikan", "diskusi", "debat", "bahas bareng", "bahas bersama", "menurut kalian", "rapat tim"] {
             if low.starts_with(k) || low.contains(&format!(" {k} ")) || low.ends_with(&format!(" {k}")) {

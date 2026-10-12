@@ -69,7 +69,8 @@ ps            : daftar proses
 fetch <url>   : ambil teks halaman web
 shell <cmd>   : jalankan perintah shell (butuh persetujuan Bos)
 write <path>  : tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)
-open <target> : buka URL/file/aplikasi (butuh persetujuan Bos)cariisi <berkas> :: <pertanyaan>: potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)
+open <target> : buka URL/file/aplikasi (butuh persetujuan Bos)
+cariisi <berkas> :: <pertanyaan>: potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)
 github <kata>   : cari repositori GitHub (bintang, bahasa, lisensi)
 tunggu <detik>  : jeda 1-30 detik di antara langkah
 kompres <folder|berkas>: buat zip di sebelahnya (butuh persetujuan)

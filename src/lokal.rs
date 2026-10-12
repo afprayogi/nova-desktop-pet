@@ -172,6 +172,11 @@ async fn plan_one(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat
         msgs.push(json!({"role": "user", "content": u}));
         msgs.push(json!({"role": "assistant", "content": a}));
     }
+    // Guru lokal: keputusan yang sudah terverifikasi/dikonfirmasi Bos dan mirip kalimat ini menjadi contoh tambahan.
+    for (k, alat, arg) in crate::putusan::contoh(goal, 4) {
+        msgs.push(json!({"role": "user", "content": k}));
+        msgs.push(json!({"role": "assistant", "content": json!({"calls": [{"tool": alat, "arg": arg}], "reply": "Siap, Bos."}).to_string()}));
+    }
     msgs.push(json!({"role": "user", "content": goal}));
     // Koreksi-diri: bila keluaran bukan JSON valid, kirim galatnya kembali ke model sekali lagi.
     let mut j: Option<Value> = None;

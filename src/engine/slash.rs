@@ -165,6 +165,15 @@ impl Engine {
                 let r = if let Some(sisa) = arg.strip_prefix("tambah ") { crate::aturan::layanan_tambah(sisa) } else { format!("Layanan web: {}. Tambah: /layanan tambah <nama> <kata1,kata2> <url dengan {{q}}>, atau edit layanan.json.", crate::aturan::layanan_daftar().join(", ")) };
                 self.agent_say(0, &r)
             }
+            "putusan" => {
+                let d = crate::putusan::daftar();
+                let r = if d.is_empty() {
+                    "Belum ada putusan. NOVA menyimpan hasil verifikasi model di sini; lihat dan setujui di dasbor → Belajar.".to_string()
+                } else {
+                    format!("📚 {} putusan tersimpan (terverifikasi {}, ditolak {}):\n{}", d.len(), d.iter().filter(|e| e.status == "terverifikasi" || e.status == "dikonfirmasi").count(), d.iter().filter(|e| e.status == "ditolak").count(), d.iter().rev().take(8).map(|e| format!("• \"{}\" → {} {} [{}]", e.kalimat, e.alat, e.arg.chars().take(30).collect::<String>(), e.status)).collect::<Vec<_>>().join("\n"))
+                };
+                self.agent_say(0, &r)
+            }
             "wikipedia" | "wiki" => {
                 let r = if arg.to_lowercase().starts_with("isi") {
                     let n = arg.split_whitespace().nth(1).and_then(|x| x.parse().ok()).unwrap_or(10usize).clamp(1, 40);

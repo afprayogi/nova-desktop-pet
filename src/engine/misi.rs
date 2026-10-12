@@ -2,22 +2,37 @@
 use super::*;
 
 impl Engine {
+    /// Verifikasi tebakan lokal dengan rencana model. True bila beda dan Bos ditanya (misi berhenti menunggu jawaban).
+    async fn bandingkan(&mut self, goal: &str, a: &Option<Vec<Call>>, b: &[Call], sumber: &str) -> bool {
+        let a1 = a.as_deref().and_then(|v| if let [x] = v { Some(x) } else { None });
+        let crate::putusan::Nilai::Beda(x, y) = crate::putusan::nilai(goal, a1, b, sumber) else { return false };
+        let o = crate::putusan::tunggu(goal, &x, &y);
+        self.agent_say(0, &format!("Aku ragu membaca \"{goal}\" — {} vs {}. Pilih yang benar supaya kuingat dan tidak salah lagi.", o[0], o[1]));
+        self.tx.send(Event::Ask { question: "Maksudmu yang mana?".into(), options: o });
+        self.running = false;
+        self.tx.send(Event::Running(false));
+        true
+    }
+
     pub(super) async fn start_mission(&mut self, goal: String) {
         let w = goal.trim().trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase();
         if ["ya", "iya", "ok", "oke", "siap", "sip", "nanti", "tidak", "enggak", "gak", "y", "n"].contains(&w.as_str()) {
             return self.agent_say(0, "Oke, Bos 👍 Ada yang mau kubantu?");
         }
-        let mut offline = alat::plan_offline(&goal);
+        // Putusan tersimpan (kasus.json / terverifikasi / dikonfirmasi) didahulukan; koreksi Bos memaksa kalimat ditanyakan ke model.
+        let paksa = crate::putusan::ambil_paksa(&goal);
+        let tersimpan = if paksa { None } else { crate::putusan::cari(&goal) };
+        let mut offline = if paksa { None } else { tersimpan.clone().map(|c| vec![c]).or_else(|| alat::plan_offline(&goal)) };
         let mut g_failed = false;
         let only_tanya = offline.as_ref().is_some_and(|p| p.len() == 1 && p[0].tool == "tanya");
-        let mut from_ml = alat::FROM_ML.load(std::sync::atomic::Ordering::Relaxed);
+        let mut from_ml = tersimpan.is_none() && !paksa && alat::FROM_ML.load(std::sync::atomic::Ordering::Relaxed);
         // Pemahaman semantik (embedding): niat aksi yang jelas dipakai langsung, tanpa panggilan perencana yang lebih mahal.
-        if offline.is_none() || only_tanya || from_ml {
-            if let Some((label, _)) = crate::semantik::classify(&self.http, &goal).await {
+        if !paksa && (offline.is_none() || only_tanya || from_ml) {
+            if let Some((label, skor)) = crate::semantik::classify(&self.http, &goal).await {
                 if !["tanya", "ngobrol"].contains(&label.as_str()) {
                     if let Some(c) = alat::call_for(&label, &goal) {
                         offline = Some(vec![c]);
-                        from_ml = false;
+                        from_ml = skor < 0.85; // keyakinan sedang: diverifikasi model
                         crate::ml::learn(&label, &goal);
                     }
                 }
@@ -58,6 +73,9 @@ impl Engine {
                             crate::ml::learn(l, &goal);
                         }
                     }
+                    if self.bandingkan(&goal, &offline, &p.calls, "gemini").await {
+                        return;
+                    }
                     if !p.reply.trim().is_empty() {
                         self.agent_say(0, &research::truncate(&p.reply, 300));
                     }
@@ -92,6 +110,9 @@ impl Engine {
             self.tx.send(Event::Thinking(None));
             if let Ok((calls, reply)) = pr {
                 if !calls.is_empty() {
+                    if self.bandingkan(&goal, &offline, &calls, "llama").await {
+                        return;
+                    }
                     if !reply.trim().is_empty() {
                         self.agent_say(0, &research::truncate(&reply, 200));
                     }
@@ -139,6 +160,9 @@ impl Engine {
                 self.last_ml = Some((goal.clone(), l.to_string()));
                 self.tx.send(Event::Ask { question: "Sesuai maksudmu?".into(), options: vec!["Ya".into(), "Salah".into()] });
             }
+        }
+        if let Some([c]) = offline.as_deref() {
+            crate::putusan::set_last(&goal, c);
         }
         self.running = false;
         self.tx.send(Event::Running(false));

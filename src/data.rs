@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
-pub const BERKAS: &[&str] = &["kamus_aksi.json", "cli.json", "layanan.json", "ajar.json"];
+pub const BERKAS: &[&str] = &["kamus_aksi.json", "cli.json", "layanan.json", "ajar.json", "putusan.json", "kasus.json"];
 
 type Isi = (Option<SystemTime>, Arc<Value>, String);
 static CACHE: Mutex<Option<HashMap<String, Isi>>> = Mutex::new(None);
@@ -45,7 +45,12 @@ pub fn json(nama: &str, bawaan: &str) -> Arc<Value> {
 pub fn ubah(nama: &str, bawaan: &str, f: impl FnOnce(&mut Value)) -> Result<(), String> {
     let mut v = (*json(nama, bawaan)).clone();
     f(&mut v);
-    std::fs::write(path(nama), serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?).map_err(|e| e.to_string())
+    let r = std::fs::write(path(nama), serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+    // timestamp berkas bisa sama dengan pembacaan sebelumnya (resolusi kasar): paksa baca ulang
+    if let Some(m) = CACHE.lock().unwrap().as_mut() {
+        m.remove(nama);
+    }
+    r
 }
 
 /// Ringkasan status semua berkas data (untuk `/data`).
