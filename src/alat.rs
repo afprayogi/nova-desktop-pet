@@ -403,6 +403,29 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
             let _ = c.spawn();
             format!("dibuka: {arg}")
         }
+        "open" if !arg.contains(['/', '\\', ':', '.']) && !arg.is_empty() => {
+            // Nama aplikasi (bukan URL/path): cari di indeks menu Start, lalu PATH; laporkan jujur bila tidak ada.
+            let q = arg.to_string();
+            tokio::task::spawn_blocking(move || {
+                if let Some(a) = crate::aplikasi::cari(&q) {
+                    return if crate::aplikasi::buka(&a) { format!("dibuka: {}", a.nama) } else { format!("gagal membuka {}", a.nama) };
+                }
+                #[cfg(windows)]
+                {
+                    use std::os::windows::process::CommandExt;
+                    let ada = std::process::Command::new("where").arg(&q).creation_flags(0x0800_0000).output().map(|o| o.status.success()).unwrap_or(false);
+                    if ada {
+                        let mut c = std::process::Command::new("cmd");
+                        c.raw_arg(format!("/C start \"\" \"{q}\"")).creation_flags(0x0800_0000);
+                        let _ = c.spawn();
+                        return format!("dibuka: {q}");
+                    }
+                }
+                format!("Tidak menemukan aplikasi '{q}' di laptop ini. Ketik /aplikasi {q} untuk melihat yang terpasang.")
+            })
+            .await
+            .unwrap_or_else(|_| "gagal membuka aplikasi".into())
+        }
         "open" => {
             #[cfg(windows)]
             {

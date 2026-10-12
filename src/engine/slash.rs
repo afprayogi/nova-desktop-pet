@@ -132,6 +132,10 @@ impl Engine {
                 let r = crate::hewan::paksa_cmd(arg);
                 self.agent_say(2, &r);
             }
+            "aplikasi" | "apps" => {
+                let r = tokio::task::spawn_blocking({ let a = arg.to_string(); move || crate::aplikasi::daftar_teks(&a) }).await.unwrap_or_default();
+                self.agent_say(0, &r)
+            }
             "smtp" => {
                 let p: Vec<&str> = arg.split_whitespace().collect();
                 let r = if p.len() >= 3 { crate::surel::setup(p[0], p[1], &p[2..].join(" ")) } else { crate::surel::setup("", "", "") };

@@ -5,6 +5,7 @@ mod ambien;
 mod adegan;
 mod agents;
 mod alat;
+mod aplikasi;
 mod api;
 mod bandit;
 mod bec;
