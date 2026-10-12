@@ -318,6 +318,75 @@ struct OmniReq {
     hapus: bool,
 }
 
+/// Bedah satu kalimat TANPA menjalankannya: tiap tahap pemahaman NOVA dan siapa yang akhirnya memutuskan. `?llm=1` menambah rencana Llama lokal.
+async fn bedah_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    let t = q.get("q").cloned().unwrap_or_default();
+    if t.trim().is_empty() {
+        return Ok(Json(serde_json::json!({"galat": "kalimat kosong"})));
+    }
+    use serde_json::json;
+    let norm = crate::rawat::normalisasi(&t);
+    let cj = |c: &crate::alat::Call| {
+        let r = match crate::alat::assess(c) {
+            crate::alat::Risk::Safe => "aman",
+            crate::alat::Risk::Confirm(_) => "minta persetujuan",
+            crate::alat::Risk::Block(_) => "diblokir",
+        };
+        json!({"alat": c.tool, "arg": c.arg, "risiko": r})
+    };
+    let ajar = crate::ajar::cocok(&norm).map(|c| cj(&c));
+    let dasar = crate::aturan::rule_dasar(&norm).map(|c| cj(&c));
+    let http = crate::research::client(20);
+    let sem = crate::semantik::scores(&http, &norm).await.ok().map(|v| v.into_iter().take(3).map(|(l, s)| json!([l, (s * 100.0).round() / 100.0])).collect::<Vec<_>>());
+    let sem_jelas = crate::semantik::classify(&http, &norm).await.map(|(l, s)| json!([l, (s * 100.0).round() / 100.0]));
+    let ml = crate::ml::classify(&norm).map(|(l, s)| json!([l, s]));
+    let llm = if q.contains_key("llm") {
+        match crate::lokal::plan(&http, &norm).await {
+            Ok((c, r)) => json!({"calls": c.iter().map(&cj).collect::<Vec<_>>(), "balasan": r}),
+            Err(e) => json!({"galat": e.to_string()}),
+        }
+    } else {
+        serde_json::Value::Null
+    };
+    let keputusan = if ajar.is_some() {
+        "aturan yang kamu ajarkan"
+    } else if dasar.is_some() {
+        "aturan bahasa bawaan"
+    } else if sem_jelas.is_some() {
+        "pemahaman makna (embedding)"
+    } else if ml.is_some() {
+        "tebakan ML dari contoh"
+    } else {
+        "tidak dikenali lokal: diserahkan ke model bahasa (Gemini, lalu Llama)"
+    };
+    Ok(Json(json!({"norm": norm, "ajar": ajar, "aturan": dasar, "semantik": sem, "semantik_jelas": sem_jelas, "ml": ml, "llm": llm, "keputusan": keputusan})))
+}
+
+async fn ajar_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    Ok(Json(serde_json::json!({"aturan": crate::ajar::daftar(), "alat": crate::gemini::tool_names()})))
+}
+
+/// Ajarkan aturan baru `{pola, alat, arg}` atau hapus `{hapus: indeks}`.
+async fn ajar_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    if let Some(i) = r["hapus"].as_u64() {
+        return Ok(Json(serde_json::json!({"ok": crate::ajar::hapus(i as usize)})));
+    }
+    let g = |k: &str| r[k].as_str().unwrap_or("").to_string();
+    Ok(Json(match crate::ajar::tambah(&g("pola"), &g("alat"), &g("arg")) {
+        Ok(m) => serde_json::json!({"ok": true, "pesan": m}),
+        Err(e) => serde_json::json!({"ok": false, "pesan": e}),
+    }))
+}
+
 async fn graf_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
     if !authorized(&headers, &s) {
         return Err(StatusCode::UNAUTHORIZED);
@@ -482,7 +551,7 @@ pub async fn serve(cfg: Config, port: u16) -> anyhow::Result<()> {
             s2.snap.lock().unwrap_or_else(|e| e.into_inner()).apply(&e);
         }
     });
-    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
+    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
     let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
     axum::serve(listener, app).await?;
     Ok(())

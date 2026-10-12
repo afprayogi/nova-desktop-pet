@@ -711,6 +711,10 @@ mod tests {
         let (tool, arg) = url("carikan di video youtube anime fullmetal").unwrap();
         assert_eq!(tool, "open");
         assert!(arg.starts_with("https://www.youtube.com/results?search_query=anime%20fullmetal"));
+        for t in ["buka music anime", "buka lagu anime", "putar lagu anime", "nyalakan musik anime"] {
+            assert!(url(t).unwrap().1.contains("search_query=lagu%20anime"), "{t}");
+        }
+        assert!(!url("buka spotify music").is_some_and(|c| c.1.contains("youtube")));
         assert!(url("rute ke bandung").unwrap().1.contains("google.com/maps/search/bandung"));
         assert!(url("carikan repo rust pet di github").unwrap().1.contains("github.com/search"));
         assert!(url("buka video anime fullmetal").unwrap().1.contains("youtube.com/results?search_query=anime%20fullmetal"));

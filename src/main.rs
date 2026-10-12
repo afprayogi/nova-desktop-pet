@@ -4,6 +4,7 @@ mod adblock;
 mod ambien;
 mod adegan;
 mod agents;
+mod ajar;
 mod alat;
 mod daya;
 mod aplikasi;

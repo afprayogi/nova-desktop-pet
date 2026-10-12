@@ -48,6 +48,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;p
   <div class="logo">NOVA</div><div class="upd" id="upd">memuat…</div>
   <a data-s="ringkas" class="on">Hari ini <b id="n1"></b></a>
   <a data-s="otak">Otak <b id="n2"></b></a>
+  <a data-s="ajar">Belajar <b id="n5"></b></a>
   <a data-s="net">Jaringan <b id="n3"></b></a>
   <a data-s="pc">Laptop <b id="n4"></b></a>
   <a class="back" href="/ui?app=1">Kembali ke obrolan</a>
@@ -73,6 +74,18 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;p
     <div><h3>Pertumbuhan harian</h3><canvas id="cotk" height="120"></canvas><p class="lead">Setiap hari saat kamu aktif, NOVA melatih ulang model kelelahan dan mencatat isi ingatan.</p><button id="otbtn">Belajar sekarang</button>
       <h3>Isi pikiran</h3><div class="lead" id="bd" style="white-space:pre-wrap;font:12px/1.5 Consolas,monospace"></div></div>
   </div>
+</section>
+
+<section id="ajar">
+  <h2>Belajar</h2><p class="lead">Ajari NOVA langsung. Tulis kalimat, lihat bagaimana NOVA memahaminya di tiap tahap, lalu ajarkan jawaban yang benar. Aturan yang kamu simpan dipakai lebih dulu daripada aturan bawaan.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><input id="aq" placeholder="mis. buka music anime" style="flex:1;min-width:240px" aria-label="Kalimat untuk dibedah"><button id="abed">Bedah</button><button id="allm" title="Minta Llama lokal merencanakan (lebih lambat)">Bedah + Llama</button><button id="arun">Jalankan sungguhan</button></div>
+  <h3>Cara NOVA memahami</h3><div id="atr" class="lead">Ketik kalimat lalu tekan Bedah.</div>
+  <h3>Hasil jika dijalankan</h3><pre id="aout">–</pre>
+  <h3>Ajarkan</h3>
+  <div class="lead">Pola boleh memakai <code>*</code> untuk bagian yang berubah-ubah, dan <code>{*}</code> di argumen untuk memakainya lagi. Contoh: pola <code>buka music *</code>, alat <code>open</code>, argumen <code>https://www.youtube.com/results?search_query=lagu {*}</code>.</div>
+  <div style="display:grid;grid-template-columns:1fr 160px 1.4fr auto;gap:8px;margin-top:8px;max-width:980px"><input id="ap" placeholder="pola kalimat" aria-label="Pola kalimat"><select id="aa" aria-label="Alat" style="background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:3px"></select><input id="ag" placeholder="argumen" aria-label="Argumen"><button id="asv">Simpan</button></div>
+  <div class="lead" id="amsg"></div>
+  <h3>Aturan yang sudah diajarkan</h3><div id="alist" class="lead">Belum ada.</div>
 </section>
 
 <section id="net">
@@ -176,8 +189,31 @@ async function koneksi(){$("#pks").textContent="Memuat…";try{const r=await (aw
  $("#pkp").innerHTML="<table><tr><th>Aplikasi</th><th>Tujuan</th><th>Port</th><th>Protokol</th></tr>"+r.koneksi.slice(0,60).map(k=>`<tr><td>${esc(k.proses||"?")}</td><td>${esc(k.domain||k.remote)}</td><td>${k.port}</td><td>${esc(k.protokol)}</td></tr>`).join("")+"</table>"}catch(e){$("#pks").textContent="Gagal memuat."}}
 async function tangkap(){const b=$("#pkt");b.disabled=true;$("#cap").textContent="Menangkap ±15 detik. Setujui kotak UAC Windows bila muncul…";try{const r=await (await fetch("/api/paket?tangkap=1",H)).json();$("#cap").textContent=r.tangkap}catch(e){$("#cap").textContent="Gagal menangkap."}b.disabled=false}
 $("#netb").onclick=periksa;$("#pkb").onclick=koneksi;$("#pkt").onclick=tangkap;
+
+/* ---- belajar ---- */
+async function ajarMuat(){try{const r=await (await fetch("/api/ajar",H)).json();$("#n5").textContent=r.aturan.length||"";
+ if(!$("#aa").options.length)$("#aa").innerHTML=r.alat.slice().sort().map(a=>`<option>${esc(a)}</option>`).join("");
+ $("#alist").innerHTML=r.aturan.length?"<table><tr><th>Pola</th><th>Alat</th><th>Argumen</th><th></th></tr>"+r.aturan.map((a,i)=>`<tr><td>${esc(a.pola)}</td><td>${esc(a.alat)}</td><td>${esc(a.arg)}</td><td><button data-h="${i}">Hapus</button></td></tr>`).join("")+"</table>":"Belum ada.";
+ $("#alist").querySelectorAll("[data-h]").forEach(b=>b.onclick=async()=>{await fetch("/api/ajar",{method:"POST",headers:{...H.headers,"content-type":"application/json"},body:JSON.stringify({hapus:+b.dataset.h})});ajarMuat()})}catch(e){}}
+const cl=c=>c?`<code>${esc(c.alat)}</code> ${esc(c.arg)} <span class="lead">(${esc(c.risiko)})</span>`:"–";
+async function bedah(llm){const q=$("#aq").value.trim();if(!q)return;$("#atr").textContent="Membedah…";
+ try{const r=await (await fetch("/api/bedah?q="+encodeURIComponent(q)+(llm?"&llm=1":""),H)).json();const ok=k=>r.keputusan.startsWith(k);
+ const row=(no,nm,isi,menang)=>`<div class="row" style="${menang?"border-left:3px solid var(--amber);padding-left:8px":""}"><span><b>${no}</b> ${nm}</span><span style="text-align:left;flex:1;margin-left:16px;color:var(--text)">${isi}</span></div>`;
+ $("#atr").innerHTML=row(1,"Kalimat dibersihkan",esc(r.norm),false)+row(2,"Aturan yang kamu ajarkan",cl(r.ajar),ok("aturan yang kamu"))+row(3,"Aturan bahasa bawaan",cl(r.aturan),ok("aturan bahasa"))
+  +row(4,"Makna (embedding)",r.semantik?r.semantik.map(x=>esc(x[0])+" "+x[1]).join(" · ")+(r.semantik_jelas?" → cukup yakin: "+esc(r.semantik_jelas[0]):" → kurang yakin"):"belum tersedia",ok("pemahaman"))
+  +row(5,"Tebakan ML",r.ml?esc(r.ml[0])+" "+Number(r.ml[1]).toFixed(2):"–",ok("tebakan"))
+  +(r.llm?row(6,"Rencana Llama",r.llm.galat?esc(r.llm.galat):(r.llm.calls.map(cl).join("<br>")||"tanpa alat")+" — "+esc(r.llm.balasan||""),false):"")
+  +`<div class="flag ${ok("tidak")?"":"ok"}" style="margin-top:10px">Diputuskan oleh: <b>${esc(r.keputusan)}</b>. Kalau hasilnya salah, ajarkan di bawah.</div>`;
+ if(!$("#ap").value)$("#ap").value=r.norm.toLowerCase()}catch(e){$("#atr").textContent="Gagal membedah."}}
+$("#abed").onclick=()=>bedah(false);$("#allm").onclick=()=>bedah(true);$("#aq").onkeydown=e=>{if(e.key==="Enter")bedah(false)};
+$("#arun").onclick=async()=>{const q=$("#aq").value.trim();if(!q)return;$("#aout").textContent="Menjalankan… (alat berisiko akan menunggu persetujuan di obrolan)";
+ await fetch("/api/cmd",{method:"POST",headers:{...H.headers,"content-type":"application/json"},body:JSON.stringify({Chat:q})});await new Promise(r=>setTimeout(r,4500));
+ const p=await (await fetch("/api/pet",H)).json();$("#aout").textContent=p.chat.slice(-6).map(c=>(c.who===-1?"Kamu: ":c.who===-2?"Alat: ":"NOVA: ")+c.text).join("\n")+(p.approval?"\n\nMenunggu persetujuanmu: "+p.approval.tool+" "+p.approval.arg:"")};
+$("#asv").onclick=async()=>{const pola=$("#ap").value.trim(),alat=$("#aa").value,arg=$("#ag").value;if(!pola)return;
+ const r=await (await fetch("/api/ajar",{method:"POST",headers:{...H.headers,"content-type":"application/json"},body:JSON.stringify({pola,alat,arg})})).json();$("#amsg").textContent=r.pesan||"";if(r.ok){ajarMuat();if($("#aq").value)bedah(false)}};
+document.querySelector('[data-s="ajar"]').addEventListener("click",ajarMuat);ajarMuat();
 load();setInterval(load,5000);addEventListener("resize",load);
-{const h=(location.hash||"").slice(1);show(["ringkas","otak","net","pc"].includes(h)?h:"ringkas")}
+{const h=(location.hash||"").slice(1);show(["ringkas","otak","ajar","net","pc"].includes(h)?h:"ringkas")}
 fetch("/api/otak",H).then(r=>r.json()).then(r=>$("#n2").textContent=r.tingkat+"%").catch(()=>{});
 </script>
 </body>
