@@ -1243,8 +1243,8 @@ impl eframe::App for Pet {
                     let g = p.layout(text.clone(), FontId::proportional(12.0), Color32::from_rgb(225, 245, 255), W - 24.0);
                     let size = g.size() + vec2(16.0, 12.0);
                     let br = Rect::from_min_size(pos2((W - size.x) / 2.0, (origin.y - size.y - 4.0).max(2.0)), size);
-                    p.rect_filled(br, 8.0, Color32::from_rgba_unmultiplied(8, 20, 38, 240));
-                    p.rect_stroke(br, 8.0, Stroke::new(1.5_f32, Color32::from_rgb(main.0, main.1, main.2)));
+                    p.rect_filled(br, 4.0, Color32::from_rgba_unmultiplied(16, 19, 26, 245));
+                    p.rect_stroke(br, 4.0, Stroke::new(1.5_f32, Color32::from_rgb(main.0, main.1, main.2)));
                     p.galley(br.min + vec2(8.0, 6.0), g, Color32::WHITE);
                 }
                 // Equalizer: batang bergerak mengikuti level audio keluar (musik/video sedang bersuara).

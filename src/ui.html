@@ -92,6 +92,46 @@ canvas.ch{display:block;width:100%;max-width:480px;height:auto;border-radius:12p
 .row2{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .th{display:block;max-width:100%;width:320px;border-radius:12px;margin:8px 0 2px}
 @media (max-width:820px){header{flex-wrap:wrap;gap:8px}nav{order:3;flex-basis:100%;overflow-x:auto}#wd.open,#side.open{position:fixed;right:0;top:0;bottom:0;z-index:20;box-shadow:var(--sh)}}
+
+/* ===== Tampilan v2: buku catatan bengkel — transkrip, bukan gelembung ===== */
+:root{--bg:#161a22;--panel:#1b212c;--panel2:#10131a;--line:#273040;--text:#d8dce6;--mut:#8791a5;--acc:#e8a33d;--blue:#6ea6dc;--me:#10131a;--ok:#5fb98a;--warn:#e0b04a;--bad:#e0605a;--r:3px;--sh:none}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#eef0f4;--panel:#f7f8fb;--panel2:#e2e6ee;--line:#cfd5e0;--text:#222834;--mut:#5f6a7e;--acc:#b36a00;--blue:#2c6aa8;--me:#e2e6ee;--ok:#2d8a5a;--warn:#9a7000;--bad:#b73a35}}
+:root[data-theme=light]{--bg:#eef0f4;--panel:#f7f8fb;--panel2:#e2e6ee;--line:#cfd5e0;--text:#222834;--mut:#5f6a7e;--acc:#b36a00;--blue:#2c6aa8;--me:#e2e6ee;--ok:#2d8a5a;--warn:#9a7000;--bad:#b73a35}
+.title,.who,.mega h5{font-family:Bahnschrift,"Segoe UI",sans-serif}
+.title{font-size:17px;letter-spacing:.06em}
+.logo{border-radius:3px}
+.btn,.m>button,nav .find{white-space:nowrap}
+.btn,.m>button,.dd button,.dd,.chip,.sug,.sug div,#omni .box2,#pal .bx,.wc,.card,canvas.ch,#term{border-radius:3px}
+.mega h5{text-transform:none;letter-spacing:0;font-size:12px;font-weight:600}
+.wc h4{text-transform:none;letter-spacing:0;font-size:12px;font-family:Bahnschrift,"Segoe UI",sans-serif}
+#chat{padding:26px max(18px,calc((100% - 780px)/2)) 12px 0}
+.row{margin:14px 0;animation:none;padding-left:calc(max(18px,(100% - 780px)/2) + 92px);position:relative}
+.row.me,.row:not(.me){justify-content:flex-start}
+.av{display:none}
+.bub{max-width:72ch;padding:0;position:relative;line-height:1.62}
+.who{position:absolute;left:-86px;top:1px;width:70px;text-align:right;font-size:13px;font-weight:600;margin:0;color:var(--mut)!important}
+.row:not(.me) .who{color:var(--blue)!important}
+.me .bub{background:none;padding:0 0 0 12px;border-left:2px solid var(--acc);border-radius:0}
+.me .who{left:-98px;color:var(--acc)!important}
+.sys{text-align:left;font:12.5px/1.55 Consolas,"Cascadia Mono",monospace;margin:6px 0 6px calc(max(18px,(100% - 780px)/2) + 92px);padding:2px 0 2px 10px;border-left:2px solid var(--line);max-width:80ch}
+.card{margin:14px 0 14px calc(max(18px,(100% - 780px)/2) + 92px);max-width:72ch;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc)}
+.card.bad{border-color:var(--bad);border-left-color:var(--bad)}
+.card code{background:var(--panel2);border-radius:2px}
+.chip{border-radius:3px;padding:5px 12px;font-size:13.5px}
+.chip:hover{border-color:var(--acc);background:none}
+.chip.p{background:var(--acc);color:#14161c}.chip.d{color:var(--bad);border-color:var(--bad)}
+footer{padding:0 0 0 0;background:var(--bg);border-top:1px solid var(--line)}
+.box{max-width:780px;margin:0 auto;border:0;border-radius:0;background:none;padding:10px 14px 12px 92px;box-shadow:none;position:relative;align-items:center}
+.box::before{content:"›";position:absolute;left:70px;top:50%;transform:translateY(-52%);font:600 24px Bahnschrift,"Segoe UI",sans-serif;color:var(--acc)}
+.box:focus-within{border-color:transparent}
+.box:focus-within textarea{box-shadow:0 2px 0 var(--acc)}
+textarea{padding:7px 2px}
+.send{background:none;border:1px solid var(--line);color:var(--text);border-radius:3px;width:auto;height:34px;padding:0 14px;font-size:0}
+.send::after{content:"Kirim";font:14px "Segoe UI Variable Text","Segoe UI",sans-serif}
+.send:hover{border-color:var(--acc);filter:none}
+.dots span{border-radius:0;width:5px;height:5px;background:var(--acc)}
+#toast{border-radius:3px}
+@media (max-width:760px){.row,.sys,.card{padding-left:12px;margin-left:12px}.sys{margin-left:12px}.who{position:static;display:block;width:auto;text-align:left;margin-bottom:2px}.me .who{left:auto}#chat{padding-left:0}.box{padding:8px 12px}.box::before{display:none}}
 </style>
 </head>
 <body>
@@ -199,7 +239,7 @@ function render(d){bangunKarakter(d);
  if(render.k!==key){render.k=key;let h="";
   if(!d.chat.length)h+=`<div class="sys">Halo Bos! Ketik bebas, atau mulai cepat:</div><div class="chips" style="justify-content:center">${["cek wifi","cuaca","harga bitcoin","bisa tidur 8 jam malam ini","catatan","/buddy"].map(q=>`<button class="chip" data-q="${q}">${q.replace("/buddy","sahabat")}</button>`).join("")}</div><div class="sys">Semua fitur ada di menu atas atau tekan <b>Ctrl K</b> untuk mencari.</div>`;
   for(const l of d.chat){
-   if(l.who===-1)h+=`<div class="row me"><div class="bub">${fmt(l.text)}</div></div>`;
+   if(l.who===-1)h+=`<div class="row me"><div class="bub"><div class="who">Kamu</div>${fmt(l.text)}</div></div>`;
    else if(l.who===-2)h+=`<div class="sys">${fmt(l.text)}</div>`;
    else{const i=l.who%4;h+=`<div class="row">${av(i)}<div class="bub"><div class="who" style="color:${COL[i]}">${NAME[i]}</div>${fmt(l.text)}</div></div>`}}
   if(d.thinking)h+=`<div class="row">${av(0)}<div class="bub"><span class="dots"><span></span><span></span><span></span></span></div></div>`;

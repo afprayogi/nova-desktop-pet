@@ -603,18 +603,19 @@ pub(crate) fn apply_style(ctx: &egui::Context) {
     st.spacing.button_padding = vec2(12.0, 5.0);
     st.spacing.item_spacing = vec2(8.0, 6.0);
     st.spacing.interact_size.y = 26.0;
-    let r = egui::Rounding::same(10.0);
+    // Selaras dengan dasbor/obrolan web: sudut hampir persegi, aksen kuning-oranye, latar biru-abu.
+    let r = egui::Rounding::same(4.0);
     let v = &mut st.visuals;
     v.widgets.inactive.rounding = r;
     v.widgets.hovered.rounding = r;
     v.widgets.active.rounding = r;
-    v.widgets.inactive.weak_bg_fill = Color32::from_rgb(28, 44, 68);
-    v.widgets.inactive.bg_stroke = Stroke::new(1.0_f32, Color32::from_rgb(54, 78, 112));
-    v.widgets.hovered.weak_bg_fill = Color32::from_rgb(40, 66, 104);
-    v.widgets.hovered.bg_stroke = Stroke::new(1.2_f32, Color32::from_rgb(110, 170, 255));
-    v.widgets.active.weak_bg_fill = Color32::from_rgb(52, 92, 150);
-    v.selection.bg_fill = Color32::from_rgb(52, 110, 190);
-    v.extreme_bg_color = Color32::from_rgb(14, 26, 44);
+    v.widgets.inactive.weak_bg_fill = Color32::from_rgb(27, 33, 44);
+    v.widgets.inactive.bg_stroke = Stroke::new(1.0_f32, Color32::from_rgb(39, 48, 64));
+    v.widgets.hovered.weak_bg_fill = Color32::from_rgb(36, 43, 58);
+    v.widgets.hovered.bg_stroke = Stroke::new(1.2_f32, Color32::from_rgb(232, 163, 61));
+    v.widgets.active.weak_bg_fill = Color32::from_rgb(70, 52, 24);
+    v.selection.bg_fill = Color32::from_rgb(120, 84, 30);
+    v.extreme_bg_color = Color32::from_rgb(16, 19, 26);
     ctx.set_style(st);
 }
 
