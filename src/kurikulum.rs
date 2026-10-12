@@ -208,21 +208,21 @@ fn new_books() -> Vec<std::path::PathBuf> {
     out
 }
 
-/// Dipanggil berkala: buku baru -> pelajari + kurikulum otomatis + pengingat.
+/// Dipanggil berkala: buku baru di folder buku dibaca dan dimasukkan ke pengetahuan (informasi, bukan perintah).
+/// Kurikulum dan pengingat belajar HANYA dibuat bila diminta: `kurikulum <buku>`.
 pub async fn process_new(tx: &crate::engine::Tx) {
     let books = tokio::task::spawn_blocking(new_books).await.unwrap_or_default();
     for b in books.into_iter().take(2) {
         let name = b.file_name().map(|s| s.to_string_lossy().to_string()).unwrap_or_default();
-        tx.sys(format!("📚 Buku baru terdeteksi: {name}. Menyusun kurikulum..."));
+        tx.sys(format!("📚 Buku baru terdeteksi: {name}. Kubaca isinya…"));
         let path = b.to_string_lossy().to_string();
-        let plan = tokio::task::spawn_blocking(move || run(&path)).await.unwrap_or_else(|_| "gagal membuat kurikulum".into());
-        if plan.starts_with("gagal") {
-            // Jangan pura-pura berhasil: beri tahu alasannya dan cara mencoba manual.
-            tx.sys(format!("⚠ Buku '{name}' belum bisa dipelajari: {plan}. Coba manual: pelajari <path buku>."));
+        let r = tokio::task::spawn_blocking(move || crate::teknik::pelajari(&path)).await.unwrap_or_else(|_| "gagal membaca".into());
+        if r.starts_with("gagal") {
+            tx.sys(format!("⚠ Buku '{name}' belum bisa dibaca: {r}. Coba manual: pelajari <path buku>."));
             continue;
         }
-        crate::notify::toast("NOVA - kurikulum baru", &format!("Kurikulum untuk '{name}' sudah siap."));
-        crate::adegan::play(tx, vec![(3, format!("📚 Buku baru: {name}. Kurikulumnya sudah kusiapkan:")), (3, plan.chars().take(1800).collect())]);
+        crate::notify::toast("NOVA - buku dipelajari", &format!("'{name}' sudah masuk ke pengetahuan."));
+        tx.sys(format!("📚 {r} Tanyakan isinya langsung (mis. 'apa fungsi overload relay'). Kurikulum belajar dibuat hanya bila diminta: kurikulum <buku>."));
     }
 }
 

@@ -5,3 +5,4 @@
 - Format paket karakter bergaya **Shimeji**: hanya format; tidak ada seni karakter yang disertakan.
 - Dependensi Rust tercantum di `Cargo.lock`, masing-masing dengan lisensinya sendiri.
 - **crewAIInc/crewAI** (MIT): pola kru (peran, tugas berurutan, konteks antar-tugas, loop ReAct terbatas) dan gagasan alat cari-isi-berkas/kompres/tunggu diimplementasi ulang di `src/engine/kru.rs` dan `src/alatbaru.rs`; tidak ada kode yang disalin.
+- **nasalsabila/kamus-alay** (kamus bahasa gaul → baku): diunduh saat dibutuhkan ke folder data pengguna (`/kamus muat`), tidak disertakan di repositori karena lisensinya tidak dinyatakan. **Sastrawi** (`sastrawi-rs`, MIT): pencari kata dasar bahasa Indonesia.

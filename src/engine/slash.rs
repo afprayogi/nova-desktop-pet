@@ -149,6 +149,29 @@ impl Engine {
                 };
                 self.agent_say(0, &r)
             }
+            "buku" => {
+                let v = tokio::task::spawn_blocking(crate::teknik::buku_terpelajari).await.unwrap_or_default();
+                let r = if v.is_empty() {
+                    format!("Belum ada buku yang dipelajari. Taruh PDF/MD/TXT di {} (otomatis dibaca) atau ketik: pelajari <path buku>.", crate::kurikulum::buku_dir().display())
+                } else {
+                    format!("📚 Buku yang sudah kupelajari:\n{}\nTanya isinya langsung, mis. 'apa fungsi overload relay'.", v.iter().map(|(s, n)| format!("• {s} ({n} potongan)")).collect::<Vec<_>>().join("\n"))
+                };
+                self.agent_say(0, &r)
+            }
+            "cli" => {
+                let r = if arg.eq_ignore_ascii_case("belajar") {
+                    self.agent_say(0, "Membaca bantuan semua alat CLI terpasang…");
+                    tokio::task::spawn_blocking(crate::cli::belajar_semua).await.unwrap_or_default()
+                } else {
+                    let v = tokio::task::spawn_blocking(crate::cli::terpasang).await.unwrap_or_default();
+                    format!("Alat CLI terpasang: {}. '/cli belajar' memasukkan cara pakainya ke pengetahuan; 'bantu <alat> <perintah>' menampilkan bantuannya.", v.join(", "))
+                };
+                self.agent_say(0, &r)
+            }
+            "kamus" => {
+                let r = if arg.eq_ignore_ascii_case("muat") { crate::kata::muat_kamus(&self.http, true).await } else { format!("Kamus gaul: {} pasang. '/kamus muat' mengunduh ulang dari GitHub (kamus-alay).", crate::kata::jumlah_gaul()) };
+                self.agent_say(0, &r)
+            }
             "katalog" => {
                 let r = if arg.eq_ignore_ascii_case("muat") {
                     self.agent_say(0, "Mengunduh katalog alat MCP dari GitHub…");

@@ -32,7 +32,10 @@ pub fn normalisasi(s: &str) -> String {
             let core = w.trim_matches(|c: char| !c.is_alphanumeric());
             match SLANG.iter().find(|(k, _)| core.eq_ignore_ascii_case(k)) {
                 Some((_, v)) => w.replace(core, v),
-                None => w.to_string(),
+                None => match crate::kata::baku(core) {
+                    Some(b) => w.replace(core, &b),
+                    None => w.to_string(),
+                },
             }
         })
         .collect::<Vec<_>>()

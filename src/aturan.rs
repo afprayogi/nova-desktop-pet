@@ -52,13 +52,13 @@ fn strip_fillers(s: &str) -> &str {
 
 /// Layanan web: kalimat → URL pencarian (YouTube, Maps, Google, GitHub). Dibuka di browser lewat alat `open`.
 fn layanan(l: &str) -> Option<String> {
-    const NOISE: &[&str] = &["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "saja", "pakai", "lewat", "link", "tautan"];
+    const NOISE: &[&str] = &["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "kamu", "kau", "anda", "saya", "aku", "mohon", "deh", "sih", "nih", "lah", "bisa", "mau", "ingin", "silakan", "saja", "pakai", "lewat", "link", "tautan"];
     let w: Vec<&str> = l.split(|c: char| !c.is_alphanumeric()).filter(|x| !x.is_empty()).collect();
     let has = |k: &str| w.contains(&k);
     let q = |extra: &[&str]| w.iter().filter(|x| !NOISE.contains(x) && !extra.contains(x)).cloned().collect::<Vec<_>>().join(" ");
     let files = ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"].iter().any(|k| has(k));
-    let extra = ["lagu", "musik", "music", "mainkan", "setel", "setelkan", "play", "nyalakan", "dengar", "dengarkan"];
-    let lagu = (has("lagu") || has("musik") || has("music")) && ["putar", "putarkan", "mainkan", "setel", "setelkan", "play", "buka", "bukakan", "nyalakan", "dengar", "dengarkan"].iter().any(|k| has(k)) && !has("folder") && !has("laptop") && !has("spotify") && !q(&extra).is_empty();
+    let extra = ["lagu", "musik", "music", "mainkan", "setel", "setelkan", "play", "nyalakan", "dengar", "dengarkan", "ganti", "gantikan", "ubah", "ubahkan", "pindah", "tukar"];
+    let lagu = (has("lagu") || has("musik") || has("music")) && { let ak = crate::kata::aksi(l); ak.contains(&"putar") || ak.contains(&"buka") || ak.contains(&"ganti") } && !has("folder") && !has("laptop") && !has("spotify") && !q(&extra).is_empty();
     let (base, q) = if lagu {
         ("https://www.youtube.com/results?search_query=", format!("lagu {}", q(&extra)))
     } else if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"].iter().any(|k| has(k)) && !files) {

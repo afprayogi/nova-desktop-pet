@@ -771,6 +771,8 @@ mod tests {
         let (tool, arg) = url("carikan di video youtube anime fullmetal").unwrap();
         assert_eq!(tool, "open");
         assert!(arg.starts_with("https://www.youtube.com/results?search_query=anime%20fullmetal"));
+        assert!(url("kamu ganti music ke lagu indonesia").unwrap().1.contains("search_query=lagu%20indonesia"));
+        assert!(url("tolong putarkan lagu dangdut koplo").unwrap().1.contains("lagu%20dangdut%20koplo"));
         for t in ["buka music anime", "buka lagu anime", "putar lagu anime", "nyalakan musik anime"] {
             assert!(url(t).unwrap().1.contains("search_query=lagu%20anime"), "{t}");
         }

@@ -1591,6 +1591,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fst"
+version = "0.4.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ab85b9b05e3978cc9a9cf8fea7f01b494e1a09ed3037e16ba39edc7a29eb61a"
+
+[[package]]
 name = "futures"
 version = "0.3.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3168,6 +3174,7 @@ dependencies = [
  "regex",
  "reqwest",
  "rusqlite",
+ "sastrawi-rs",
  "serde",
  "serde_json",
  "sha2",
@@ -4279,6 +4286,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 dependencies = [
  "winapi-util",
+]
+
+[[package]]
+name = "sastrawi-rs"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f870f078866fc8f73b59c9d647db3826788586f03c30d89796fae1082d85219b"
+dependencies = [
+ "fst",
+ "once_cell",
 ]
 
 [[package]]

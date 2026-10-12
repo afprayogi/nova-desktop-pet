@@ -3,7 +3,7 @@
 use std::process::{Command, Stdio};
 use std::time::Duration;
 
-const TOOLS: &[&str] = &["git", "cargo", "rustc", "rustup", "docker", "ollama", "npm", "node", "python", "pip", "winget", "gh", "ping", "ipconfig", "tasklist", "netstat", "robocopy", "dir", "where", "powershell"];
+const TOOLS: &[&str] = &["git", "cargo", "rustc", "rustup", "docker", "ollama", "npm", "node", "python", "pip", "winget", "gh", "ping", "ipconfig", "tasklist", "netstat", "robocopy", "dir", "where", "powershell", "ffmpeg", "curl", "tailscale", "kicad-cli", "code", "magick", "yt-dlp", "pnpm", "yarn", "uv", "go", "dotnet", "adb"];
 
 /// (perintah, deskripsi) obrolan NOVA.
 pub const SLASH: &[(&str, &str)] = &[
@@ -36,6 +36,40 @@ pub const SLASH: &[(&str, &str)] = &[
     ("/diam", "NOVA diam sebentar"),
     ("/pasang", "pasang model Ollama"),
 ];
+
+/// Alat CLI di daftar putih yang benar-benar ada di PATH laptop ini.
+pub fn terpasang() -> Vec<&'static str> {
+    TOOLS
+        .iter()
+        .copied()
+        .filter(|t| {
+            let mut c = Command::new("where");
+            c.arg(t).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
+            #[cfg(windows)]
+            {
+                use std::os::windows::process::CommandExt;
+                c.creation_flags(0x0800_0000);
+            }
+            c.status().map(|s| s.success()).unwrap_or(false)
+        })
+        .collect()
+}
+
+/// Baca `--help` semua alat CLI terpasang (paralel) dan simpan ke pengetahuan agar NOVA tahu cara memakainya.
+pub fn belajar_semua() -> String {
+    let ada = terpasang();
+    let hs: Vec<_> = ada.iter().map(|t| { let t = t.to_string(); std::thread::spawn(move || (t.clone(), help(&t))) }).collect();
+    let (mut ok, mut n) = (0, 0);
+    for h in hs {
+        if let Ok((t, teks)) = h.join() {
+            if teks.starts_with("📟") && teks.len() > 60 {
+                n += crate::teknik::ingest(&format!("cli:{t}"), &format!("Alat CLI {t} (terpasang di laptop ini). {teks}"));
+                ok += 1;
+            }
+        }
+    }
+    format!("{} alat CLI terpasang ({}); {ok} dipelajari ke pengetahuan ({n} potongan). Tanya mis. 'cara pakai git stash'.", ada.len(), ada.join(", "))
+}
 
 pub fn is_tool(w: &str) -> bool {
     TOOLS.contains(&w.to_lowercase().as_str())

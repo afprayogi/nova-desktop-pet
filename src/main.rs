@@ -31,6 +31,7 @@ mod internet;
 mod ingat;
 mod klip;
 mod katalog;
+mod kata;
 mod kode;
 mod kurikulum;
 mod konteks;
