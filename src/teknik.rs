@@ -380,7 +380,7 @@ mod simpan_tests {
 /// Buku/dokumen yang sudah dipelajari (sumber berakhiran .pdf/.md/.txt) beserta jumlah potongan.
 pub fn buku_terpelajari() -> Vec<(String, i64)> {
     let Ok(c) = open() else { return vec![] };
-    c.prepare("SELECT src, COUNT(*) FROM kb WHERE lower(src) LIKE '%.pdf' OR lower(src) LIKE '%.md' OR lower(src) LIKE '%.txt' GROUP BY src ORDER BY 2 DESC")
+    c.prepare("SELECT src, COUNT(*) FROM kb WHERE (lower(src) LIKE '%.pdf' OR lower(src) LIKE '%.md' OR lower(src) LIKE '%.txt') AND src NOT LIKE 'id:%' GROUP BY src ORDER BY 2 DESC")
         .and_then(|mut st| st.query_map([], |r| Ok((r.get(0)?, r.get(1)?))).map(|r| r.flatten().collect()))
         .unwrap_or_default()
 }

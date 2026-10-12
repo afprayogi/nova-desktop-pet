@@ -165,6 +165,12 @@ impl Engine {
                 let r = if let Some(sisa) = arg.strip_prefix("tambah ") { crate::aturan::layanan_tambah(sisa) } else { format!("Layanan web: {}. Tambah: /layanan tambah <nama> <kata1,kata2> <url dengan {{q}}>, atau edit layanan.json.", crate::aturan::layanan_daftar().join(", ")) };
                 self.agent_say(0, &r)
             }
+            "buku" if arg.to_lowercase().starts_with("terjemah") => {
+                let n = arg.split_whitespace().nth(1).and_then(|x| x.parse().ok()).unwrap_or(40usize).clamp(1, 200);
+                self.agent_say(0, &format!("Menerjemahkan {n} potongan buku lewat Google Translate…"));
+                let r = crate::terjemah::buku(&self.http, n).await;
+                self.agent_say(0, &r)
+            }
             "buku" => {
                 let v = tokio::task::spawn_blocking(crate::teknik::buku_terpelajari).await.unwrap_or_default();
                 let r = if v.is_empty() {

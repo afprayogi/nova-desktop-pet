@@ -115,6 +115,45 @@ pub fn kemungkinan_inggris(teks: &str) -> bool {
     en * 100 / kata.len() >= 8 && en > id * 2
 }
 
+/// Terjemahkan `n` potongan buku berbahasa Inggris yang belum diterjemahkan ke Indonesia (Google Translate dipercaya sebagai sumber
+/// terjemahan) lalu simpan sebagai pengetahuan baru `id:<buku>`. Potongan non-Inggris hanya ditandai selesai.
+pub async fn buku(http: &reqwest::Client, n: usize) -> String {
+    let rows: Vec<(i64, String, String, String)> = tokio::task::spawn_blocking(move || {
+        let Ok(c) = crate::teknik::open() else { return vec![] };
+        let _ = c.execute_batch("CREATE TABLE IF NOT EXISTS terjemah_done(id INTEGER PRIMARY KEY);");
+        c.prepare("SELECT rowid, title, body, src FROM kb WHERE (lower(src) LIKE '%.pdf' OR lower(src) LIKE '%.md' OR lower(src) LIKE '%.txt') AND src NOT LIKE 'id:%' AND rowid NOT IN (SELECT id FROM terjemah_done) ORDER BY rowid LIMIT ?1")
+            .and_then(|mut st| st.query_map([n as i64], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?))).map(|r| r.flatten().collect()))
+            .unwrap_or_default()
+    })
+    .await
+    .unwrap_or_default();
+    if rows.is_empty() {
+        return "Semua buku sudah diterjemahkan (atau belum ada buku). Taruh buku di folder buku atau ketik: pelajari <path>.".into();
+    }
+    let (mut ok, mut lewat) = (0, 0);
+    for (id, judul, isi, src) in rows {
+        let teks = if crate::terjemah::kemungkinan_inggris(&isi) { terjemahkan(http, &isi, Some("id")).await.ok().map(|t| t.0) } else { None };
+        let gagal_jaringan = teks.is_none() && crate::terjemah::kemungkinan_inggris(&isi);
+        if gagal_jaringan {
+            break; // jangan tandai selesai bila layanan tidak terjangkau; coba lagi nanti
+        }
+        let (judul, src2) = (judul.clone(), format!("id:{src}"));
+        let _ = tokio::task::spawn_blocking(move || {
+            if let Ok(c) = crate::teknik::open() {
+                if let Some(t) = &teks {
+                    let _ = c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,?3)", (&judul, t, &src2));
+                }
+                let _ = c.execute("INSERT OR IGNORE INTO terjemah_done VALUES(?1)", [id]);
+            }
+            teks.is_some()
+        })
+        .await
+        .map(|b| if b { ok += 1 } else { lewat += 1 });
+    }
+    crate::ingat::clear_cache();
+    format!("{ok} potongan buku diterjemahkan ke Indonesia dan masuk otak ({lewat} sudah berbahasa lain). Ulangi /buku terjemah untuk melanjutkan.")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

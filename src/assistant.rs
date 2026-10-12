@@ -530,6 +530,16 @@ pub async fn run(tx: Tx) {
     let Ok(c) = db() else { return };
     crate::musik::jaga_loop();
     tokio::spawn(async {
+        // Otak tumbuh sendiri: 20 potongan buku Inggris diterjemahkan tiap 10 menit sampai habis.
+        let http = crate::research::client(30);
+        loop {
+            tokio::time::sleep(std::time::Duration::from_secs(600)).await;
+            if crate::terjemah::buku(&http, 20).await.starts_with("Semua buku") {
+                break;
+            }
+        }
+    });
+    tokio::spawn(async {
         let http = crate::research::client(40);
         let _ = crate::kata::muat_kamus(&http, false).await;
     });
