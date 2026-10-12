@@ -109,6 +109,11 @@ fn single_instance(name: &str) -> bool {
 
 fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
+    // Pembantu admin penangkap paket (dijalankan lewat UAC oleh paket::tangkap): `nova.exe --paket <detik> <berkas.json>`.
+    if let Some(i) = args.iter().position(|a| a == "--paket") {
+        paket::pembantu(args.get(i + 1).and_then(|d| d.parse().ok()).unwrap_or(15), args.get(i + 2).map(|s| s.as_str()).unwrap_or("cap.json"));
+        return Ok(());
+    }
     if args.iter().any(|a| a == "--pet") {
         #[cfg(windows)]
         if !single_instance(r"Local\NOVA_PET") {

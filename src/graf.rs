@@ -487,3 +487,21 @@ pub fn hitung() -> (i64, i64) {
     let Ok(c) = open() else { return (0, 0) };
     (c.query_row("SELECT COUNT(*) FROM g_node", [], |r| r.get(0)).unwrap_or(0), c.query_row("SELECT COUNT(*) FROM g_edge", [], |r| r.get(0)).unwrap_or(0))
 }
+
+/// Simpul teratas (menurut bobot) beserta sisi di antara mereka, untuk tampilan graf di dasbor.
+pub fn json(limit: usize) -> serde_json::Value {
+    let Ok(c) = open() else { return serde_json::json!({"nodes": [], "edges": []}) };
+    let nodes: Vec<(i64, String, String, f64)> = c
+        .prepare("SELECT id, name, kind, weight FROM g_node WHERE length(name) > 3 AND name NOT IN ('buka','coba','carikan','cari','tolong','bisa','lalu','terus','dong','saja','yang','dengan','untuk','tentang','minta','tampilkan','lihat','zxqbaterai') ORDER BY weight DESC LIMIT ?1")
+        .and_then(|mut st| st.query_map([limit as i64], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?))).map(|r| r.flatten().collect()))
+        .unwrap_or_default();
+    let ids: std::collections::HashSet<i64> = nodes.iter().map(|n| n.0).collect();
+    let edges: Vec<(i64, i64, f64)> = c
+        .prepare("SELECT a, b, w FROM g_edge ORDER BY w DESC LIMIT 6000")
+        .and_then(|mut st| st.query_map([], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?))).map(|r| r.flatten().filter(|e: &(i64, i64, f64)| ids.contains(&e.0) && ids.contains(&e.1)).collect()))
+        .unwrap_or_default();
+    serde_json::json!({
+        "nodes": nodes.iter().map(|n| serde_json::json!({"id": n.0, "name": n.1, "kind": n.2, "w": n.3})).collect::<Vec<_>>(),
+        "edges": edges.iter().map(|e| serde_json::json!([e.0, e.1, e.2])).collect::<Vec<_>>(),
+    })
+}

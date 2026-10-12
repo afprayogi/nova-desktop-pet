@@ -5,99 +5,180 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NOVA · Dasbor</title>
 <style>
-:root{--bg:#15171c;--panel:#1b1e25;--panel2:#22262e;--line:#2b303a;--text:#d6dae2;--mut:#8a92a0;--acc:#8ab4f8;--ok:#86d4a8;--warn:#e8c47c;--bad:#ea9a9a}
-@media (prefers-color-scheme:light){:root{--bg:#f5f4f1;--panel:#fffefc;--panel2:#efede8;--line:#e3e0d9;--text:#2a2d33;--mut:#7a7f89;--acc:#3b6fd4;--ok:#2f8f5b;--warn:#a87a1c;--bad:#c25555}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
-header{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
-h1{font-size:18px;margin:0}.sub{color:var(--mut);font-size:12px}.sp{flex:1}
-a.btn{color:var(--acc);text-decoration:none}
-.tabs{display:flex;gap:4px;padding:10px 24px 0}.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mut);padding:8px 14px;font:inherit;cursor:pointer}
-.tabs button.on{color:var(--text);border-color:var(--acc)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;padding:16px 24px 32px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
-.card h3{margin:0 0 4px;font-size:14px}.card .sub{margin-bottom:10px}
-.big{font-size:32px;font-weight:700}.row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-canvas{width:100%;height:170px;display:block}
-.bar{height:10px;background:#0003;border-radius:99px;overflow:hidden;margin:6px 0 12px}.bar i{display:block;height:100%;border-radius:99px;background:var(--acc)}
-.app{display:flex;justify-content:space-between;font-size:13px;margin-top:6px}
-.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;background:#0003}
-[hidden]{display:none!important}
+:root{--bg:#161a22;--bg2:#10131a;--line:#273040;--text:#d8dce6;--mut:#8791a5;--amber:#e8a33d;--blue:#6ea6dc;--ok:#5fb98a;--warn:#e0b04a;--bad:#e0605a;--sel:#a78bfa}
+@media (prefers-color-scheme:light){:root{--bg:#eef0f4;--bg2:#e2e6ee;--line:#cfd5e0;--text:#222834;--mut:#5f6a7e;--amber:#b36a00;--blue:#2c6aa8;--ok:#2d8a5a;--warn:#9a7000;--bad:#b73a35;--sel:#6d4fd6}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:208px 1fr;min-height:100vh}
+nav{border-right:1px solid var(--line);padding:18px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.logo{font:600 22px/1 Bahnschrift,"Segoe UI",sans-serif;padding:0 18px 4px;letter-spacing:.04em}
+.upd{color:var(--mut);font-size:12px;padding:0 18px 18px}
+nav a{display:flex;justify-content:space-between;align-items:baseline;padding:9px 18px;color:var(--mut);text-decoration:none;border-left:3px solid transparent;cursor:pointer}
+nav a b{font:600 13px Bahnschrift,"Segoe UI",sans-serif;color:var(--text)}
+nav a.on{color:var(--text);border-left-color:var(--amber);background:var(--bg2)}
+nav .back{margin-top:auto;color:var(--blue);padding:9px 18px;text-decoration:none}
+main{padding:22px 28px 40px;min-width:0}
+section{display:none}section.on{display:block}
+h2{font:600 20px Bahnschrift,"Segoe UI",sans-serif;margin:0 0 4px}
+h3{font:600 14px "Segoe UI Variable Text","Segoe UI",sans-serif;margin:22px 0 8px;color:var(--text)}
+.lead{color:var(--mut);margin:0 0 16px;max-width:70ch}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px}
+.num{font:600 38px/1 Bahnschrift,"Segoe UI",sans-serif;color:var(--amber)}
+.num small{font-size:14px;color:var(--mut);margin-left:4px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--line)}
+.row span:last-child{color:var(--mut);font-variant-numeric:tabular-nums;text-align:right}
+.bar{height:4px;background:var(--bg2);margin:2px 0 6px}.bar i{display:block;height:100%;background:var(--blue)}
+.flag{padding:7px 10px;border-left:3px solid var(--warn);background:var(--bg2);margin:6px 0}
+.flag.bad{border-color:var(--bad)}.flag.ok{border-color:var(--ok)}
+button{background:none;border:1px solid var(--line);color:var(--text);padding:6px 12px;font:inherit;cursor:pointer;border-radius:3px}
+button:hover{border-color:var(--amber)}button:disabled{opacity:.5}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+input{background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:6px 10px;font:inherit;border-radius:3px}
+pre{white-space:pre-wrap;margin:8px 0;font:12px/1.65 Consolas,"Cascadia Mono",monospace}
+canvas{width:100%;display:block}
+#gwrap{display:grid;grid-template-columns:1fr 250px;border:1px solid var(--line);background:var(--bg2)}
+#graf{height:520px;cursor:grab}
+#gside{border-left:1px solid var(--line);padding:12px;overflow:auto;max-height:520px;font-size:13px}
+.k{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:4px 10px 4px 0;border-bottom:1px solid var(--line);font-weight:400}th{color:var(--mut)}
+@media (max-width:760px){body{grid-template-columns:1fr}nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:8px}.logo,.upd,nav .back{display:none}#gwrap{grid-template-columns:1fr}#gside{border-left:0;border-top:1px solid var(--line)}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<header><div><h1>📊 Dasbor NOVA</h1><div class="sub" id="upd">memuat…</div></div><div class="sp"></div><a class="btn" href="/ui?app=1">💬 Kembali ke obrolan</a></header>
-<div class="tabs"><button class="on" data-t="me">Tentang saya</button><button data-t="pc">Laptop saya</button><button data-t="ai">Otak NOVA</button><button data-t="net">Internet</button><button data-t="otk">Otak</button></div>
-<div class="grid" id="me">
-  <div class="card"><h3>Tingkat kelelahan</h3><div class="sub">gabungan aturan + jaringan saraf</div><div class="row"><div class="big" id="fat">–</div><div id="fatt" class="sub"></div></div><div class="bar"><i id="fatb" style="width:0"></i></div><div class="sub" id="sesi"></div></div>
-  <div class="card"><h3>Pola jam aktif (rata-rata menit/jam)</h3><div class="sub" id="hari"></div><canvas id="c24"></canvas></div>
-  <div class="card"><h3>Pemakaian 7 hari (jam)</h3><div class="sub">total waktu aktif di laptop</div><canvas id="c7"></canvas></div>
-  <div class="card"><h3>Aplikasi teratas (7 hari)</h3><div id="apps"></div></div>
-</div>
-<div class="grid" id="pc" hidden>
-  <div class="card"><h3>CPU</h3><div class="big" id="cpu">–</div><canvas id="ccpu"></canvas></div>
-  <div class="card"><h3>Memori & Disk</h3><div class="app"><span>RAM</span><span id="ramt"></span></div><div class="bar"><i id="ramb"></i></div><div class="app"><span>Disk</span><span id="diskt"></span></div><div class="bar"><i id="diskb"></i></div><div class="sub" id="up"></div></div>
-  <div class="card"><h3>Proses terberat</h3><div id="procs"></div></div>
-  <div class="card"><h3>Pemblokir iklan</h3><div class="big" id="ads">–</div><div class="sub" id="adst"></div></div>
-</div>
-<div class="grid" id="ai" hidden>
-  <div class="card"><h3>Jaringan saraf (MLP 4-8-1)</h3><div class="sub">memprediksi kapan Bos butuh istirahat</div><div class="row"><div class="big" id="mlacc">–</div><div class="sub" id="mlt"></div></div><span class="pill" id="mlp"></span></div>
-  <div class="card"><h3>Pemahaman perintah</h3><div class="sub">contoh niat yang dipelajari</div><div class="big" id="ex">–</div></div>
-  <div class="card"><h3>🐾 Sahabat NOVA</h3><div class="sub">diadaptasi dari fiorastudio/buddy (MIT)</div><pre id="bd" style="white-space:pre-wrap;margin:0;font:12px/1.5 Consolas,monospace"></pre></div>
-  <div class="card" style="grid-column:1/-1"><h3>Analitik: tipe hari · ramalan disk · anomali</h3><div class="sub">K-Means, regresi tren, deteksi anomali</div><pre id="an" style="white-space:pre-wrap;margin:0;font:inherit"></pre></div>
-  <div class="card"><h3>Memori Gemini (hemat token)</h3><div class="big" id="gc">–</div><div class="sub" id="gct"></div></div>
-</div>
-<div class="grid" id="net" hidden>
-  <div class="card" style="grid-column:1/-1"><h3>Jalur internet</h3><div class="sub" id="nets">belum diperiksa</div><pre id="netp" style="white-space:pre-wrap;margin:8px 0;font:12px/1.6 Consolas,monospace"></pre><button class="btn" id="netb">Periksa sekarang</button></div>
-  <div class="card" style="grid-column:1/-1"><h3>Monitor koneksi &amp; penangkap paket</h3><div class="sub" id="pks">belum dimuat</div><pre id="pkp" style="white-space:pre-wrap;margin:8px 0;font:12px/1.6 Consolas,monospace"></pre><button class="btn" id="pkb">Muat koneksi</button> <button class="btn" id="pkt">Tangkap paket 15 dtk (admin/UAC)</button></div>
-</div>
-<div class="grid" id="otk" hidden>
-  <div class="card"><h3>Tingkat otak</h3><div class="sub">rata-rata kemajuan semua ingatan menuju targetnya</div><div class="big" id="otl">–</div><div class="bar"><i id="otb" style="width:0"></i></div><div class="sub" id="ota"></div></div>
-  <div class="card"><h3>Pertumbuhan harian</h3><div class="sub">tingkat otak per hari (belajar berkelanjutan)</div><canvas id="cotk"></canvas><button class="btn" id="otbtn" style="margin-top:8px">Belajar sekarang</button></div>
-  <div class="card" style="grid-column:1/-1"><h3>Isi ingatan</h3><div id="otd"></div></div>
-</div>
+<nav>
+  <div class="logo">NOVA</div><div class="upd" id="upd">memuat…</div>
+  <a data-s="ringkas" class="on">Hari ini <b id="n1"></b></a>
+  <a data-s="otak">Otak <b id="n2"></b></a>
+  <a data-s="net">Jaringan <b id="n3"></b></a>
+  <a data-s="pc">Laptop <b id="n4"></b></a>
+  <a class="back" href="/ui?app=1">Kembali ke obrolan</a>
+</nav>
+<main>
+<section id="ringkas" class="on">
+  <h2>Hari ini</h2><p class="lead" id="kal">memuat…</p>
+  <div id="flags"></div>
+  <div class="cols">
+    <div><h3>Kelelahan</h3><div class="num" id="fat">–</div><div class="bar"><i id="fatb" style="width:0"></i></div><div class="lead" id="sesi"></div>
+      <h3>Jam aktif (rata-rata menit per jam)</h3><canvas id="c24" height="110"></canvas><div class="lead" id="hari"></div></div>
+    <div><h3>Aplikasi yang paling lama dipakai (7 hari)</h3><div id="apps"></div>
+      <h3>Pemakaian per hari (jam)</h3><canvas id="c7" height="110"></canvas></div>
+  </div>
+</section>
+
+<section id="otak">
+  <h2>Otak</h2><p class="lead">Peta ingatan NOVA: tiap titik adalah hal yang pernah kamu bahas atau kerjakan (kata kunci, berkas, domain, kode); garis berarti sering muncul bersamaan. Titik besar = sering. Geser untuk menggeser, roda untuk zoom, klik titik untuk melihat tetangganya.</p>
+  <div style="margin:0 0 10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><input id="cari" placeholder="Cari titik…" aria-label="Cari titik di graf"><span class="lead" id="gstat" style="margin:0"></span></div>
+  <div id="gwrap"><canvas id="graf"></canvas><div id="gside"><div class="lead">Klik sebuah titik.</div></div></div>
+  <div class="cols">
+    <div><h3>Seberapa jauh NOVA belajar</h3><div class="num"><span id="otl">–</span><small>dari target</small></div><div class="lead" id="ota"></div><div id="otd"></div></div>
+    <div><h3>Pertumbuhan harian</h3><canvas id="cotk" height="120"></canvas><p class="lead">Setiap hari saat kamu aktif, NOVA melatih ulang model kelelahan dan mencatat isi ingatan.</p><button id="otbtn">Belajar sekarang</button>
+      <h3>Isi pikiran</h3><div class="lead" id="bd" style="white-space:pre-wrap;font:12px/1.5 Consolas,monospace"></div></div>
+  </div>
+</section>
+
+<section id="net">
+  <h2>Jaringan</h2><p class="lead" id="nets">Periksa jalur dari laptop sampai internet, lihat aplikasi yang memakai koneksi, atau tangkap paket.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button id="netb">Periksa jalur internet</button><button id="pkb">Muat koneksi</button><button id="pkt">Tangkap paket 15 dtk (admin, UAC)</button></div>
+  <h3>Jalur internet</h3><pre id="netp">Belum diperiksa.</pre>
+  <h3>Koneksi aktif</h3><div class="lead" id="pks"></div><div id="pkp"></div>
+  <h3>Hasil tangkapan paket</h3><pre id="cap">Belum ada tangkapan. Windows meminta izin admin (UAC) sekali tiap tangkapan.</pre>
+</section>
+
+<section id="pc">
+  <h2>Laptop</h2>
+  <div class="cols">
+    <div><h3>CPU</h3><div class="num" id="cpu">–</div><canvas id="ccpu" height="90"></canvas>
+      <h3>Memori dan disk</h3><div class="row"><span>RAM</span><span id="ramt"></span></div><div class="bar"><i id="ramb"></i></div><div class="row"><span>Disk</span><span id="diskt"></span></div><div class="bar"><i id="diskb"></i></div></div>
+    <div><h3>Proses terberat</h3><div id="procs"></div>
+      <h3>Pemblokir iklan</h3><div class="num" id="ads">–</div><div class="lead" id="adst"></div>
+      <h3>Prediksi kelelahan</h3><div class="lead" id="mlt"></div><div class="lead" id="an" style="white-space:pre-wrap"></div></div>
+  </div>
+</section>
+</main>
 <script>
 const TOKEN="__TOKEN__";
-const $=s=>document.querySelector(s);
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["me","pc","ai","net","otk"].forEach(t=>$("#"+t).hidden=t!==b.dataset.t)});
-const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-function bars(id,vals,labels,color,fmt){const c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;const g=c.getContext("2d");g.scale(d,d);const W=r.width,H=r.height,p=22,mx=Math.max(1,...vals);g.clearRect(0,0,W,H);g.font="10px Segoe UI";g.fillStyle=css("--mut");const bw=(W-8)/vals.length;
- vals.forEach((v,i)=>{const h=(H-p-14)*v/mx;g.fillStyle=color;g.globalAlpha=v?1:.15;g.beginPath();g.roundRect(4+i*bw+2,H-p-h,bw-4,Math.max(h,2),3);g.fill();g.globalAlpha=1;g.fillStyle=css("--mut");if(labels[i]!==""){g.textAlign="center";g.fillText(labels[i],4+i*bw+bw/2,H-6)}if(v&&h>14){g.fillStyle=css("--text");g.fillText(fmt?fmt(v):Math.round(v),4+i*bw+bw/2,H-p-h-4)}})}
-function line(id,vals,color){const c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;const g=c.getContext("2d");g.scale(d,d);const W=r.width,H=r.height;g.clearRect(0,0,W,H);if(vals.length<2)return;g.strokeStyle=css("--line");for(let y=0;y<=4;y++){g.beginPath();g.moveTo(0,10+y*(H-20)/4);g.lineTo(W,10+y*(H-20)/4);g.stroke()}
- g.strokeStyle=color;g.lineWidth=2;g.beginPath();vals.forEach((v,i)=>{const x=i*W/(vals.length-1),y=H-10-(H-20)*Math.min(v,100)/100;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();g.lineTo(W,H-10);g.lineTo(0,H-10);g.fillStyle=color+"22";g.fill()}
-
-async function net(baru){const b=$("#netb");b.disabled=true;$("#nets").textContent=baru?"memeriksa… (±15 detik)":"memuat…";try{const r=await (await fetch("/api/internet"+(baru?"?baru=1":""),{headers:{"x-nova-token":TOKEN}})).json();
- const m=v=>v==null?"gagal":v+" ms";
- $("#nets").textContent="diperiksa "+r.waktu;
- $("#netp").textContent=["Laptop → "+(r.wifi_ssid?("Wi-Fi '"+r.wifi_ssid+"'"+(r.sinyal!=null?" sinyal "+r.sinyal+"%":"")):"kabel/jaringan"),"Router "+(r.gateway||"-")+": "+m(r.ping_gateway_ms)+" · hilang "+(r.loss_gateway??"-")+"%","Internet 1.1.1.1: "+m(r.ping_internet_ms)+" · hilang "+(r.loss_internet??"-")+"%","DNS "+(r.dns||"-")+": "+m(r.dns_ms),"Web: "+m(r.web_ms),"","Jalur: "+(r.hop||[]).join("  →  "),"Koneksi terbanyak: "+(r.top_proses||[]).join(", "),"","KESIMPULAN:",...(r.kesimpulan||[]).map(x=>"• "+x)].join("\n")}catch(e){$("#nets").textContent="gagal memuat"}b.disabled=false}
-$("#netb").onclick=()=>net(true);document.querySelector('[data-t="net"]').addEventListener("click",()=>{if($("#netp").textContent==="")net(false)});
-
-const H={headers:{"x-nova-token":TOKEN}};
-async function otak(b){const r=await (await fetch("/api/otak"+(b?"?belajar=1":""),H)).json();$("#otl").textContent=r.tingkat+"%";$("#otb").style.width=r.tingkat+"%";$("#ota").textContent="akurasi prediksi kelelahan "+r.akurasi+"% · sisi graf "+r.graf_sisi;
- $("#otd").innerHTML=r.dimensi.map(d=>`<div class="app"><span>${d.nama}</span><span>${d.nilai}/${d.target}</span></div><div class="bar"><i style="width:${d.persen}%"></i></div>`).join("");
- line("#cotk",r.riwayat.map(x=>x.tingkat),css("--acc"))}
-$("#otbtn").onclick=async()=>{$("#otbtn").disabled=true;await otak(true);$("#otbtn").disabled=false};
-document.querySelector('[data-t="otk"]').addEventListener("click",()=>otak(false));
-async function paket(t){$("#pks").textContent=t?"menangkap… setujui UAC bila muncul (±20 dtk)":"memuat…";try{const r=await (await fetch("/api/paket"+(t?"?tangkap=1":""),H)).json();
- if(r.tangkap){$("#pks").textContent="hasil tangkapan";$("#pkp").textContent=r.tangkap;return}
- $("#pks").textContent="diperbarui "+r.waktu+" · unduh "+r.unduh_kbps+" kb/s · unggah "+r.unggah_kbps+" kb/s · "+r.koneksi.length+" koneksi";
- $("#pkp").textContent=["PER APLIKASI: "+r.per_proses.map(p=>p[0]+" ("+p[1]+")").join(", "),"",...r.koneksi.slice(0,40).map(k=>(k.proses||"?").padEnd(18)+(k.domain||k.remote).padEnd(40)+(":"+k.port+" "+k.protokol)),"",r.catatan.length?"PERLU DILIHAT:\n• "+r.catatan.join("\n• "):"Tidak ada yang mencurigakan."].join("\n")}catch(e){$("#pks").textContent="gagal memuat"}}
-$("#pkb").onclick=()=>paket(false);$("#pkt").onclick=()=>paket(true);
+const $=s=>document.querySelector(s),css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const H={headers:{"x-nova-token":TOKEN,...(/[?&]app=1/.test(location.search)||document.referrer.includes("app=1")?{"x-nova-ui":"1"}:{})}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtH=s=>(s/3600).toFixed(1);
-async function load(){try{const d=await (await fetch("/api/stats",{headers:{"x-nova-token":TOKEN,...(/[?&]app=1/.test(location.search)||document.referrer.includes("app=1")?{"x-nova-ui":"1"}:{})}})).json();
+function show(id){document.querySelectorAll("section").forEach(x=>x.classList.toggle("on",x.id===id));document.querySelectorAll("nav a[data-s]").forEach(a=>a.classList.toggle("on",a.dataset.s===id));if(id==="otak")loadOtak();history.replaceState(null,"","#"+id)}
+document.querySelectorAll("nav a[data-s]").forEach(a=>a.onclick=()=>show(a.dataset.s));
+function fit(c,h){const r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=(h||r.height)*d;const g=c.getContext("2d");g.setTransform(d,0,0,d,0,0);return[g,r.width,h||r.height]}
+function bars(id,vals,labels,color){const[g,W,Hh]=fit($(id),$(id).getAttribute("height")|0);const p=18,mx=Math.max(1,...vals),bw=W/vals.length;g.clearRect(0,0,W,Hh);g.font="10px Consolas";g.textAlign="center";
+ vals.forEach((v,i)=>{const h=(Hh-p-4)*v/mx;g.fillStyle=color;g.globalAlpha=v?1:.2;g.fillRect(i*bw+2,Hh-p-Math.max(h,1),Math.max(bw-4,2),Math.max(h,1));g.globalAlpha=1;if(labels[i]!==""){g.fillStyle=css("--mut");g.fillText(labels[i],i*bw+bw/2,Hh-4)}})}
+function line(id,vals,color,max){const[g,W,Hh]=fit($(id),$(id).getAttribute("height")|0);g.clearRect(0,0,W,Hh);if(vals.length<2)return;const mx=max||Math.max(1,...vals);g.strokeStyle=color;g.lineWidth=1.6;g.beginPath();vals.forEach((v,i)=>{const x=i*W/(vals.length-1),y=Hh-4-(Hh-8)*Math.min(v,mx)/mx;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()}
+
+/* ---- data utama ---- */
+let net={};
+async function load(){try{const d=await (await fetch("/api/stats",H)).json();
  $("#upd").textContent="diperbarui "+new Date().toLocaleTimeString();
- const f=Math.round(d.fatigue*100);$("#fat").textContent=f+"%";$("#fatb").style.width=f+"%";$("#fatb").style.background=f>66?css("--bad"):f>40?css("--warn"):css("--ok");
- $("#fatt").textContent=f>66?"waktunya istirahat":f>40?"mulai lelah":"segar";$("#sesi").textContent="Sesi aktif sekarang "+d.streak+" menit · sesi tipikal "+(d.sesi||"belum diketahui")+" menit";
- $("#hari").textContent="berdasarkan "+d.hari+" hari data";bars("#c24",d.per_jam,d.per_jam.map((_,i)=>i%3===0?String(i):""),css("--acc"),v=>Math.round(v));
- bars("#c7",d.days.map(x=>x[1]),d.days.map(x=>x[0].slice(5)),css("--ok"),v=>fmtH(v));
- const mx=Math.max(1,...d.apps.map(a=>a[1]));$("#apps").innerHTML=d.apps.map(a=>`<div class="app"><span>${a[0]}</span><span>${fmtH(a[1])} j</span></div><div class="bar"><i style="width:${100*a[1]/mx}%"></i></div>`).join("")||"<div class=sub>Belum ada data.</div>";
- $("#cpu").textContent=Math.round(d.cpu)+"%";line("#ccpu",d.cpu_hist,css("--acc"));
- const rp=100*d.ram_used/d.ram_total,dp=100*d.disk_used/d.disk_total;$("#ramt").textContent=(d.ram_used/1024).toFixed(1)+" / "+(d.ram_total/1024).toFixed(1)+" GB";$("#ramb").style.width=rp+"%";$("#diskt").textContent=d.disk_used+" / "+d.disk_total+" GB";$("#diskb").style.width=dp+"%";$("#diskb").style.background=dp>90?css("--bad"):css("--acc");$("#up").textContent="Menyala "+Math.floor(d.uptime/60)+" j "+d.uptime%60+" m";
- $("#procs").innerHTML=d.procs.map(p=>`<div class="app"><span>${p[0]}</span><span>${p[1].toFixed(0)}% CPU · ${p[2]} MB</span></div>`).join("");
- $("#ads").textContent=d.ads_blocked;$("#adst").textContent="diblokir dari "+d.ads_total+" permintaan · "+d.ads_listed+" domain";
- $("#mlacc").textContent=d.ml.samples?d.ml.acc.toFixed(0)+"%":"–";$("#mlt").textContent=d.ml.samples?d.ml.samples+" sampel · pembanding mayoritas "+d.ml.base.toFixed(0)+"%":"belum dilatih (butuh data aktivitas)";$("#mlp").textContent=d.ml.used?"dipakai untuk prediksi":"belum dipakai (belum mengalahkan tebakan mayoritas)";
- $("#an").textContent=d.analitik;$("#bd").textContent=d.buddy;$("#ex").textContent=d.examples;$("#gc").textContent=d.gcache[0];$("#gct").textContent="entri · dipakai ulang "+d.gcache[1]+" kali (hemat panggilan)";
+ const f=Math.round(d.fatigue*100),rp=100*d.ram_used/d.ram_total,dp=100*d.disk_used/d.disk_total,ket=f>66?"waktunya istirahat":f>40?"mulai lelah":"masih segar";
+ $("#kal").textContent="Sesi aktif "+d.streak+" menit. Kelelahan "+f+"% ("+ket+"). CPU "+Math.round(d.cpu)+"%, RAM "+Math.round(rp)+"%, disk "+Math.round(dp)+"% terisi.";
+ $("#fat").textContent=f+"%";$("#fatb").style.width=f+"%";$("#fatb").style.background=f>66?css("--bad"):f>40?css("--warn"):css("--ok");
+ $("#sesi").textContent="Sesi tipikalmu "+(d.sesi||"belum diketahui")+" menit.";$("#hari").textContent="Dari "+d.hari+" hari data.";
+ bars("#c24",d.per_jam,d.per_jam.map((_,i)=>i%3===0?String(i):""),css("--blue"));bars("#c7",d.days.map(x=>x[1]/3600),d.days.map(x=>x[0].slice(5)),css("--amber"));
+ const mx=Math.max(1,...d.apps.map(a=>a[1]));$("#apps").innerHTML=d.apps.map(a=>`<div class="row"><span>${esc(a[0])}</span><span>${fmtH(a[1])} jam</span></div><div class="bar"><i style="width:${100*a[1]/mx}%"></i></div>`).join("")||"<div class=lead>Belum ada data.</div>";
+ const fl=[];if(f>66)fl.push(["bad","Kelelahan tinggi ("+f+"%): istirahat dulu."]);if(dp>90)fl.push(["bad","Disk hampir penuh ("+Math.round(dp)+"%). Ketik 'bersihkan cache aman' di obrolan."]);if(rp>85)fl.push(["warn","RAM terpakai "+Math.round(rp)+"%: tutup aplikasi yang tidak dipakai."]);
+ (net.kesimpulan||[]).filter(x=>!/sehat/.test(x)).forEach(x=>fl.push(["warn",x]));
+ $("#flags").innerHTML=fl.length?fl.map(x=>`<div class="flag ${x[0]==="bad"?"bad":""}">${esc(x[1])}</div>`).join(""):'<div class="flag ok">Tidak ada yang perlu diperhatikan sekarang.</div>';
+ $("#cpu").textContent=Math.round(d.cpu)+"%";line("#ccpu",d.cpu_hist,css("--blue"),100);
+ $("#ramt").textContent=(d.ram_used/1024).toFixed(1)+" / "+(d.ram_total/1024).toFixed(1)+" GB";$("#ramb").style.width=rp+"%";$("#diskt").textContent=d.disk_used+" / "+d.disk_total+" GB";$("#diskb").style.width=dp+"%";$("#diskb").style.background=dp>90?css("--bad"):css("--blue");
+ $("#procs").innerHTML=d.procs.map(p=>`<div class="row"><span>${esc(p[0])}</span><span>${p[1].toFixed(0)}% CPU · ${p[2]} MB</span></div>`).join("");
+ $("#ads").textContent=d.ads_blocked;$("#adst").textContent="diblokir dari "+d.ads_total+" permintaan ("+d.ads_listed+" domain terdaftar)";
+ $("#mlt").textContent=d.ml.samples?"Akurasi "+d.ml.acc.toFixed(0)+"% dari "+d.ml.samples+" sampel; tebakan mayoritas "+d.ml.base.toFixed(0)+"%. "+(d.ml.used?"Dipakai untuk prediksi.":"Belum dipakai (belum mengalahkan tebakan mayoritas)."):"Belum dilatih (butuh lebih banyak data aktivitas).";
+ $("#an").textContent=d.analitik;$("#bd").textContent=d.buddy;
+ $("#n1").textContent=f+"%";$("#n4").textContent=Math.round(d.cpu)+"%";
 }catch(e){$("#upd").textContent="terputus…"}}
+
+/* ---- otak: graf ala Obsidian ---- */
+const KC={kata:"#6ea6dc",nama:"#e8a33d",berkas:"#5fb98a",domain:"#c97fb5",kode:"#d96b5a"};
+const kc=k=>KC[k]||"#8791a5";
+let G={nodes:[],edges:[],by:new Map(),adj:new Map(),sel:null,hov:null,q:"",tx:0,ty:0,k:1,run:0,drag:null};
+async function loadGraf(){try{const r=await (await fetch("/api/graf",H)).json();const n=r.nodes.length;
+ G.nodes=r.nodes.map((x,i)=>({...x,x:Math.cos(i*2.4)*Math.sqrt(i+1)*14,y:Math.sin(i*2.4)*Math.sqrt(i+1)*14,vx:0,vy:0,r:3+Math.min(11,Math.sqrt(x.w)*.9)}));
+ G.by=new Map(G.nodes.map(x=>[x.id,x]));G.adj=new Map(G.nodes.map(x=>[x.id,[]]));
+ G.edges=r.edges.filter(e=>G.by.has(e[0])&&G.by.has(e[1]));G.edges.forEach(e=>{G.adj.get(e[0]).push([e[1],e[2]]);G.adj.get(e[1]).push([e[0],e[2]])});
+ $("#gstat").textContent=n+" titik · "+G.edges.length+" garis (350 teratas)";G.run=420;tick()}catch(e){$("#gstat").textContent="graf belum bisa dimuat"}}
+function tick(){const N=G.nodes;if(G.run>0||G.drag){G.run--;
+  for(let i=0;i<N.length;i++){const a=N[i];for(let j=i+1;j<N.length;j++){const b=N[j];let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy+.5;if(d2>40000)continue;const f=900/d2,d=Math.sqrt(d2);a.vx+=dx/d*f;a.vy+=dy/d*f;b.vx-=dx/d*f;b.vy-=dy/d*f}}
+  G.edges.forEach(e=>{const a=G.by.get(e[0]),b=G.by.get(e[1]),dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)+.1,f=(d-60)*.012;a.vx+=dx/d*f;a.vy+=dy/d*f;b.vx-=dx/d*f;b.vy-=dy/d*f});
+  N.forEach(a=>{a.vx-=a.x*.004;a.vy-=a.y*.004;if(G.drag&&G.drag.n===a){a.vx=a.vy=0;return}a.x+=a.vx*.5;a.y+=a.vy*.5;a.vx*=.82;a.vy*=.82})}
+ drawG();if($("#otak").classList.contains("on")&&(G.run>0||G.drag))requestAnimationFrame(tick)}
+function drawG(){const c=$("#graf"),[g,W,Hh]=fit(c,520);g.clearRect(0,0,W,Hh);g.save();g.translate(W/2+G.tx,Hh/2+G.ty);g.scale(G.k,G.k);
+ const act=G.sel||G.hov,nb=act?new Set([act.id,...G.adj.get(act.id).map(x=>x[0])]):null,q=G.q.toLowerCase();
+ g.lineWidth=1/G.k;G.edges.forEach(e=>{const a=G.by.get(e[0]),b=G.by.get(e[1]);const on=nb&&(a===act||b===act);g.strokeStyle=on?css("--sel"):css("--line");g.globalAlpha=nb&&!on?.15:on?.9:.7;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()});g.globalAlpha=1;
+ G.nodes.forEach(n=>{const hit=q&&n.name.toLowerCase().includes(q),dim=(nb&&!nb.has(n.id))||(q&&!hit);g.globalAlpha=dim?.18:1;g.fillStyle=n===G.sel?css("--sel"):kc(n.kind);g.beginPath();g.arc(n.x,n.y,n.r,0,7);g.fill();if(hit){g.strokeStyle=css("--amber");g.lineWidth=2/G.k;g.stroke()}});
+ g.globalAlpha=1;g.fillStyle=css("--text");g.font=(11/G.k)+"px Segoe UI";g.textAlign="center";
+ G.nodes.forEach(n=>{const show=n===G.sel||n===G.hov||(nb&&nb.has(n.id)&&n.r>5)||(q&&n.name.toLowerCase().includes(q))||(!nb&&!q&&n.r>8.5&&G.k>.7)||G.k>2.2;if(show)g.fillText(n.name.slice(0,26),n.x,n.y-n.r-3/G.k)});g.restore()}
+function pick(ev){const r=$("#graf").getBoundingClientRect(),x=(ev.clientX-r.left-r.width/2-G.tx)/G.k,y=(ev.clientY-r.top-r.height/2-G.ty)/G.k;let best=null,bd=1e9;G.nodes.forEach(n=>{const d=(n.x-x)**2+(n.y-y)**2;if(d<(n.r+4)**2&&d<bd){bd=d;best=n}});return[best,x,y]}
+function detail(n){if(!n){$("#gside").innerHTML='<div class="lead">Klik sebuah titik.</div>';return}
+ const nb=G.adj.get(n.id).sort((a,b)=>b[1]-a[1]).slice(0,14);
+ $("#gside").innerHTML=`<div><span class="k" style="background:${kc(n.kind)}"></span><b>${esc(n.name)}</b></div><div class="lead">${esc(n.kind)} · bobot ${n.w.toFixed(1)} · ${nb.length?G.adj.get(n.id).length:0} tetangga</div>`+nb.map(x=>{const m=G.by.get(x[0]);return`<div class="row" style="cursor:pointer" data-id="${m.id}"><span><span class="k" style="background:${kc(m.kind)}"></span>${esc(m.name)}</span><span>${x[1].toFixed(0)}</span></div>`}).join("");
+ $("#gside").querySelectorAll("[data-id]").forEach(r=>r.onclick=()=>{G.sel=G.by.get(+r.dataset.id);detail(G.sel);drawG()})}
+(()=>{const c=$("#graf");let pan=null;
+ c.onmousedown=e=>{const[n]=pick(e);if(n){G.drag={n};G.sel=n;detail(n);tick()}else pan={x:e.clientX-G.tx,y:e.clientY-G.ty};c.style.cursor="grabbing"};
+ addEventListener("mouseup",()=>{G.drag=null;pan=null;c.style.cursor="grab"});
+ c.onmousemove=e=>{if(G.drag){const[,x,y]=pick(e);const r=c.getBoundingClientRect();G.drag.n.x=(e.clientX-r.left-r.width/2-G.tx)/G.k;G.drag.n.y=(e.clientY-r.top-r.height/2-G.ty)/G.k;G.run=60;return}
+  if(pan){G.tx=e.clientX-pan.x;G.ty=e.clientY-pan.y;drawG();return}const[n]=pick(e);if(n!==G.hov){G.hov=n;drawG()}};
+ c.onwheel=e=>{e.preventDefault();G.k=Math.max(.2,Math.min(5,G.k*(e.deltaY<0?1.12:.9)));drawG()};
+ c.onmouseleave=()=>{G.hov=null;drawG()};
+ $("#cari").oninput=e=>{G.q=e.target.value;drawG()};addEventListener("resize",()=>{if($("#otak").classList.contains("on"))drawG()})})();
+async function loadOtak(b){if(!G.nodes.length)loadGraf();else{G.run=Math.max(G.run,1);tick()}
+ try{const r=await (await fetch("/api/otak"+(b?"?belajar=1":""),H)).json();$("#otl").textContent=r.tingkat+"%";$("#n2").textContent=r.tingkat+"%";$("#ota").textContent="Akurasi prediksi kelelahan "+r.akurasi+"%, "+r.graf_sisi+" garis di graf.";
+ $("#otd").innerHTML=r.dimensi.map(d=>`<div class="row"><span>${esc(d.nama)}</span><span>${d.nilai} / ${d.target}</span></div><div class="bar"><i style="width:${d.persen}%"></i></div>`).join("");line("#cotk",r.riwayat.map(x=>x.tingkat),css("--amber"),100)}catch(e){}}
+$("#otbtn").onclick=async()=>{$("#otbtn").disabled=true;await loadOtak(true);$("#otbtn").disabled=false};
+
+/* ---- jaringan ---- */
+async function periksa(){const b=$("#netb");b.disabled=true;$("#nets").textContent="Memeriksa jalur (±15 detik)…";try{const r=await (await fetch("/api/internet?baru=1",H)).json();net=r;const m=v=>v==null?"gagal":v+" ms";
+ $("#nets").textContent="Diperiksa "+r.waktu+".";$("#n3").textContent=r.ping_internet_ms==null?"putus":r.ping_internet_ms+" ms";
+ $("#netp").textContent=["Laptop → "+(r.wifi_ssid?("Wi-Fi '"+r.wifi_ssid+"'"+(r.sinyal!=null?", sinyal "+r.sinyal+"%":"")):"kabel/jaringan"),"Router "+(r.gateway||"-")+": "+m(r.ping_gateway_ms)+", paket hilang "+(r.loss_gateway??"-")+"%","Internet 1.1.1.1: "+m(r.ping_internet_ms)+", paket hilang "+(r.loss_internet??"-")+"%","DNS "+(r.dns||"-")+": "+m(r.dns_ms),"Web: "+m(r.web_ms),"","Jalur: "+(r.hop||[]).join("  →  "),"","Kesimpulan:",...(r.kesimpulan||[]).map(x=>"• "+x)].join("\n")}catch(e){$("#nets").textContent="Gagal memeriksa."}b.disabled=false}
+async function koneksi(){$("#pks").textContent="Memuat…";try{const r=await (await fetch("/api/paket",H)).json();
+ $("#pks").textContent="Unduh "+r.unduh_kbps+" kb/s, unggah "+r.unggah_kbps+" kb/s, "+r.koneksi.length+" koneksi aktif. "+(r.catatan.length?"Perlu dilihat: "+r.catatan.join("; "):"Tidak ada pola yang mencurigakan.");
+ $("#pkp").innerHTML="<table><tr><th>Aplikasi</th><th>Tujuan</th><th>Port</th><th>Protokol</th></tr>"+r.koneksi.slice(0,60).map(k=>`<tr><td>${esc(k.proses||"?")}</td><td>${esc(k.domain||k.remote)}</td><td>${k.port}</td><td>${esc(k.protokol)}</td></tr>`).join("")+"</table>"}catch(e){$("#pks").textContent="Gagal memuat."}}
+async function tangkap(){const b=$("#pkt");b.disabled=true;$("#cap").textContent="Menangkap ±15 detik. Setujui kotak UAC Windows bila muncul…";try{const r=await (await fetch("/api/paket?tangkap=1",H)).json();$("#cap").textContent=r.tangkap}catch(e){$("#cap").textContent="Gagal menangkap."}b.disabled=false}
+$("#netb").onclick=periksa;$("#pkb").onclick=koneksi;$("#pkt").onclick=tangkap;
 load();setInterval(load,5000);addEventListener("resize",load);
+{const h=(location.hash||"").slice(1);show(["ringkas","otak","net","pc"].includes(h)?h:"ringkas")}
+fetch("/api/otak",H).then(r=>r.json()).then(r=>$("#n2").textContent=r.tingkat+"%").catch(()=>{});
 </script>
 </body>
 </html>
