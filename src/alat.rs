@@ -378,7 +378,16 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "remind" => crate::assistant::add_reminder(arg),
         "agenda" | "habit" | "tidur" => crate::assistant::report(&c.tool),
         "tanya" => {
-            let r = crate::teknik::tanya(arg);
+            let mut r = crate::teknik::tanya(arg);
+            // Buku berbahasa Inggris: pertanyaan Indonesia juga dicari dalam bentuk Inggris (pencarian berbasis kata tidak lintas bahasa).
+            if arg.split_whitespace().count() >= 3 && !crate::terjemah::kemungkinan_inggris(arg) && !crate::teknik::buku_terpelajari().is_empty() {
+                if let Ok((en, _, _)) = crate::terjemah::terjemahkan(http, arg, Some("en")).await {
+                    let r2 = crate::teknik::tanya(&en);
+                    if r2.contains(".pdf]") || r2.contains(".md]") || r2.contains(".txt]") {
+                        r = r2;
+                    }
+                }
+            }
             // Sumber berbahasa Inggris (mis. buku teknik): sertakan terjemahan Indonesia di depan.
             if crate::terjemah::kemungkinan_inggris(&r) {
                 let awal: String = r.chars().take(1500).collect();
