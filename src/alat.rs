@@ -110,7 +110,7 @@ pub fn assess(c: &Call) -> Risk {
         return Risk::Block("akses komputer dikunci: server web terbuka tanpa KH_PASSWORD".into());
     }
     match c.tool.as_str() {
-        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" => Risk::Safe,
+        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" => Risk::Safe,
         "kurikulum" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "graphify" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "graphify" => Risk::Safe,
@@ -298,6 +298,8 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "gitringkas" => crate::ekstra::git_ringkas(http, arg).await,
         "halaman" => crate::ekstra::halaman(http, arg).await,
         "peramban" => crate::peramban::baca(arg).await,
+        "internet" => crate::internet::laporan(http).await,
+        "riwayat" => tokio::task::spawn_blocking(crate::riwayat::ringkas).await.unwrap_or_default(),
         "daya" => crate::daya::jalankan(arg),
         "kirim" => crate::surel::kirim(arg).await,
         "csv" => crate::ekstra::csv(arg),
@@ -409,6 +411,13 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "open" if arg.starts_with("https://www.youtube.com/results?search_query=") => {
             let q = urlencoding::decode(arg.trim_start_matches("https://www.youtube.com/results?search_query=")).map(|c| c.into_owned()).unwrap_or_default();
             crate::musik::catat(&q);
+            // Pencarian musik: langsung putar video teratas (bukan berhenti di daftar hasil).
+            let musik = q.to_lowercase().split_whitespace().any(|w| ["lagu", "musik", "music", "lofi", "playlist"].contains(&w));
+            if musik {
+                let q2 = q.clone();
+                let _ = tokio::task::spawn_blocking(move || crate::musik::putar(&q2)).await;
+                return format!("memutar di YouTube: {q}");
+            }
             crate::musik::buka_url(arg);
             format!("dibuka: {arg}")
         }

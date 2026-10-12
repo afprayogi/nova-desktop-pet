@@ -131,7 +131,13 @@ pub fn catat(q: &str) {
 /// (terbanyak, sebelumnya): kueri paling sering diputar, dan yang terakhir diputar selain itu.
 fn pilihan() -> Option<(String, Option<String>)> {
     let j = baca_riwayat();
-    let top = j["hitung"].as_object()?.iter().max_by_key(|(_, v)| v.as_u64().unwrap_or(0))?.0.clone();
+    let mut hitung: std::collections::HashMap<String, u64> = j["hitung"].as_object().map(|o| o.iter().map(|(k, v)| (k.clone(), v.as_u64().unwrap_or(0))).collect()).unwrap_or_default();
+    if crate::riwayat::aktif() {
+        for (t, n) in crate::riwayat::lagu().into_iter().take(20) {
+            *hitung.entry(t).or_insert(0) += n as u64;
+        }
+    }
+    let top = hitung.iter().max_by_key(|(_, v)| **v)?.0.clone();
     let prev = j["terakhir"].as_array().and_then(|a| a.iter().rev().filter_map(|x| x.as_str()).find(|x| *x != top).map(String::from));
     Some((top, prev))
 }
@@ -158,7 +164,7 @@ pub fn buka_url(u: &str) {
 }
 
 /// Buka video teratas hasil pencarian `q` di YouTube (cadangan: halaman hasil pencarian).
-fn putar(q: &str) {
+pub fn putar(q: &str) {
     let search = format!("https://www.youtube.com/results?search_query={}", urlencoding::encode(q));
     let id = tokio::runtime::Builder::new_current_thread().enable_all().build().ok().and_then(|rt| {
         rt.block_on(async {

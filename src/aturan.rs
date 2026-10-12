@@ -84,6 +84,12 @@ pub fn rule(s: &str) -> Option<Call> {
     if let Some(r) = after(s, &l, &["baca dengan chrome", "baca pakai chrome", "buka dan baca"]) {
         return Some(Call { tool: "peramban".into(), arg: clean(r) });
     }
+    if ["cek internet", "jalur internet", "koneksi internet", "internet lambat", "internet lemot", "internet mati", "kenapa internet", "cek jaringan", "wifi lemot", "diagnosa internet"].iter().any(|k| l.contains(k)) {
+        return Some(Call { tool: "internet".into(), arg: String::new() });
+    }
+    if l.starts_with("riwayat chrome") || l.starts_with("riwayat browser") || l.contains("history chrome") {
+        return Some(Call { tool: "riwayat".into(), arg: String::new() });
+    }
     if let Some(a) = crate::daya::dari_kalimat(&l) {
         return Some(Call { tool: "daya".into(), arg: a.into() });
     }

@@ -136,6 +136,19 @@ impl Engine {
                 let r = tokio::task::spawn_blocking({ let a = arg.to_string(); move || crate::aplikasi::daftar_teks(&a) }).await.unwrap_or_default();
                 self.agent_say(0, &r)
             }
+            "internet" | "jaringan" => {
+                self.agent_say(0, "Memeriksa jalur internet (±15 detik)…");
+                let r = crate::internet::laporan(&self.http).await;
+                self.agent_say(0, &r)
+            }
+            "riwayat" => {
+                let r = match arg.to_lowercase().as_str() {
+                    "on" => crate::riwayat::set(true),
+                    "off" => crate::riwayat::set(false),
+                    _ => tokio::task::spawn_blocking(crate::riwayat::ringkas).await.unwrap_or_default(),
+                };
+                self.agent_say(0, &r)
+            }
             "musikjaga" => {
                 let r = crate::musik::set_jaga(!arg.eq_ignore_ascii_case("off") && arg != "0");
                 self.agent_say(0, &r)
