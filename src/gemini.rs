@@ -428,7 +428,7 @@ fn recent_turns() -> String {
     TURNS.lock().map(|t| t.iter().map(|(u, o)| format!("Bos: {u}\nNOVA: {o}")).collect::<Vec<_>>().join("\n")).unwrap_or_default()
 }
 
-const EXTRA_TOOLS: &str = "\
+pub(crate) const EXTRA_TOOLS: &str = "\
 atur <kecerahan|volume> <N|+N|-N|mute|unmute|?> : atur kecerahan layar / volume suara (persen)
 waktu         : jam, hari, dan tanggal sekarang
 web <pertanyaan>: cari informasi terbaru di internet lalu rangkum
@@ -470,12 +470,11 @@ Tugasmu: pahami ucapan Bos lalu balas HANYA JSON: {{\"calls\":[{{\"tool\":\"nama
 - Bila hanya bertanya/ngobrol, calls kosong dan reply berisi jawaban ramah (maksimal 4 kalimat, Bahasa Indonesia, jangan mengarang).\n\
 - Pertanyaan tentang fakta terbaru/berita/harga/cuaca -> pakai alat web. Jangan memakai alat yang tidak ada di daftar.\n\
 - shell/write/open hanya bila Bos jelas memintanya; keputusan akhir tetap di Bos (akan dimintai konfirmasi).\n\
-Alat:\n{}\n{}\n\nKonteks: aplikasi di depan = {}. {}{}",
+Alat (nama argumen: deskripsi [risiko]):\n{}\n\nKonteks: aplikasi di depan = {}. {}{}",
         crate::sistem::waktu_text(),
         mode,
         crate::persona::prompt(0),
-        crate::alat::TOOL_HELP,
-        EXTRA_TOOLS,
+        crate::registry::teks(None),
         crate::konteks::current_app(),
         crate::hewan::memori(),
         if ctx.is_empty() { String::new() } else { format!("\nPercakapan terakhir (untuk memahami rujukan):\n{ctx}") }

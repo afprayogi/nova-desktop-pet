@@ -137,7 +137,9 @@ async fn plan_one(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat
     if !has(http, CHAT_MODEL).await {
         bail!("model obrolan lokal belum terpasang");
     }
-    let tools = crate::gemini::tool_names();
+    // Model kecil: hanya alat paling relevan (pencarian embedding) yang ditampilkan dan boleh dipilih.
+    let top = crate::registry::relevan(goal, 14);
+    let tools: Vec<String> = top.iter().map(|x| x.nama.clone()).collect();
     let schema = json!({
         "type": "object",
         "properties": {
@@ -149,7 +151,7 @@ async fn plan_one(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat
     // sistem ringkas (prompt panjang membingungkan model kecil): daftar alat + aturan
     let sys = format!(
         "Kamu NOVA, asisten laptop yang ramah (panggil pengguna 'Bos'). Balas HANYA JSON {{\"calls\":[{{\"tool\":..,\"arg\":..}}],\"reply\":..}}.\nJika Bos meminta tindakan, isi calls dengan alat yang tepat dan reply satu kalimat ramah. Jika hanya ngobrol/bertanya umum, calls kosong dan reply jawaban singkat yang jujur.\nAlat:\n{}\nFakta: {}",
-        crate::alat::TOOL_HELP.lines().chain(["atur <kecerahan|volume> <N>", "waktu", "web <pertanyaan>", "gambar <kata>", "jurnal <topik tahun>"]).map(|l| l.chars().take(110).collect::<String>()).collect::<Vec<_>>().join("\n"),
+        top.iter().map(|x| crate::registry::baris(x).chars().take(130).collect::<String>()).collect::<Vec<_>>().join("\n"),
         crate::fakta::ringkas()
     );
     let shots: [(&str, &str); 11] = [
