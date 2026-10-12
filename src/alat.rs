@@ -117,6 +117,8 @@ pub fn assess(c: &Call) -> Risk {
         "pelajari" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "pelajari" | "kurikulum" => Risk::Safe,
         "kirim" => Risk::Confirm("mengirim email ke alamat Bos sendiri".into()),
+        "daya" if matches!(arg.trim(), "kunci" | "batal") => Risk::Safe,
+        "daya" => Risk::Confirm(format!("daya laptop: {}", arg.trim())),
         "urungkan" => Risk::Confirm("mengembalikan perubahan berkas terakhir (tulis/rapikan)".into()),
         "layar" => Risk::Safe, // hanya membaca (OCR lokal, tidak disimpan)
         "pdf" | "ringkas" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
@@ -296,6 +298,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
         "gitringkas" => crate::ekstra::git_ringkas(http, arg).await,
         "halaman" => crate::ekstra::halaman(http, arg).await,
         "peramban" => crate::peramban::baca(arg).await,
+        "daya" => crate::daya::jalankan(arg),
         "kirim" => crate::surel::kirim(arg).await,
         "csv" => crate::ekstra::csv(arg),
         "hitung" => crate::perkakas::hitung(arg),
@@ -401,6 +404,12 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                 c.creation_flags(0x0800_0000);
             }
             let _ = c.spawn();
+            format!("dibuka: {arg}")
+        }
+        "open" if arg.starts_with("https://www.youtube.com/results?search_query=") => {
+            let q = urlencoding::decode(arg.trim_start_matches("https://www.youtube.com/results?search_query=")).map(|c| c.into_owned()).unwrap_or_default();
+            crate::musik::catat(&q);
+            crate::musik::buka_url(arg);
             format!("dibuka: {arg}")
         }
         "open" if !arg.contains(['/', '\\', ':', '.']) && !arg.is_empty() => {

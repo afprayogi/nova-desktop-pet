@@ -57,7 +57,11 @@ fn layanan(l: &str) -> Option<String> {
     let has = |k: &str| w.contains(&k);
     let q = |extra: &[&str]| w.iter().filter(|x| !NOISE.contains(x) && !extra.contains(x)).cloned().collect::<Vec<_>>().join(" ");
     let files = ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"].iter().any(|k| has(k));
-    let (base, q) = if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"].iter().any(|k| has(k)) && !files) {
+    let extra = ["lagu", "musik", "mainkan", "setel", "play"];
+    let lagu = (has("lagu") || has("musik")) && ["putar", "putarkan", "mainkan", "setel", "play"].iter().any(|k| has(k)) && !has("folder") && !has("laptop") && !q(&extra).is_empty();
+    let (base, q) = if lagu {
+        ("https://www.youtube.com/results?search_query=", format!("lagu {}", q(&extra)))
+    } else if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"].iter().any(|k| has(k)) && !files) {
         ("https://www.youtube.com/results?search_query=", q(&[]))
     } else if l.starts_with("rute ke ") || l.starts_with("navigasi ke ") || has("maps") || l.starts_with("peta ") || l.starts_with("lokasi ") {
         ("https://www.google.com/maps/search/", q(&[]))
@@ -79,6 +83,9 @@ pub fn rule(s: &str) -> Option<Call> {
     }
     if let Some(r) = after(s, &l, &["baca dengan chrome", "baca pakai chrome", "buka dan baca"]) {
         return Some(Call { tool: "peramban".into(), arg: clean(r) });
+    }
+    if let Some(a) = crate::daya::dari_kalimat(&l) {
+        return Some(Call { tool: "daya".into(), arg: a.into() });
     }
     if let Some(u) = layanan(&l) {
         return Some(Call { tool: "open".into(), arg: u });

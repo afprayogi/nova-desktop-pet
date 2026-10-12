@@ -96,3 +96,100 @@ mod tests {
         let _ = player_running(); // tidak panik
     }
 }
+
+// ---------- Riwayat lagu & putar otomatis di YouTube ----------
+
+const MUSIK_KATA: &[&str] = &["lagu", "musik", "music", "song", "lofi", "playlist", "ost", "cover", "remix", "official", "mv", "lyrics", "lirik"];
+
+fn riwayat_file() -> PathBuf {
+    crate::config::data_dir().join("lagu.json")
+}
+
+fn baca_riwayat() -> serde_json::Value {
+    std::fs::read_to_string(riwayat_file()).ok().and_then(|j| serde_json::from_str(&j).ok()).unwrap_or_else(|| serde_json::json!({"hitung": {}, "terakhir": []}))
+}
+
+/// Catat pencarian YouTube bernuansa musik (jumlah per kueri + 10 terakhir).
+pub fn catat(q: &str) {
+    let q = q.trim().to_lowercase();
+    if q.is_empty() || !q.split_whitespace().any(|w| MUSIK_KATA.contains(&w)) {
+        return;
+    }
+    let mut j = baca_riwayat();
+    let n = j["hitung"][&q].as_u64().unwrap_or(0) + 1;
+    j["hitung"][&q] = n.into();
+    let mut last: Vec<String> = j["terakhir"].as_array().map(|a| a.iter().filter_map(|x| x.as_str().map(String::from)).collect()).unwrap_or_default();
+    last.retain(|x| *x != q);
+    last.push(q);
+    if last.len() > 10 {
+        last.remove(0);
+    }
+    j["terakhir"] = serde_json::json!(last);
+    let _ = std::fs::write(riwayat_file(), j.to_string());
+}
+
+/// (terbanyak, sebelumnya): kueri paling sering diputar, dan yang terakhir diputar selain itu.
+fn pilihan() -> Option<(String, Option<String>)> {
+    let j = baca_riwayat();
+    let top = j["hitung"].as_object()?.iter().max_by_key(|(_, v)| v.as_u64().unwrap_or(0))?.0.clone();
+    let prev = j["terakhir"].as_array().and_then(|a| a.iter().rev().filter_map(|x| x.as_str()).find(|x| *x != top).map(String::from));
+    Some((top, prev))
+}
+
+fn auto_off_file() -> PathBuf {
+    crate::config::data_dir().join("musik_auto_off")
+}
+
+pub fn set_auto(on: bool) -> String {
+    if on {
+        let _ = std::fs::remove_file(auto_off_file());
+        "Putar musik otomatis: AKTIF (sekali sehari saat Bos mulai aktif, sesuai riwayat YouTube terbanyak lewat NOVA).".into()
+    } else {
+        let _ = std::fs::write(auto_off_file(), "");
+        "Putar musik otomatis: MATI.".into()
+    }
+}
+
+pub fn buka_url(u: &str) {
+    let _ = std::process::Command::new("explorer.exe").arg(u).spawn();
+}
+
+/// Saat Bos mulai aktif (sekali per hari): putar lagu terbanyak di YouTube dan tawarkan lagu sebelumnya.
+pub fn auto(tx: &Tx) {
+    if auto_off_file().exists() || player_running() {
+        return;
+    }
+    let Some((top, prev)) = pilihan() else { return };
+    if !crate::assistant::once_key(&format!("{}musikauto", chrono::Local::now().format("%Y-%m-%d"))) {
+        return;
+    }
+    let tx = tx.clone();
+    std::thread::spawn(move || {
+        let search = format!("https://www.youtube.com/results?search_query={}", urlencoding::encode(&top));
+        let id = tokio::runtime::Builder::new_current_thread().enable_all().build().ok().and_then(|rt| {
+            rt.block_on(async {
+                let h = reqwest::Client::builder().user_agent("Mozilla/5.0").timeout(std::time::Duration::from_secs(10)).build().ok()?;
+                let html = h.get(&search).header("Accept-Language", "id,en").send().await.ok()?.text().await.ok()?;
+                regex::Regex::new(r#""videoId":"([A-Za-z0-9_-]{11})""#).ok()?.captures(&html).map(|c| c[1].to_string())
+            })
+        });
+        buka_url(&id.map(|i| format!("https://www.youtube.com/watch?v={i}")).unwrap_or(search));
+        if let Some(p) = prev {
+            crate::saran::offer_always(&tx, &format!("Kuputar '{top}'. Mau lagu sebelumnya, '{p}'?"), &format!("putar lagu {p}"), "musik");
+        }
+    });
+}
+
+#[cfg(test)]
+mod riwayat_tests {
+    #[test]
+    fn only_music_queries_counted() {
+        super::catat("tutorial rust"); // bukan musik: diabaikan
+        super::catat("lagu santai");
+        super::catat("lagu santai");
+        super::catat("lofi hip hop");
+        let (top, prev) = super::pilihan().unwrap();
+        assert_eq!(top, "lagu santai");
+        assert_eq!(prev.as_deref(), Some("lofi hip hop"));
+    }
+}

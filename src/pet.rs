@@ -155,6 +155,9 @@ struct Pet {
     ground_y: f32,
     fall_vy: f32,
     dragging: bool,
+    /// Area sprite yang menerima mouse; di luar itu jendela transparan meneruskan klik ke aplikasi di bawahnya.
+    hit: Rect,
+    pass: bool,
     special: Option<(usize, f64, f64)>,
     next_special: Instant,
     wheel_open: bool,
@@ -271,6 +274,8 @@ impl Pet {
             ground_y: 0.0,
             fall_vy: 0.0,
             dragging: false,
+            hit: Rect::NOTHING,
+            pass: false,
             special: None,
             next_special: Instant::now() + Duration::from_secs(25),
             wheel_open: false,
@@ -676,6 +681,22 @@ impl eframe::App for Pet {
             self.ground_y = self.pos.1;
         } else if let Some(r) = ctx.input(|i| i.viewport().outer_rect) {
             self.pos = (r.min.x, r.min.y);
+        }
+
+        // Jendela transparan tidak boleh menghalangi mouse/ketikan: di luar sprite, klik diteruskan ke aplikasi di bawahnya.
+        #[cfg(windows)]
+        {
+            use windows_sys::Win32::Foundation::POINT;
+            use windows_sys::Win32::UI::WindowsAndMessaging::GetCursorPos;
+            let mut pt = POINT { x: 0, y: 0 };
+            let ok = unsafe { GetCursorPos(&mut pt) } != 0;
+            let ppp = ctx.pixels_per_point();
+            let local = pos2(pt.x as f32 / ppp - self.pos.0, pt.y as f32 / ppp - self.pos.1);
+            let want = ok && !self.dragging && !self.chat_open && self.bec.is_none() && self.hit != Rect::NOTHING && !self.hit.contains(local);
+            if want != self.pass {
+                self.pass = want;
+                ctx.send_viewport_cmd(ViewportCommand::MousePassthrough(want));
+            }
         }
 
         // Kedip (wink) selesai -> buka obrolan.
@@ -1120,6 +1141,7 @@ impl eframe::App for Pet {
                 let oy = self.popup_h;
                 let origin = pos2((W - 16.0 * SCALE) / 2.0 + shake + gaze, oy + H - 16.0 * SCALE - 14.0 + nod + if self.st == St::Sleep { 0.0 } else { bob + hop });
                 let rect = Rect::from_min_size(origin, vec2(16.0 * SCALE, 16.0 * SCALE));
+                self.hit = rect.expand(14.0);
                 let frame = match self.st {
                     St::Sleep => Frame::Sleep,
                     St::Wander => {
