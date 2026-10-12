@@ -662,6 +662,11 @@ pub async fn run(tx: Tx) {
                 crate::otak::harian(false);
             });
         }
+        if n % 60 == 33 && active_recently(&c, 10) && crate::adegan::level() > 0 && !crate::bandit::quiet() && once(&c, &format!("{}ask{}", Local::now().format("%Y-%m-%d"), Local::now().hour() / 3)) {
+            if let Some(q) = crate::penasaran::proaktif() {
+                crate::adegan::play(&tx, vec![(0, q)]);
+            }
+        }
         if n % 60 == 20 && active_recently(&c, 10) && once(&c, &format!("{}dl", Local::now().format("%Y-%m-%d"))) {
             let loose = crate::berkas::loose_count(&dirs::download_dir().unwrap_or_default());
             if loose >= 40 {

@@ -84,6 +84,7 @@ mod ekstra;
 mod buddy;
 mod lokal;
 mod pdfteks;
+mod penasaran;
 mod persona;
 mod belajar;
 mod jurnal;

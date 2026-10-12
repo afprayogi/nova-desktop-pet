@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
-pub const BERKAS: &[&str] = &["kamus_aksi.json", "cli.json", "layanan.json", "ajar.json", "putusan.json", "kasus.json"];
+pub const BERKAS: &[&str] = &["kamus_aksi.json", "cli.json", "layanan.json", "ajar.json", "putusan.json", "kasus.json", "penasaran.json"];
 
 type Isi = (Option<SystemTime>, Arc<Value>, String);
 static CACHE: Mutex<Option<HashMap<String, Isi>>> = Mutex::new(None);

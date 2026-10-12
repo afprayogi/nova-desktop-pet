@@ -28,7 +28,7 @@ const KOSONG: &str = "[]";
 static TUNGGU: Mutex<Option<(String, Call, Call, [String; 2])>> = Mutex::new(None);
 static LAST: Mutex<Option<(String, Call, Instant)>> = Mutex::new(None);
 static TULIS: Mutex<()> = Mutex::new(());
-static PAKSA: Mutex<Option<String>> = Mutex::new(None);
+static PAKSA: Mutex<Option<(String, String)>> = Mutex::new(None);
 
 pub fn norm(s: &str) -> String {
     crate::rawat::normalisasi(s).to_lowercase().split_whitespace().collect::<Vec<_>>().join(" ")
@@ -88,6 +88,10 @@ fn upsert(kalimat: &str, c: &Call, sumber: &str, status: &str) -> bool {
 
 /// Bandingkan tebakan lokal `a` dengan rencana model `b` (satu panggilan) dan simpan hasilnya.
 pub fn nilai(goal: &str, a: Option<&Call>, b: &[Call], sumber: &str) -> Nilai {
+    // kalimat hasil penyambungan konteks tidak dipelajari: yang tersimpan hanya kalimat asli Bos
+    if crate::rawat::asli(goal) != goal {
+        return Nilai::Baru;
+    }
     let [b] = b else { return Nilai::Baru };
     if b.tool == "tanya" {
         return Nilai::Baru;
@@ -159,18 +163,18 @@ pub fn koreksi(t: &str) -> Option<String> {
         }
     });
     tolak_alat(&goal, &c.tool);
-    *PAKSA.lock().unwrap() = Some(goal.clone());
-    Some(goal)
+    let asli = crate::rawat::asli(&goal);
+    *PAKSA.lock().unwrap() = Some((asli.clone(), c.tool.clone()));
+    Some(asli)
 }
 
-/// Sekali pakai: kalimat ini harus ditanyakan ke model (abaikan tebakan lokal).
-pub fn ambil_paksa(goal: &str) -> bool {
+/// Sekali pakai: kalimat ini baru saja dikoreksi Bos; mengembalikan alat yang ditolak (tebakan lain dicoba dulu, baru model).
+pub fn ambil_paksa(goal: &str) -> Option<String> {
     let mut p = PAKSA.lock().unwrap();
-    if p.as_deref() == Some(goal) {
-        *p = None;
-        true
+    if p.as_ref().is_some_and(|x| x.0 == goal) {
+        p.take().map(|x| x.1)
     } else {
-        false
+        None
     }
 }
 
@@ -241,6 +245,6 @@ mod tests {
         set_last(&g, &c("waktu", ""));
         assert_eq!(koreksi("bukan itu"), Some(g.clone()));
         assert!(cari(&g).is_none());
-        assert!(ambil_paksa(&g) && !ambil_paksa(&g));
+        assert!(ambil_paksa(&g).is_some() && ambil_paksa(&g).is_none());
     }
 }

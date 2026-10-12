@@ -165,6 +165,10 @@ impl Engine {
                 let r = if let Some(sisa) = arg.strip_prefix("tambah ") { crate::aturan::layanan_tambah(sisa) } else { format!("Layanan web: {}. Tambah: /layanan tambah <nama> <kata1,kata2> <url dengan {{q}}>, atau edit layanan.json.", crate::aturan::layanan_daftar().join(", ")) };
                 self.agent_say(0, &r)
             }
+            "penasaran" => {
+                let r = crate::penasaran::mulai(arg).unwrap_or_else(|| "Daftar pertanyaan kosong. Isi otak/penasaran.json.".into());
+                self.agent_say(0, &r)
+            }
             "putusan" => {
                 let d = crate::putusan::daftar();
                 let r = if d.is_empty() {

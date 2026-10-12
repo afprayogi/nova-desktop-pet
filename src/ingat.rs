@@ -394,10 +394,10 @@ pub static AKTIF: Mutex<Vec<String>> = Mutex::new(Vec::new());
 /// Ingatan yang dipakai untuk kalimat ini, sebagai satu baris obrolan ("🧠 Ingatan terkait: …"); kosong bila tidak ada yang relevan.
 pub fn dipakai(q: &str) -> String {
     let kata: Vec<String> = crate::teknik::terms(q).into_iter().filter(|w| w.len() > 3).collect();
-    let docs: Vec<Doc> = hybrid(q, 3).into_iter().filter(|d| d.src != "bawaan" && { let t = format!("{} {}", d.title, d.body).to_lowercase(); kata.iter().any(|w| t.contains(w.as_str())) }).collect();
+    let docs: Vec<Doc> = hybrid(q, 3).into_iter().filter(|d| d.src != "bawaan" && !d.title.trim_start().starts_with("==") && d.body.chars().count() > 60 && { let t = format!("{} {}", d.title, d.body).to_lowercase(); kata.iter().any(|w| t.contains(w.as_str())) }).collect();
     let ql = q.to_lowercase();
     let (gd, rel) = crate::graf::recall(q, 3);
-    let rel: Vec<String> = rel.into_iter().filter(|r| !ql.contains(&r.to_lowercase())).collect(); // entitas yang hanya mengulang kalimat tidak informatif
+    let rel: Vec<String> = rel.into_iter().filter(|r| !ql.contains(&r.to_lowercase()) && !["halo", "nova", "carikan", "coba", "buka", "tolong", "bisa", "cari", "tanya", "gemini", "pakai", "jawab", "internet", "kamu", "saya", "aku", "mau", "lagi", "video", "lagu"].contains(&r.to_lowercase().as_str())).collect(); // entitas yang hanya mengulang kalimat tidak informatif
     if let Ok(mut a) = AKTIF.lock() {
         *a = rel.iter().take(24).cloned().collect();
     }

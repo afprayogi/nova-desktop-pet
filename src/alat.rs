@@ -165,6 +165,20 @@ pub fn assess(c: &Call) -> Risk {
     }
 }
 
+/// "https://www.youtube.com/results?search_query=spongebob" → "Youtube: spongebob" (yang dibuka terlihat jelas di obrolan).
+fn tampil_url(u: &str) -> String {
+    let host = u.split("://").nth(1).unwrap_or(u).split('/').next().unwrap_or("").trim_start_matches("www.");
+    let q = u.split(['?', '&']).skip(1).find_map(|p| ["q=", "search_query=", "search=", "query=", "term=", "keyword=", "text=", "ss="].iter().find_map(|k| p.strip_prefix(k)));
+    match q {
+        Some(q) => {
+            let nama = host.split('.').rev().nth(1).unwrap_or(host);
+            let mut c = nama.chars();
+            format!("{}{}: {}", c.next().map(|f| f.to_uppercase().to_string()).unwrap_or_default(), c.as_str(), urlencoding::decode(q).map(|d| d.into_owned()).unwrap_or_default())
+        }
+        None => host.to_string(),
+    }
+}
+
 fn cut(s: &str, n: usize) -> String {
     if s.chars().count() <= n {
         s.to_string()
@@ -477,7 +491,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                 return format!("memutar di YouTube: {q}");
             }
             crate::musik::buka_url(arg);
-            format!("dibuka: {arg}")
+            format!("dibuka: {}", tampil_url(arg))
         }
         "open" if arg.starts_with("https://") || arg.starts_with("http://") => {
             // URL dibuka lewat penangan protokol Windows tanpa shell (aman dari injeksi perintah)
@@ -490,7 +504,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                 c.creation_flags(0x0800_0000);
             }
             let _ = c.spawn();
-            format!("dibuka: {arg}")
+            format!("dibuka: {}", tampil_url(arg))
         }
         "open" if !arg.contains(['/', '\\', ':', '.']) && !arg.is_empty() => {
             // Nama aplikasi (bukan URL/path): cari di indeks menu Start, lalu PATH; laporkan jujur bila tidak ada.
@@ -527,7 +541,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                     c.spawn()
                 })
                 .await;
-                return cut(&format!("dibuka: {arg}"), 3000);
+                return cut(&format!("dibuka: {}", tampil_url(arg)), 3000);
             }
             #[allow(unreachable_code)]
             let cmd = if cfg!(windows) {
@@ -538,7 +552,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
                 format!("xdg-open '{arg}'")
             };
             sh(&cmd).await;
-            format!("dibuka: {arg}")
+            format!("dibuka: {}", tampil_url(arg))
         }
         t => format!("alat tidak dikenal: {t}"),
     };

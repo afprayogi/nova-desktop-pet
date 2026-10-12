@@ -34,7 +34,8 @@ impl Engine {
                 _ => (goal, false),
             }
         };
-        let paksa = crate::putusan::ambil_paksa(&goal) || minta_model;
+        let tolak = crate::putusan::ambil_paksa(&goal);
+        let paksa = tolak.is_some() || minta_model;
         if goal.split_whitespace().count() >= 3 && !goal.starts_with('/') {
             let m = crate::ingat::dipakai(&goal);
             if !m.is_empty() {
@@ -46,6 +47,16 @@ impl Engine {
         let mut g_failed = false;
         let only_tanya = offline.as_ref().is_some_and(|p| p.len() == 1 && p[0].tool == "tanya");
         let mut from_ml = tersimpan.is_none() && !paksa && alat::FROM_ML.load(std::sync::atomic::Ordering::Relaxed);
+        // Koreksi Bos: coba kandidat lokal berikutnya (makna) dulu; baru ke model bila habis. Hasilnya tetap diverifikasi model.
+        if let Some(t) = &tolak {
+            if let Ok(sk) = crate::semantik::scores(&self.http, &goal).await {
+                let ditolak = alat::label_of(t);
+                if let Some(c) = sk.iter().find(|(l, s)| *s >= 0.6 && Some(l.as_str()) != ditolak && !["tanya", "ngobrol"].contains(&l.as_str())).and_then(|(l, _)| alat::call_for(l, &goal)) {
+                    offline = Some(vec![c]);
+                    from_ml = true;
+                }
+            }
+        }
         // Pemahaman semantik (embedding): niat aksi yang jelas dipakai langsung, tanpa panggilan perencana yang lebih mahal.
         if !paksa && (offline.is_none() || only_tanya || from_ml) {
             if let Some((label, skor)) = crate::semantik::classify(&self.http, &goal).await {
@@ -59,7 +70,7 @@ impl Engine {
             }
         }
         // Layanan web berpemicu umum (layanan.json): hanya bila tidak ada kemampuan lokal yang cocok (atau hanya aturan "cari/buka" yang lemah).
-        if offline.as_ref().is_none_or(|p| p.len() == 1 && ["open", "cari"].contains(&p[0].tool.as_str())) {
+        if offline.as_ref().is_none_or(|p| p.len() == 1 && (p[0].tool == "cari" || (p[0].tool == "open" && !p[0].arg.starts_with("http") && crate::aplikasi::cari(&p[0].arg).is_none()))) {
             if let Some(c) = crate::aturan::layanan_cadangan(&goal) {
                 offline = Some(vec![c]);
                 from_ml = false;

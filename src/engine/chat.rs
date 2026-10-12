@@ -113,6 +113,14 @@ impl Engine {
         if let Some(cmd) = crate::seret::resolve(&t) {
             return self.start_mission(cmd).await;
         }
+        if let Some(m) = crate::penasaran::jawab(&self.http, &t).await {
+            return self.agent_say(0, &m);
+        }
+        if let Some(h) = crate::penasaran::pemicu(&low) {
+            if let Some(q) = crate::penasaran::mulai(&h) {
+                return self.agent_say(0, &q);
+            }
+        }
         if let Some(m) = crate::teknik::nilai_jawaban(&t) {
             return self.tx.sys(m);
         }

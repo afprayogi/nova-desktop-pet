@@ -98,7 +98,14 @@ pub fn cari_dalam(apps: &[App], q: &str) -> Option<App> {
 }
 
 pub fn cari(q: &str) -> Option<App> {
-    cari_dalam(&daftar(), q)
+    let apps = daftar();
+    // Kalimat penuh tidak cocok ("zoom dong ada meeting nih"): coba tiap kata isi, hanya yang nama aplikasinya diawali kata itu.
+    cari_dalam(&apps, q).or_else(|| {
+        kata(q).into_iter().filter(|w| w.len() >= 4 && !["dong", "nih", "untuk", "karena", "meeting", "sekarang", "tolong", "bisa", "lagi", "mau"].contains(&w.as_str())).find_map(|w| {
+            let qs = [w];
+            apps.iter().map(|a| (skor(&qs, &a.nama), a)).filter(|(s, _)| *s >= 80).max_by_key(|(s, a)| (*s, std::cmp::Reverse(a.nama.len()))).map(|(_, a)| a.clone())
+        })
+    })
 }
 
 pub fn buka(a: &App) -> bool {

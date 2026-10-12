@@ -54,7 +54,7 @@ fn strip_fillers(s: &str) -> &str {
 /// pemicu (kata), pemicu_awal (awalan kalimat), pemicu_frasa (frasa), butuh_aksi (aksi baku dari kamus aksi), butuh_kata, tolak,
 /// buang (kata yang tidak ikut kueri), awalan (disisipkan di depan kueri), url (dengan {q}).
 pub const LAYANAN_BAWAAN: &str = r#"{
-  "abaikan": ["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "kamu", "kau", "anda", "saya", "aku", "mohon", "deh", "sih", "nih", "lah", "bisa", "mau", "ingin", "silakan", "saja", "pakai", "lewat", "link", "tautan"],
+  "abaikan": ["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "kamu", "kau", "anda", "saya", "aku", "mohon", "deh", "sih", "nih", "lah", "bisa", "mau", "ingin", "silakan", "saja", "pakai", "lewat", "link", "tautan", "internet", "online", "situs", "website", "web"],
   "layanan": [
     {"nama": "lagu", "pemicu": ["lagu", "musik", "music"], "butuh_aksi": ["putar", "buka", "ganti"], "tolak": ["folder", "laptop", "spotify"],
      "buang": ["lagu", "musik", "music", "mainkan", "setel", "setelkan", "play", "nyalakan", "dengar", "dengarkan", "ganti", "gantikan", "ubah", "ubahkan", "pindah", "tukar"],

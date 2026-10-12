@@ -60,10 +60,32 @@ pub fn perluas(q: &str) -> String {
     out
 }
 
+/// Kata yang tidak membawa topik baru; kalimat koreksi yang hanya berisi kata-kata ini memang meminta topik sebelumnya.
+const BUANG: &[&str] = &["di", "ke", "yang", "itu", "ini", "saja", "aja", "maksudnya", "maksud", "maksudku", "video", "youtube", "yt", "google", "github", "maps", "lagu", "musik", "dong", "kamu", "coba", "salah", "bukan", "jawabannya", "tadi"];
+
+fn punya_isi(l: &str) -> bool {
+    l.split(|c: char| !c.is_alphanumeric()).any(|w| w.len() > 2 && !BUANG.contains(&w) && crate::kata::aksi(w).is_empty())
+}
+
+/// Sambung ke giliran sebelumnya hanya bila kalimat ini tidak membawa topik/objek sendiri: koreksi tanpa isi ("carikan di youtube maksudnya"),
+/// atau diawali kata sambung ("yang rilis tahun ini aja") TANPA kata kerja sendiri. "coba cari video X" berdiri sendiri.
 fn tindak_lanjut(l: &str) -> bool {
     let w: Vec<&str> = l.split_whitespace().collect();
+    if w.is_empty() || w.len() > 7 || l.starts_with('/') {
+        return false;
+    }
     let koreksi = l.contains("maksud") || ["carikan di", "cari di", "di youtube", "di google", "di github", "di maps"].iter().any(|k| l.starts_with(k));
-    !w.is_empty() && w.len() <= 7 && (LANJUT.contains(&w[0]) || koreksi) && !l.starts_with('/')
+    if koreksi {
+        return !punya_isi(l);
+    }
+    LANJUT.contains(&w[0]) && w[0] != "coba" && crate::kata::aksi(l).is_empty()
+}
+
+static ASLI: Mutex<Vec<(String, String)>> = Mutex::new(Vec::new());
+
+/// Kalimat asli Bos di balik kalimat gabungan `g` (atau `g` sendiri bila tidak digabung).
+pub fn asli(g: &str) -> String {
+    ASLI.lock().unwrap().iter().find(|(m, _)| m == g).map(|x| x.1.clone()).unwrap_or_else(|| g.to_string())
 }
 
 /// Normalisasi lalu, bila ini tindak-lanjut, sambungkan dengan giliran sebelumnya. Giliran dicatat.
@@ -72,7 +94,15 @@ pub fn resolve(t: &str) -> String {
     let l = n.to_lowercase();
     let mut v = TURNS.lock().unwrap();
     let out = match v.last() {
-        Some(prev) if tindak_lanjut(&l) => format!("{prev} {n}"),
+        Some(prev) if tindak_lanjut(&l) => {
+            let g = format!("{prev} {n}");
+            let mut m = ASLI.lock().unwrap();
+            m.push((g.clone(), n.clone()));
+            if m.len() > 30 {
+                m.remove(0);
+            }
+            g
+        }
         _ => n,
     };
     v.push(out.clone());
@@ -96,6 +126,10 @@ mod tests {
         let _ = resolve("cari anime aksi");
         assert_eq!(resolve("yang rilis tahun ini aja"), "cari anime aksi yang rilis tahun ini saja");
         assert_eq!(resolve("buka notepad"), "buka notepad");
+        // kalimat yang membawa topik sendiri tidak ditempeli giliran sebelumnya
+        let _ = resolve("siapa spongebob");
+        assert_eq!(resolve("coba cari video spongebob"), "coba cari video spongebob");
+        assert_eq!(resolve("video youtube spongebab maksudnya"), "video youtube spongebab maksudnya");
         let _ = resolve("halo gemini coba buka video anime fullmetal");
         assert!(resolve("carikan di video youtube maksudnya").starts_with("halo gemini coba buka video anime fullmetal"));
     }
