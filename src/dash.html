@@ -26,7 +26,7 @@ canvas{width:100%;height:170px;display:block}
 </head>
 <body>
 <header><div><h1>📊 Dasbor NOVA</h1><div class="sub" id="upd">memuat…</div></div><div class="sp"></div><a class="btn" href="/ui?app=1">💬 Kembali ke obrolan</a></header>
-<div class="tabs"><button class="on" data-t="me">Tentang saya</button><button data-t="pc">Laptop saya</button><button data-t="ai">Otak NOVA</button><button data-t="net">Internet</button></div>
+<div class="tabs"><button class="on" data-t="me">Tentang saya</button><button data-t="pc">Laptop saya</button><button data-t="ai">Otak NOVA</button><button data-t="net">Internet</button><button data-t="otk">Otak</button></div>
 <div class="grid" id="me">
   <div class="card"><h3>Tingkat kelelahan</h3><div class="sub">gabungan aturan + jaringan saraf</div><div class="row"><div class="big" id="fat">–</div><div id="fatt" class="sub"></div></div><div class="bar"><i id="fatb" style="width:0"></i></div><div class="sub" id="sesi"></div></div>
   <div class="card"><h3>Pola jam aktif (rata-rata menit/jam)</h3><div class="sub" id="hari"></div><canvas id="c24"></canvas></div>
@@ -48,11 +48,17 @@ canvas{width:100%;height:170px;display:block}
 </div>
 <div class="grid" id="net" hidden>
   <div class="card" style="grid-column:1/-1"><h3>Jalur internet</h3><div class="sub" id="nets">belum diperiksa</div><pre id="netp" style="white-space:pre-wrap;margin:8px 0;font:12px/1.6 Consolas,monospace"></pre><button class="btn" id="netb">Periksa sekarang</button></div>
+  <div class="card" style="grid-column:1/-1"><h3>Monitor koneksi &amp; penangkap paket</h3><div class="sub" id="pks">belum dimuat</div><pre id="pkp" style="white-space:pre-wrap;margin:8px 0;font:12px/1.6 Consolas,monospace"></pre><button class="btn" id="pkb">Muat koneksi</button> <button class="btn" id="pkt">Tangkap paket 15 dtk (admin/UAC)</button></div>
+</div>
+<div class="grid" id="otk" hidden>
+  <div class="card"><h3>Tingkat otak</h3><div class="sub">rata-rata kemajuan semua ingatan menuju targetnya</div><div class="big" id="otl">–</div><div class="bar"><i id="otb" style="width:0"></i></div><div class="sub" id="ota"></div></div>
+  <div class="card"><h3>Pertumbuhan harian</h3><div class="sub">tingkat otak per hari (belajar berkelanjutan)</div><canvas id="cotk"></canvas><button class="btn" id="otbtn" style="margin-top:8px">Belajar sekarang</button></div>
+  <div class="card" style="grid-column:1/-1"><h3>Isi ingatan</h3><div id="otd"></div></div>
 </div>
 <script>
 const TOKEN="__TOKEN__";
 const $=s=>document.querySelector(s);
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["me","pc","ai","net"].forEach(t=>$("#"+t).hidden=t!==b.dataset.t)});
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["me","pc","ai","net","otk"].forEach(t=>$("#"+t).hidden=t!==b.dataset.t)});
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function bars(id,vals,labels,color,fmt){const c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;const g=c.getContext("2d");g.scale(d,d);const W=r.width,H=r.height,p=22,mx=Math.max(1,...vals);g.clearRect(0,0,W,H);g.font="10px Segoe UI";g.fillStyle=css("--mut");const bw=(W-8)/vals.length;
  vals.forEach((v,i)=>{const h=(H-p-14)*v/mx;g.fillStyle=color;g.globalAlpha=v?1:.15;g.beginPath();g.roundRect(4+i*bw+2,H-p-h,bw-4,Math.max(h,2),3);g.fill();g.globalAlpha=1;g.fillStyle=css("--mut");if(labels[i]!==""){g.textAlign="center";g.fillText(labels[i],4+i*bw+bw/2,H-6)}if(v&&h>14){g.fillStyle=css("--text");g.fillText(fmt?fmt(v):Math.round(v),4+i*bw+bw/2,H-p-h-4)}})}
@@ -64,6 +70,18 @@ async function net(baru){const b=$("#netb");b.disabled=true;$("#nets").textConte
  $("#nets").textContent="diperiksa "+r.waktu;
  $("#netp").textContent=["Laptop → "+(r.wifi_ssid?("Wi-Fi '"+r.wifi_ssid+"'"+(r.sinyal!=null?" sinyal "+r.sinyal+"%":"")):"kabel/jaringan"),"Router "+(r.gateway||"-")+": "+m(r.ping_gateway_ms)+" · hilang "+(r.loss_gateway??"-")+"%","Internet 1.1.1.1: "+m(r.ping_internet_ms)+" · hilang "+(r.loss_internet??"-")+"%","DNS "+(r.dns||"-")+": "+m(r.dns_ms),"Web: "+m(r.web_ms),"","Jalur: "+(r.hop||[]).join("  →  "),"Koneksi terbanyak: "+(r.top_proses||[]).join(", "),"","KESIMPULAN:",...(r.kesimpulan||[]).map(x=>"• "+x)].join("\n")}catch(e){$("#nets").textContent="gagal memuat"}b.disabled=false}
 $("#netb").onclick=()=>net(true);document.querySelector('[data-t="net"]').addEventListener("click",()=>{if($("#netp").textContent==="")net(false)});
+
+const H={headers:{"x-nova-token":TOKEN}};
+async function otak(b){const r=await (await fetch("/api/otak"+(b?"?belajar=1":""),H)).json();$("#otl").textContent=r.tingkat+"%";$("#otb").style.width=r.tingkat+"%";$("#ota").textContent="akurasi prediksi kelelahan "+r.akurasi+"% · sisi graf "+r.graf_sisi;
+ $("#otd").innerHTML=r.dimensi.map(d=>`<div class="app"><span>${d.nama}</span><span>${d.nilai}/${d.target}</span></div><div class="bar"><i style="width:${d.persen}%"></i></div>`).join("");
+ line("#cotk",r.riwayat.map(x=>x.tingkat),css("--acc"))}
+$("#otbtn").onclick=async()=>{$("#otbtn").disabled=true;await otak(true);$("#otbtn").disabled=false};
+document.querySelector('[data-t="otk"]').addEventListener("click",()=>otak(false));
+async function paket(t){$("#pks").textContent=t?"menangkap… setujui UAC bila muncul (±20 dtk)":"memuat…";try{const r=await (await fetch("/api/paket"+(t?"?tangkap=1":""),H)).json();
+ if(r.tangkap){$("#pks").textContent="hasil tangkapan";$("#pkp").textContent=r.tangkap;return}
+ $("#pks").textContent="diperbarui "+r.waktu+" · unduh "+r.unduh_kbps+" kb/s · unggah "+r.unggah_kbps+" kb/s · "+r.koneksi.length+" koneksi";
+ $("#pkp").textContent=["PER APLIKASI: "+r.per_proses.map(p=>p[0]+" ("+p[1]+")").join(", "),"",...r.koneksi.slice(0,40).map(k=>(k.proses||"?").padEnd(18)+(k.domain||k.remote).padEnd(40)+(":"+k.port+" "+k.protokol)),"",r.catatan.length?"PERLU DILIHAT:\n• "+r.catatan.join("\n• "):"Tidak ada yang mencurigakan."].join("\n")}catch(e){$("#pks").textContent="gagal memuat"}}
+$("#pkb").onclick=()=>paket(false);$("#pkt").onclick=()=>paket(true);
 const fmtH=s=>(s/3600).toFixed(1);
 async function load(){try{const d=await (await fetch("/api/stats",{headers:{"x-nova-token":TOKEN,...(/[?&]app=1/.test(location.search)||document.referrer.includes("app=1")?{"x-nova-ui":"1"}:{})}})).json();
  $("#upd").textContent="diperbarui "+new Date().toLocaleTimeString();

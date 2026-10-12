@@ -149,6 +149,27 @@ impl Engine {
                 };
                 self.agent_say(0, &r)
             }
+            "otak" | "ingatan" => {
+                let r = if arg.eq_ignore_ascii_case("belajar") {
+                    tokio::task::spawn_blocking(|| crate::otak::harian(true)).await.ok().flatten().unwrap_or_default()
+                } else {
+                    tokio::task::spawn_blocking(crate::otak::teks).await.unwrap_or_default()
+                };
+                self.agent_say(0, &r)
+            }
+            "paket" | "wireshark" => {
+                let r = if arg.to_lowercase().contains("tangkap") {
+                    self.agent_say(0, "Menangkap paket ±15 detik. Setujui kotak UAC Windows bila muncul…");
+                    crate::paket::tangkap(15).await
+                } else {
+                    crate::paket::teks_monitor(&crate::paket::monitor().await)
+                };
+                self.agent_say(0, &r)
+            }
+            "panelmusik" => {
+                let r = crate::musik::set_panel(!arg.eq_ignore_ascii_case("off") && arg != "0");
+                self.agent_say(0, &r)
+            }
             "musikjaga" => {
                 let r = crate::musik::set_jaga(!arg.eq_ignore_ascii_case("off") && arg != "0");
                 self.agent_say(0, &r)

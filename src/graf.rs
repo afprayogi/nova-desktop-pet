@@ -481,3 +481,9 @@ mod tests {
         assert!(q.contains("zxq"), "{q}");
     }
 }
+
+/// (simpul, sisi)
+pub fn hitung() -> (i64, i64) {
+    let Ok(c) = open() else { return (0, 0) };
+    (c.query_row("SELECT COUNT(*) FROM g_node", [], |r| r.get(0)).unwrap_or(0), c.query_row("SELECT COUNT(*) FROM g_edge", [], |r| r.get(0)).unwrap_or(0))
+}

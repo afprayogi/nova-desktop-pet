@@ -622,6 +622,9 @@ pub async fn run(tx: Tx) {
         if n % 10 == 5 && active_recently(&c, 5) {
             crate::musik::check(&tx);
             crate::musik::auto(&tx);
+            std::thread::spawn(|| {
+                crate::otak::harian(false);
+            });
         }
         if n % 60 == 20 && active_recently(&c, 10) && once(&c, &format!("{}dl", Local::now().format("%Y-%m-%d"))) {
             let loose = crate::berkas::loose_count(&dirs::download_dir().unwrap_or_default());

@@ -3,7 +3,7 @@
 use std::process::Stdio;
 use std::time::Duration;
 
-fn chrome() -> Option<&'static str> {
+pub(crate) fn chrome() -> Option<&'static str> {
     ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"]
         .into_iter()
         .find(|p| std::path::Path::new(p).exists())

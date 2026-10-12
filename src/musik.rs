@@ -156,9 +156,48 @@ pub fn set_auto(on: bool) -> String {
     }
 }
 
+fn panel_off_file() -> PathBuf {
+    crate::config::data_dir().join("musik_panel_off")
+}
+
+pub fn set_panel(on: bool) -> String {
+    if on {
+        let _ = std::fs::remove_file(panel_off_file());
+        "Panel YouTube di sisi kanan: AKTIF (jendela app Chrome/Edge 440 px di tepi kanan layar).".into()
+    } else {
+        let _ = std::fs::write(panel_off_file(), "");
+        "Panel YouTube: MATI (video dibuka di tab biasa).".into()
+    }
+}
+
+#[cfg(windows)]
+fn layar() -> (i32, i32) {
+    use windows_sys::Win32::UI::WindowsAndMessaging::GetSystemMetrics;
+    unsafe { (GetSystemMetrics(0), GetSystemMetrics(1)) }
+}
+
+#[cfg(not(windows))]
+fn layar() -> (i32, i32) {
+    (1920, 1080)
+}
+
+pub fn jumlah_lagu() -> i64 {
+    baca_riwayat()["hitung"].as_object().map(|o| o.len() as i64).unwrap_or(0)
+}
+
 pub fn buka_url(u: &str) {
     if u.contains("youtube.com") {
         let _ = std::fs::write(aktif_file(), now_s().to_string());
+    }
+    // Video YouTube: jendela app di sisi kanan layar (tanpa bilah alamat); ekstensi NOVA melewati iklan di dalamnya.
+    if u.contains("youtube.com/watch") && !panel_off_file().exists() {
+        if let Some(exe) = crate::peramban::chrome() {
+            let (w, h) = layar();
+            let pw = 440;
+            if std::process::Command::new(exe).arg(format!("--app={u}")).arg(format!("--window-size={pw},{}", (h - 60).max(400))).arg(format!("--window-position={},0", (w - pw).max(0))).spawn().is_ok() {
+                return;
+            }
+        }
     }
     let _ = std::process::Command::new("explorer.exe").arg(u).spawn();
 }

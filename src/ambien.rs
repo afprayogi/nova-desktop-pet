@@ -10,6 +10,12 @@ use std::time::{Duration, Instant};
 static TYPING: AtomicBool = AtomicBool::new(false);
 static VIDEO: AtomicBool = AtomicBool::new(false);
 static LAST_SOUND_MS: AtomicU64 = AtomicU64::new(0);
+static LEVEL: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+
+/// Level puncak audio keluar terakhir (0..1), ~10x/detik.
+pub fn level() -> f32 {
+    f32::from_bits(LEVEL.load(Ordering::Relaxed))
+}
 static START: Mutex<Option<Instant>> = Mutex::new(None);
 static ONCE: Once = Once::new();
 
@@ -60,7 +66,7 @@ public class NovaPeak {
   }
 }
 '@
-while ($true) { [Console]::Out.WriteLine([NovaPeak]::Get()); [Console]::Out.Flush(); Start-Sleep -Milliseconds 700 }
+while ($true) { [Console]::Out.WriteLine([NovaPeak]::Get()); [Console]::Out.Flush(); Start-Sleep -Milliseconds 100 }
 "#;
 
 /// Satu proses PowerShell berumur panjang (dikompilasi sekali) yang mencetak level puncak audio tiap 0,7 detik.
@@ -79,7 +85,9 @@ fn start_meter() {
     let Some(out) = child.stdout.take() else { return };
     std::thread::spawn(move || {
         for line in BufReader::new(out).lines().map_while(Result::ok) {
-            if line.trim().parse::<f32>().map(|p| p > 0.015).unwrap_or(false) {
+            let p = line.trim().parse::<f32>().unwrap_or(0.0);
+            LEVEL.store(p.to_bits(), Ordering::Relaxed);
+            if p > 0.015 {
                 LAST_SOUND_MS.store(now_ms().max(1), Ordering::Relaxed);
             }
         }

@@ -56,6 +56,8 @@ mod gambar;
 mod perkakas;
 mod ilmiah;
 mod niat;
+mod otak;
+mod paket;
 mod peramban;
 mod rawat;
 mod riwayat;

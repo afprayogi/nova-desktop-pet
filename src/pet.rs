@@ -1237,6 +1237,19 @@ impl eframe::App for Pet {
                     p.rect_stroke(br, 8.0, Stroke::new(1.5_f32, Color32::from_rgb(main.0, main.1, main.2)));
                     p.galley(br.min + vec2(8.0, 6.0), g, Color32::WHITE);
                 }
+                // Equalizer: batang bergerak mengikuti level audio keluar (musik/video sedang bersuara).
+                crate::ambien::start();
+                if !crate::ambien::media().is_empty() {
+                    let lv = crate::ambien::level().min(1.0);
+                    let tt = ctx.input(|i| i.time) as f32;
+                    let x0 = if rect.right() + 44.0 < W { rect.right() + 8.0 } else { rect.left() - 44.0 };
+                    for i in 0..6 {
+                        let h = 4.0 + 46.0 * lv * (0.3 + 0.7 * (tt * (5.0 + i as f32 * 1.9) + i as f32 * 1.3).sin().abs());
+                        let r = Rect::from_min_max(pos2(x0 + i as f32 * 6.0, rect.bottom() - h), pos2(x0 + i as f32 * 6.0 + 4.0, rect.bottom()));
+                        ui.painter().rect_filled(r, 2.0, Color32::from_rgb(110 + i as u8 * 18, 180, 255));
+                    }
+                    ctx.request_repaint();
+                }
                 let resp = ui.allocate_rect(rect, Sense::click_and_drag());
                 if resp.drag_started() {
                     self.goto(St::Interrupted, 1.0);

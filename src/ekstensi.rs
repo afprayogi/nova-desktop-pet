@@ -27,6 +27,24 @@ window.addEventListener('message', (e) => {
 });
 "#;
 
+const YOUTUBE: &str = r#"// NOVA (YouTube): lewati iklan otomatis. Tombol 'Lewati' ditekan; iklan tanpa tombol dipercepat lalu diakhiri.
+(() => {
+  let muted = false;
+  setInterval(() => {
+    const btn = document.querySelector('.ytp-skip-ad-button, .ytp-ad-skip-button, .ytp-ad-skip-button-modern');
+    if (btn) (btn.closest('button') || btn).click();
+    const close = document.querySelector('.ytp-ad-overlay-close-button');
+    if (close) close.click();
+    const player = document.querySelector('.html5-video-player');
+    const v = document.querySelector('video.html5-main-video') || document.querySelector('video');
+    if (player && v && player.classList.contains('ad-showing')) {
+      v.muted = true; muted = true;
+      if (isFinite(v.duration) && v.duration > 0) { v.playbackRate = 16; v.currentTime = v.duration; }
+    } else if (muted && v) { v.muted = false; v.playbackRate = 1; muted = false; }
+  }, 400);
+})();
+"#;
+
 const GUARD: &str = r#"// NOVA (dunia halaman): pop-up window.open tanpa interaksi pengguna ditahan.
 (() => {
   const real = window.open;
@@ -92,12 +110,14 @@ pub fn generate(port: u16, token: &str) -> std::io::Result<(PathBuf, usize)> {
         "declarative_net_request": {"rule_resources": [{"id": "nova", "enabled": true, "path": "rules.json"}]},
         "content_scripts": [
             {"matches": ["<all_urls>"], "js": ["guard.js"], "run_at": "document_start", "world": "MAIN", "all_frames": true},
-            {"matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_start", "all_frames": true}
+            {"matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_start", "all_frames": true},
+            {"matches": ["*://*.youtube.com/*"], "js": ["youtube.js"], "run_at": "document_idle"}
         ]
     });
     std::fs::write(d.join("manifest.json"), serde_json::to_string_pretty(&manifest)?)?;
     std::fs::write(d.join("content.js"), CONTENT)?;
     std::fs::write(d.join("guard.js"), GUARD)?;
+    std::fs::write(d.join("youtube.js"), YOUTUBE)?;
     std::fs::write(d.join("background.js"), background(port, token))?;
     Ok((d, doms.len()))
 }

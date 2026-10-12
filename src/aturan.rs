@@ -90,6 +90,15 @@ pub fn rule(s: &str) -> Option<Call> {
     if l.starts_with("riwayat chrome") || l.starts_with("riwayat browser") || l.contains("history chrome") {
         return Some(Call { tool: "riwayat".into(), arg: String::new() });
     }
+    if ["tangkap paket", "capture paket", "sniff paket"].iter().any(|k| l.contains(k)) {
+        return Some(Call { tool: "paket".into(), arg: "tangkap".into() });
+    }
+    if ["wireshark", "lalu lintas jaringan", "koneksi aktif", "siapa yang memakai internet", "siapa yang pakai internet", "monitor koneksi", "aplikasi apa yang pakai internet"].iter().any(|k| l.contains(k)) {
+        return Some(Call { tool: "paket".into(), arg: String::new() });
+    }
+    if ["tingkat otak", "otak nova", "seberapa pintar", "kemajuan belajar", "peta ingatan", "sampai mana belajar"].iter().any(|k| l.contains(k)) {
+        return Some(Call { tool: "otak".into(), arg: String::new() });
+    }
     if let Some(a) = crate::daya::dari_kalimat(&l) {
         return Some(Call { tool: "daya".into(), arg: a.into() });
     }

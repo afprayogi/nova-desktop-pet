@@ -118,3 +118,7 @@ mod tests {
         assert!(extract_clause("cuaca hari ini bagaimana").is_empty());
     }
 }
+
+pub fn jumlah() -> i64 {
+    db().and_then(|c| c.query_row("SELECT COUNT(*) FROM fakta", [], |r| r.get(0)).ok()).unwrap_or(0)
+}

@@ -314,6 +314,27 @@ struct OmniReq {
     hapus: bool,
 }
 
+async fn otak_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    if q.contains_key("belajar") {
+        let _ = tokio::task::spawn_blocking(|| crate::otak::harian(true)).await;
+    }
+    Ok(Json(tokio::task::spawn_blocking(crate::otak::json).await.unwrap_or_default()))
+}
+
+/// Monitor koneksi (tanpa admin). `?tangkap=1` menangkap paket ±15 dtk (Windows meminta UAC).
+async fn paket_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
+    if !authorized(&headers, &s) {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    if q.contains_key("tangkap") {
+        return Ok(Json(serde_json::json!({"tangkap": crate::paket::tangkap(15).await})));
+    }
+    Ok(Json(serde_json::to_value(crate::paket::monitor().await).unwrap_or_default()))
+}
+
 /// Diagnosa jalur internet untuk dasbor. `?baru=1` memeriksa ulang (±15 dtk); tanpa itu mengembalikan hasil terakhir bila ada.
 async fn internet_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
     if !authorized(&headers, &s) {
@@ -450,7 +471,7 @@ pub async fn serve(cfg: Config, port: u16) -> anyhow::Result<()> {
             s2.snap.lock().unwrap_or_else(|e| e.into_inner()).apply(&e);
         }
     });
-    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
+    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
     let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
     axum::serve(listener, app).await?;
     Ok(())
