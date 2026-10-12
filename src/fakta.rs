@@ -4,7 +4,7 @@
 use rusqlite::Connection;
 
 fn db() -> Option<Connection> {
-    let c = crate::assistant::db().ok()?;
+    let c = crate::teknik::open().ok()?;
     c.execute_batch("CREATE TABLE IF NOT EXISTS fakta(k TEXT PRIMARY KEY, kategori TEXT, isi TEXT, ts INT);").ok()?;
     Some(c)
 }

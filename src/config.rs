@@ -71,6 +71,26 @@ pub fn data_dir() -> PathBuf {
     d
 }
 
+/// Folder "otak": pengetahuan, buku yang dipelajari, memori percakapan, dan data bahasa (kamus aksi, CLI, layanan, aturan ajar).
+/// Urutan: variabel NOVA_OTAK, lalu isi `otak_path.txt` di folder data (diatur `/otak pindah`), lalu folder data biasa.
+/// Token, kunci, dan log aktivitas tetap di folder data.
+pub fn otak_dir() -> PathBuf {
+    if cfg!(test) {
+        return data_dir();
+    }
+    let d = std::env::var("NOVA_OTAK")
+        .ok()
+        .filter(|s| !s.is_empty())
+        .map(PathBuf::from)
+        .or_else(|| std::fs::read_to_string(data_dir().join("otak_path.txt")).ok().map(|s| PathBuf::from(s.trim())).filter(|p| !p.as_os_str().is_empty()))
+        .unwrap_or_else(data_dir);
+    let _ = std::fs::create_dir_all(&d);
+    d
+}
+
+/// Berkas yang termasuk otak (dipindah oleh `/otak pindah`).
+pub const BERKAS_OTAK: &[&str] = &["pengetahuan.db", "memori.db", "ajar.json", "kamus_aksi.json", "cli.json", "layanan.json", "lagu.json", "otak_log.json", "katalog_alat.json", "belajar.json"];
+
 fn path() -> PathBuf {
     data_dir().join("config.json")
 }

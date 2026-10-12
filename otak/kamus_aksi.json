@@ -1,0 +1,117 @@
+{
+  "baca": [
+    "baca",
+    "bacakan",
+    "tampilkan",
+    "read"
+  ],
+  "buka": [
+    "buka",
+    "open",
+    "jalan",
+    "mulai",
+    "launch",
+    "run",
+    "aktif",
+    "luncur"
+  ],
+  "cari": [
+    "cari",
+    "temu",
+    "lacak",
+    "search",
+    "telusur",
+    "kejar"
+  ],
+  "cek": [
+    "cek",
+    "periksa",
+    "lihat",
+    "tampil",
+    "tunjuk",
+    "status",
+    "tengok",
+    "pantau",
+    "monitor"
+  ],
+  "ganti": [
+    "ganti",
+    "ubah",
+    "tukar",
+    "pindah",
+    "switch",
+    "alih",
+    "rubah"
+  ],
+  "hapus": [
+    "hapus",
+    "buang",
+    "delete",
+    "bersih",
+    "singkir"
+  ],
+  "hitung": [
+    "hitung",
+    "kalkulasi",
+    "calculate"
+  ],
+  "ingat": [
+    "ingat",
+    "ingatkan",
+    "remind",
+    "alarm",
+    "jadwal"
+  ],
+  "kirim": [
+    "kirim",
+    "send",
+    "surat",
+    "emailkan"
+  ],
+  "matikan": [
+    "mati",
+    "padam",
+    "shutdown",
+    "off"
+  ],
+  "putar": [
+    "putar",
+    "main",
+    "setel",
+    "stel",
+    "nyala",
+    "dengar",
+    "tonton",
+    "play",
+    "senandung",
+    "lantun",
+    "dengerin"
+  ],
+  "terjemah": [
+    "terjemah",
+    "artikan",
+    "translate"
+  ],
+  "tulis": [
+    "tulis",
+    "simpan",
+    "catat",
+    "write",
+    "save",
+    "rekam"
+  ],
+  "tutup": [
+    "tutup",
+    "close",
+    "keluar",
+    "henti",
+    "stop",
+    "akhir"
+  ],
+  "unduh": [
+    "unduh",
+    "download",
+    "ambil",
+    "tarik"
+  ]
+}

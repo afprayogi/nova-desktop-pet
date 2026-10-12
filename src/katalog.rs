@@ -13,7 +13,7 @@ pub struct Entri {
 const SERVER: &[&str] = &["filesystem", "git", "fetch", "memory", "time", "sequentialthinking", "everything"];
 
 fn file() -> std::path::PathBuf {
-    crate::config::data_dir().join("katalog_alat.json")
+    crate::config::otak_dir().join("katalog_alat.json")
 }
 
 pub fn daftar() -> Vec<Entri> {

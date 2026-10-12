@@ -207,7 +207,10 @@ impl Engine {
                 }
             }
             "otak" | "ingatan" => {
-                let r = if arg.eq_ignore_ascii_case("belajar") {
+                let r = if let Some(t) = arg.strip_prefix("pindah") {
+                    let t = t.trim().to_string();
+                    tokio::task::spawn_blocking(move || crate::otak::pindah(&t)).await.unwrap_or_default()
+                } else if arg.eq_ignore_ascii_case("belajar") {
                     tokio::task::spawn_blocking(|| crate::otak::harian(true)).await.ok().flatten().unwrap_or_default()
                 } else {
                     tokio::task::spawn_blocking(crate::otak::teks).await.unwrap_or_default()

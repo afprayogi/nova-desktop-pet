@@ -247,7 +247,7 @@ pub struct Engine {
 }
 
 pub async fn run(cfg: Config, tx: Tx, mut rx: UnboundedReceiver<Cmd>) {
-    let mem = match Memory::open(&config::data_dir().join("memori.db")) {
+    let mem = match Memory::open(&config::otak_dir().join("memori.db")) {
         Ok(m) => Arc::new(m),
         Err(e) => {
             tx.log(format!("Gagal membuka memori: {e}"));

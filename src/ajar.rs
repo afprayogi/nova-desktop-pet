@@ -12,7 +12,7 @@ pub struct Aturan {
 }
 
 fn file() -> std::path::PathBuf {
-    crate::config::data_dir().join("ajar.json")
+    crate::config::otak_dir().join("ajar.json")
 }
 
 pub fn daftar() -> Vec<Aturan> {

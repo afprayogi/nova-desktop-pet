@@ -69,7 +69,7 @@ fn seed(c: &Connection) -> rusqlite::Result<()> {
 
 pub(crate) fn open() -> rusqlite::Result<Connection> {
     static CLEAN: std::sync::Once = std::sync::Once::new();
-    let c = Connection::open(config::data_dir().join("pengetahuan.db"))?;
+    let c = Connection::open(config::otak_dir().join("pengetahuan.db"))?;
     c.busy_timeout(std::time::Duration::from_secs(10))?;
     c.execute_batch("CREATE VIRTUAL TABLE IF NOT EXISTS kb USING fts5(title, body, src UNINDEXED, tokenize='unicode61');")?;
     seed(&c)?;

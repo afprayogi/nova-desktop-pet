@@ -1,0 +1,13 @@
+{
+  "abaikan": ["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "kamu", "kau", "anda", "saya", "aku", "mohon", "deh", "sih", "nih", "lah", "bisa", "mau", "ingin", "silakan", "saja", "pakai", "lewat", "link", "tautan"],
+  "layanan": [
+    {"nama": "lagu", "pemicu": ["lagu", "musik", "music"], "butuh_aksi": ["putar", "buka", "ganti"], "tolak": ["folder", "laptop", "spotify"],
+     "buang": ["lagu", "musik", "music", "mainkan", "setel", "setelkan", "play", "nyalakan", "dengar", "dengarkan", "ganti", "gantikan", "ubah", "ubahkan", "pindah", "tukar"],
+     "awalan": "lagu", "url": "https://www.youtube.com/results?search_query={q}"},
+    {"nama": "youtube", "pemicu": ["youtube", "yt"], "url": "https://www.youtube.com/results?search_query={q}"},
+    {"nama": "video", "pemicu": ["video"], "butuh_kata": ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"], "tolak": ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"], "url": "https://www.youtube.com/results?search_query={q}"},
+    {"nama": "maps", "pemicu": ["maps"], "pemicu_awal": ["rute ke ", "navigasi ke ", "peta ", "lokasi "], "url": "https://www.google.com/maps/search/{q}"},
+    {"nama": "github", "pemicu": ["github"], "butuh_kata": ["cari", "carikan", "repo", "repositori"], "url": "https://github.com/search?type=repositories&q={q}"},
+    {"nama": "google", "pemicu": ["googling"], "pemicu_awal": ["google "], "pemicu_frasa": ["di google", "cari google"], "url": "https://www.google.com/search?q={q}"}
+  ]
+}

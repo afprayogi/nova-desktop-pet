@@ -19,7 +19,7 @@ pub struct Net {
 static NET: RwLock<Option<Net>> = RwLock::new(None);
 
 fn path() -> std::path::PathBuf {
-    crate::config::data_dir().join("belajar.json")
+    crate::config::otak_dir().join("belajar.json")
 }
 
 fn feats(streak: u32, hour: u32) -> [f32; 4] {

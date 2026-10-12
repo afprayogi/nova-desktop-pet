@@ -1,0 +1,167 @@
+[
+  {
+    "bantuan": "-h",
+    "deskripsi": "kontrol versi kode",
+    "nama": "git"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "build dan paket Rust",
+    "nama": "cargo"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "kompiler Rust",
+    "nama": "rustc"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "pengelola toolchain Rust",
+    "nama": "rustup"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "kontainer",
+    "nama": "docker"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "model bahasa lokal",
+    "nama": "ollama"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "paket Node.js",
+    "nama": "npm"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "JavaScript runtime",
+    "nama": "node"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "interpreter Python",
+    "nama": "python"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "paket Python",
+    "nama": "pip"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "pemasang aplikasi Windows",
+    "nama": "winget"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "GitHub CLI",
+    "nama": "gh"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "uji koneksi",
+    "nama": "ping"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "konfigurasi IP",
+    "nama": "ipconfig"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "daftar proses",
+    "nama": "tasklist"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "koneksi dan port",
+    "nama": "netstat"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "salin folder tangguh",
+    "nama": "robocopy"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "isi folder",
+    "nama": "dir"
+  },
+  {
+    "bantuan": "/?",
+    "deskripsi": "cari lokasi perintah",
+    "nama": "where"
+  },
+  {
+    "bantuan": "-?",
+    "deskripsi": "shell PowerShell",
+    "nama": "powershell"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "konversi audio/video",
+    "nama": "ffmpeg"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "permintaan HTTP",
+    "nama": "curl"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "jaringan pribadi",
+    "nama": "tailscale"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "VS Code",
+    "nama": "code"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "ImageMagick (olah gambar)",
+    "nama": "magick"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "unduh video",
+    "nama": "yt-dlp"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "paket Node.js",
+    "nama": "pnpm"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "paket Node.js",
+    "nama": "yarn"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "paket Python cepat",
+    "nama": "uv"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "bahasa Go",
+    "nama": "go"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": ".NET",
+    "nama": "dotnet"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "Android Debug Bridge",
+    "nama": "adb"
+  },
+  {
+    "bantuan": "--help",
+    "deskripsi": "KiCad lewat CLI",
+    "nama": "kicad-cli"
+  }
+]

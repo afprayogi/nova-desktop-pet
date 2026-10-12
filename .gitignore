@@ -4,5 +4,8 @@ target/
 # berkas pribadi / data runtime
 grafik_produktivitas.py
 *.db
+!otak/*.db
+otak/*.db-wal
+otak/*.db-shm
 api.token
 .env

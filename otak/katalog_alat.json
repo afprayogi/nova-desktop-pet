@@ -1,0 +1,182 @@
+[
+  {
+    "server": "filesystem",
+    "nama": "read_text_file",
+    "deskripsi": "Read complete contents of a file as text"
+  },
+  {
+    "server": "filesystem",
+    "nama": "read_media_file",
+    "deskripsi": "Read a file and return it as a base64-encoded content block with its MIME type"
+  },
+  {
+    "server": "filesystem",
+    "nama": "read_multiple_files",
+    "deskripsi": "Read multiple files simultaneously"
+  },
+  {
+    "server": "filesystem",
+    "nama": "write_file",
+    "deskripsi": "Create new file or overwrite existing (exercise caution with this)"
+  },
+  {
+    "server": "filesystem",
+    "nama": "edit_file",
+    "deskripsi": "Make selective edits using advanced pattern matching and formatting"
+  },
+  {
+    "server": "filesystem",
+    "nama": "create_directory",
+    "deskripsi": "Create new directory or ensure it exists"
+  },
+  {
+    "server": "filesystem",
+    "nama": "list_directory",
+    "deskripsi": "List directory contents with [FILE] or [DIR] prefixes"
+  },
+  {
+    "server": "filesystem",
+    "nama": "list_directory_with_sizes",
+    "deskripsi": "List directory contents with [FILE] or [DIR] prefixes, including file sizes"
+  },
+  {
+    "server": "filesystem",
+    "nama": "move_file",
+    "deskripsi": "Move or rename files and directories"
+  },
+  {
+    "server": "filesystem",
+    "nama": "search_files",
+    "deskripsi": "Recursively search for files/directories that match or do not match patterns"
+  },
+  {
+    "server": "filesystem",
+    "nama": "directory_tree",
+    "deskripsi": "Get recursive JSON tree structure of directory contents"
+  },
+  {
+    "server": "filesystem",
+    "nama": "get_file_info",
+    "deskripsi": "Get detailed file/directory metadata"
+  },
+  {
+    "server": "filesystem",
+    "nama": "list_allowed_directories",
+    "deskripsi": "List all directories the server is allowed to access"
+  },
+  {
+    "server": "git",
+    "nama": "git_status",
+    "deskripsi": "Shows the working tree status"
+  },
+  {
+    "server": "git",
+    "nama": "git_diff_unstaged",
+    "deskripsi": "Shows changes in working directory not yet staged"
+  },
+  {
+    "server": "git",
+    "nama": "git_diff_staged",
+    "deskripsi": "Shows changes that are staged for commit"
+  },
+  {
+    "server": "git",
+    "nama": "git_diff",
+    "deskripsi": "Shows differences between branches or commits"
+  },
+  {
+    "server": "git",
+    "nama": "git_commit",
+    "deskripsi": "Records changes to the repository"
+  },
+  {
+    "server": "git",
+    "nama": "git_add",
+    "deskripsi": "Adds file contents to the staging area"
+  },
+  {
+    "server": "git",
+    "nama": "git_reset",
+    "deskripsi": "Unstages all staged changes"
+  },
+  {
+    "server": "git",
+    "nama": "git_log",
+    "deskripsi": "Shows the commit logs with optional date filtering"
+  },
+  {
+    "server": "git",
+    "nama": "git_create_branch",
+    "deskripsi": "Creates a new branch"
+  },
+  {
+    "server": "git",
+    "nama": "git_checkout",
+    "deskripsi": "Switches branches"
+  },
+  {
+    "server": "git",
+    "nama": "git_show",
+    "deskripsi": "Shows the contents of a commit, or of a file or directory at a revision"
+  },
+  {
+    "server": "git",
+    "nama": "git_branch",
+    "deskripsi": "List Git branches"
+  },
+  {
+    "server": "memory",
+    "nama": "create_entities",
+    "deskripsi": "Create multiple new entities in the knowledge graph"
+  },
+  {
+    "server": "memory",
+    "nama": "create_relations",
+    "deskripsi": "Create multiple new relations between entities"
+  },
+  {
+    "server": "memory",
+    "nama": "add_observations",
+    "deskripsi": "Add new observations to existing entities"
+  },
+  {
+    "server": "memory",
+    "nama": "delete_entities",
+    "deskripsi": "Remove entities and their relations"
+  },
+  {
+    "server": "memory",
+    "nama": "delete_observations",
+    "deskripsi": "Remove specific observations from entities"
+  },
+  {
+    "server": "memory",
+    "nama": "delete_relations",
+    "deskripsi": "Remove specific relations from the graph"
+  },
+  {
+    "server": "memory",
+    "nama": "read_graph",
+    "deskripsi": "Read the entire knowledge graph"
+  },
+  {
+    "server": "memory",
+    "nama": "search_nodes",
+    "deskripsi": "Search for nodes based on query"
+  },
+  {
+    "server": "memory",
+    "nama": "open_nodes",
+    "deskripsi": "Retrieve specific nodes by name"
+  },
+  {
+    "server": "time",
+    "nama": "get_current_time",
+    "deskripsi": "Get current time in a specific timezone or system timezone."
+  },
+  {
+    "server": "time",
+    "nama": "convert_time",
+    "deskripsi": "Convert time between timezones."
+  }
+]

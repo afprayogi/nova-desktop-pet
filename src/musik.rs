@@ -102,7 +102,7 @@ mod tests {
 const MUSIK_KATA: &[&str] = &["lagu", "musik", "music", "song", "lofi", "playlist", "ost", "cover", "remix", "official", "mv", "lyrics", "lirik"];
 
 fn riwayat_file() -> PathBuf {
-    crate::config::data_dir().join("lagu.json")
+    crate::config::otak_dir().join("lagu.json")
 }
 
 fn baca_riwayat() -> serde_json::Value {

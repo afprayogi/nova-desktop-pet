@@ -54,7 +54,7 @@ pub fn sekarang() -> Snap {
 }
 
 fn log_file() -> std::path::PathBuf {
-    crate::config::data_dir().join("otak_log.json")
+    crate::config::otak_dir().join("otak_log.json")
 }
 
 pub fn riwayat() -> Vec<Snap> {
@@ -97,6 +97,32 @@ pub fn teks() -> String {
     }
     t.push_str(&format!("Akurasi prediksi kelelahan: {}% · sisi graf: {}\nBelajar berkelanjutan: tiap hari saat Bos aktif NOVA melatih ulang dan mencatat pertumbuhan; kini {} hari tercatat.", s.akurasi, s.graf_sisi, riwayat().len()));
     t
+}
+
+/// `/otak pindah [folder]`: salin berkas otak ke `folder` (bawaan: folder `otak` di sebelah repo/kode) dan jadikan lokasi aktif.
+/// Mulai ulang NOVA setelahnya agar semua bagian memakai lokasi baru; salinan lama di folder data tidak dihapus.
+pub fn pindah(tujuan: &str) -> String {
+    let t = if tujuan.is_empty() {
+        let exe = std::env::current_exe().unwrap_or_default();
+        match exe.ancestors().find(|p| p.join("Cargo.toml").exists()) {
+            Some(repo) => repo.join("otak"),
+            None => return "Sebut folder tujuannya: /otak pindah D:/repo/rustgent/otak".into(),
+        }
+    } else {
+        std::path::PathBuf::from(tujuan.trim_matches('"'))
+    };
+    if std::fs::create_dir_all(&t).is_err() {
+        return format!("Tidak bisa membuat {}.", t.display());
+    }
+    let (asal, mut n) = (crate::config::otak_dir(), 0);
+    for f in crate::config::BERKAS_OTAK {
+        let (a, b) = (asal.join(f), t.join(f));
+        if a.exists() && a != b && std::fs::copy(&a, &b).is_ok() {
+            n += 1;
+        }
+    }
+    let _ = std::fs::write(crate::config::data_dir().join("otak_path.txt"), t.display().to_string());
+    format!("{n} berkas otak disalin ke {} dan dijadikan lokasi otak. Mulai ulang NOVA agar semua bagian memakainya.", t.display())
 }
 
 #[cfg(test)]

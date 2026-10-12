@@ -12,7 +12,7 @@ type Isi = (Option<SystemTime>, Arc<Value>, String);
 static CACHE: Mutex<Option<HashMap<String, Isi>>> = Mutex::new(None);
 
 fn path(nama: &str) -> std::path::PathBuf {
-    crate::config::data_dir().join(nama)
+    crate::config::otak_dir().join(nama)
 }
 
 fn mtime(nama: &str) -> Option<SystemTime> {
@@ -53,7 +53,7 @@ pub fn periksa() -> String {
     // pastikan berkas bawaan sudah dibuat
     let _ = (crate::kata::aksi("x"), crate::cli::daftar(), crate::aturan::layanan_daftar());
     let g = CACHE.lock().unwrap();
-    let mut s = format!("Folder data: {}\n", crate::config::data_dir().display());
+    let mut s = format!("Folder otak: {}\n", crate::config::otak_dir().display());
     for n in BERKAS {
         let ada = path(n).exists();
         let info = g.as_ref().and_then(|m| m.get(*n));
@@ -69,7 +69,7 @@ pub fn periksa() -> String {
 }
 
 pub fn folder() -> std::path::PathBuf {
-    crate::config::data_dir()
+    crate::config::otak_dir()
 }
 
 #[cfg(test)]
