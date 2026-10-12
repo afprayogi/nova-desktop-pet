@@ -50,29 +50,73 @@ fn strip_fillers(s: &str) -> &str {
     }
 }
 
-/// Layanan web: kalimat → URL pencarian (YouTube, Maps, Google, GitHub). Dibuka di browser lewat alat `open`.
+/// Layanan web bawaan (ditulis ke `layanan.json`; tambah entri lewat berkas atau `/layanan tambah`). Kolom:
+/// pemicu (kata), pemicu_awal (awalan kalimat), pemicu_frasa (frasa), butuh_aksi (aksi baku dari kamus aksi), butuh_kata, tolak,
+/// buang (kata yang tidak ikut kueri), awalan (disisipkan di depan kueri), url (dengan {q}).
+pub const LAYANAN_BAWAAN: &str = r#"{
+  "abaikan": ["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "kamu", "kau", "anda", "saya", "aku", "mohon", "deh", "sih", "nih", "lah", "bisa", "mau", "ingin", "silakan", "saja", "pakai", "lewat", "link", "tautan"],
+  "layanan": [
+    {"nama": "lagu", "pemicu": ["lagu", "musik", "music"], "butuh_aksi": ["putar", "buka", "ganti"], "tolak": ["folder", "laptop", "spotify"],
+     "buang": ["lagu", "musik", "music", "mainkan", "setel", "setelkan", "play", "nyalakan", "dengar", "dengarkan", "ganti", "gantikan", "ubah", "ubahkan", "pindah", "tukar"],
+     "awalan": "lagu", "url": "https://www.youtube.com/results?search_query={q}"},
+    {"nama": "youtube", "pemicu": ["youtube", "yt"], "url": "https://www.youtube.com/results?search_query={q}"},
+    {"nama": "video", "pemicu": ["video"], "butuh_kata": ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"], "tolak": ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"], "url": "https://www.youtube.com/results?search_query={q}"},
+    {"nama": "maps", "pemicu": ["maps"], "pemicu_awal": ["rute ke ", "navigasi ke ", "peta ", "lokasi "], "url": "https://www.google.com/maps/search/{q}"},
+    {"nama": "github", "pemicu": ["github"], "butuh_kata": ["cari", "carikan", "repo", "repositori"], "url": "https://github.com/search?type=repositories&q={q}"},
+    {"nama": "google", "pemicu": ["googling"], "pemicu_awal": ["google "], "pemicu_frasa": ["di google", "cari google"], "url": "https://www.google.com/search?q={q}"}
+  ]
+}"#;
+
+pub fn layanan_daftar() -> Vec<String> {
+    crate::data::json("layanan.json", LAYANAN_BAWAAN)["layanan"].as_array().map(|a| a.iter().filter_map(|x| x["nama"].as_str().map(String::from)).collect()).unwrap_or_default()
+}
+
+/// `/layanan tambah <nama> <pemicu,pemicu> <url dengan {q}>`.
+pub fn layanan_tambah(arg: &str) -> String {
+    let p: Vec<&str> = arg.split_whitespace().collect();
+    if p.len() < 3 || !p[2].contains("{q}") || !(p[2].starts_with("https://") || p[2].starts_with("http://")) {
+        return "Pakai: /layanan tambah <nama> <kata1,kata2> <https://situs/cari?q={q}>. Contoh: /layanan tambah wikipedia wiki,wikipedia https://id.wikipedia.org/w/index.php?search={q}".into();
+    }
+    let (nama, pemicu, url) = (p[0].to_lowercase(), p[1].to_lowercase().split(',').map(String::from).collect::<Vec<_>>(), p[2].to_string());
+    let n2 = nama.clone();
+    match crate::data::ubah("layanan.json", LAYANAN_BAWAAN, move |v| {
+        if let Some(a) = v["layanan"].as_array_mut() {
+            a.retain(|x| x["nama"].as_str() != Some(n2.as_str()));
+            a.push(serde_json::json!({"nama": n2, "pemicu": pemicu, "url": url}));
+        }
+    }) {
+        Ok(()) => format!("Layanan '{nama}' ditambahkan. Coba: \"cari <sesuatu> di {nama}\"."),
+        Err(e) => format!("Gagal menyimpan layanan.json: {e}"),
+    }
+}
+
+/// Layanan web: kalimat → URL pencarian, berdasarkan layanan.json. Dibuka di browser lewat alat `open`.
 fn layanan(l: &str) -> Option<String> {
-    const NOISE: &[&str] = &["halo", "hai", "gemini", "nova", "coba", "tolong", "buka", "bukakan", "putar", "putarkan", "tonton", "cari", "carikan", "di", "dari", "ke", "video", "youtube", "yt", "google", "googling", "github", "maps", "peta", "rute", "navigasi", "lokasi", "repo", "repositori", "maksudnya", "maksud", "dong", "ya", "dan", "aja", "kamu", "kau", "anda", "saya", "aku", "mohon", "deh", "sih", "nih", "lah", "bisa", "mau", "ingin", "silakan", "saja", "pakai", "lewat", "link", "tautan"];
+    let cfg = crate::data::json("layanan.json", LAYANAN_BAWAAN);
+    let teks = |v: &serde_json::Value| -> Vec<String> { v.as_array().map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_lowercase())).collect()).unwrap_or_default() };
+    let abaikan = teks(&cfg["abaikan"]);
     let w: Vec<&str> = l.split(|c: char| !c.is_alphanumeric()).filter(|x| !x.is_empty()).collect();
     let has = |k: &str| w.contains(&k);
-    let q = |extra: &[&str]| w.iter().filter(|x| !NOISE.contains(x) && !extra.contains(x)).cloned().collect::<Vec<_>>().join(" ");
-    let files = ["file", "berkas", "folder", "laptop", "mp4", "mkv", "avi", "drive", "download", "unduhan", "komputer"].iter().any(|k| has(k));
-    let extra = ["lagu", "musik", "music", "mainkan", "setel", "setelkan", "play", "nyalakan", "dengar", "dengarkan", "ganti", "gantikan", "ubah", "ubahkan", "pindah", "tukar"];
-    let lagu = (has("lagu") || has("musik") || has("music")) && { let ak = crate::kata::aksi(l); ak.contains(&"putar") || ak.contains(&"buka") || ak.contains(&"ganti") } && !has("folder") && !has("laptop") && !has("spotify") && !q(&extra).is_empty();
-    let (base, q) = if lagu {
-        ("https://www.youtube.com/results?search_query=", format!("lagu {}", q(&extra)))
-    } else if has("youtube") || has("yt") || (has("video") && ["tonton", "putar", "putarkan", "cari", "carikan", "buka", "bukakan"].iter().any(|k| has(k)) && !files) {
-        ("https://www.youtube.com/results?search_query=", q(&[]))
-    } else if l.starts_with("rute ke ") || l.starts_with("navigasi ke ") || has("maps") || l.starts_with("peta ") || l.starts_with("lokasi ") {
-        ("https://www.google.com/maps/search/", q(&[]))
-    } else if has("github") && (has("cari") || has("carikan") || has("repo") || has("repositori")) {
-        ("https://github.com/search?type=repositories&q=", q(&[]))
-    } else if has("googling") || l.contains("di google") || l.contains("cari google") || l.starts_with("google ") {
-        ("https://www.google.com/search?q=", q(&[]))
-    } else {
-        return None;
-    };
-    (!q.is_empty()).then(|| format!("{base}{}", urlencoding::encode(&q)))
+    let aksi = crate::kata::aksi(l);
+    for e in cfg["layanan"].as_array()? {
+        let (pemicu, awal, frasa) = (teks(&e["pemicu"]), teks(&e["pemicu_awal"]), teks(&e["pemicu_frasa"]));
+        let hit = pemicu.iter().any(|k| has(k)) || awal.iter().any(|k| l.starts_with(k.as_str())) || frasa.iter().any(|k| l.contains(k.as_str()));
+        let (butuh_aksi, butuh_kata, tolak, buang) = (teks(&e["butuh_aksi"]), teks(&e["butuh_kata"]), teks(&e["tolak"]), teks(&e["buang"]));
+        if !hit || (!butuh_aksi.is_empty() && !butuh_aksi.iter().any(|a| aksi.contains(a))) || (!butuh_kata.is_empty() && !butuh_kata.iter().any(|k| has(k))) || tolak.iter().any(|k| has(k)) {
+            continue;
+        }
+        let q = w.iter().filter(|x| !abaikan.iter().any(|a| a == *x) && !buang.iter().any(|b| b == *x)).cloned().collect::<Vec<_>>().join(" ");
+        if q.is_empty() {
+            continue;
+        }
+        let url = e["url"].as_str().filter(|u| u.starts_with("https://") || u.starts_with("http://") )?;
+        let q = match e["awalan"].as_str() {
+            Some(a) if !a.is_empty() => format!("{a} {q}"),
+            _ => q,
+        };
+        return Some(url.replace("{q}", &urlencoding::encode(&q)));
+    }
+    None
 }
 
 /// Aturan ajaran Bos (dasbor Belajar) didahulukan, lalu aturan bawaan.

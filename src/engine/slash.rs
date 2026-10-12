@@ -149,6 +149,22 @@ impl Engine {
                 };
                 self.agent_say(0, &r)
             }
+            "data" => {
+                if arg.eq_ignore_ascii_case("buka") {
+                    let _ = std::process::Command::new("explorer.exe").arg(crate::data::folder()).spawn();
+                }
+                let r = crate::data::periksa();
+                self.agent_say(0, &r)
+            }
+            "kamusaksi" => {
+                let p: Vec<&str> = arg.split_whitespace().collect();
+                let r = if p.len() >= 3 && p[0].eq_ignore_ascii_case("tambah") { crate::kata::tambah_aksi(p[1], &p[2..]) } else { format!("Aksi dikenal: {}. Tambah: /kamusaksi tambah <aksi> <kata>.", crate::kata::aksi("putar buka tutup ganti cari cek matikan baca tulis hapus kirim hitung terjemah unduh ingat").join(", ")) };
+                self.agent_say(0, &r)
+            }
+            "layanan" => {
+                let r = if let Some(sisa) = arg.strip_prefix("tambah ") { crate::aturan::layanan_tambah(sisa) } else { format!("Layanan web: {}. Tambah: /layanan tambah <nama> <kata1,kata2> <url dengan {{q}}>, atau edit layanan.json.", crate::aturan::layanan_daftar().join(", ")) };
+                self.agent_say(0, &r)
+            }
             "buku" => {
                 let v = tokio::task::spawn_blocking(crate::teknik::buku_terpelajari).await.unwrap_or_default();
                 let r = if v.is_empty() {
@@ -159,7 +175,9 @@ impl Engine {
                 self.agent_say(0, &r)
             }
             "cli" => {
-                let r = if arg.eq_ignore_ascii_case("belajar") {
+                let r = if let Some(sisa) = arg.strip_prefix("tambah ") {
+                    crate::cli::tambah(sisa)
+                } else if arg.eq_ignore_ascii_case("belajar") {
                     self.agent_say(0, "Membaca bantuan semua alat CLI terpasang…");
                     tokio::task::spawn_blocking(crate::cli::belajar_semua).await.unwrap_or_default()
                 } else {

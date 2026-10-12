@@ -773,6 +773,12 @@ mod tests {
         assert!(arg.starts_with("https://www.youtube.com/results?search_query=anime%20fullmetal"));
         assert!(url("kamu ganti music ke lagu indonesia").unwrap().1.contains("search_query=lagu%20indonesia"));
         assert!(url("tolong putarkan lagu dangdut koplo").unwrap().1.contains("lagu%20dangdut%20koplo"));
+        // data JSON: menambah layanan dan sinonim aksi tanpa mengubah kode
+        assert!(crate::aturan::layanan_tambah("wikipedia wiki https://id.wikipedia.org/w/index.php?search={q}").contains("ditambahkan"));
+        assert!(url("cari motor induksi di wiki").unwrap().1.contains("search=motor%20induksi"));
+        assert!(!crate::kata::punya_aksi("dengerin lagu", "putar"));
+        crate::kata::tambah_aksi("putar", &["dengerin"]);
+        assert!(crate::kata::punya_aksi("dengerin lagu", "putar"));
         for t in ["buka music anime", "buka lagu anime", "putar lagu anime", "nyalakan musik anime"] {
             assert!(url(t).unwrap().1.contains("search_query=lagu%20anime"), "{t}");
         }

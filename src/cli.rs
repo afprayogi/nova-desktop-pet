@@ -3,7 +3,87 @@
 use std::process::{Command, Stdio};
 use std::time::Duration;
 
-const TOOLS: &[&str] = &["git", "cargo", "rustc", "rustup", "docker", "ollama", "npm", "node", "python", "pip", "winget", "gh", "ping", "ipconfig", "tasklist", "netstat", "robocopy", "dir", "where", "powershell", "ffmpeg", "curl", "tailscale", "kicad-cli", "code", "magick", "yt-dlp", "pnpm", "yarn", "uv", "go", "dotnet", "adb"];
+/// Daftar alat CLI yang boleh dibaca bantuannya (dibuat ke `cli.json`; tambah lewat berkas atau `/cli tambah`). Hanya flag bantuan yang dijalankan.
+pub const CLI_BAWAAN: &str = r#"[
+  {"nama": "git", "bantuan": "-h", "deskripsi": "kontrol versi kode"},
+  {"nama": "cargo", "bantuan": "--help", "deskripsi": "build dan paket Rust"},
+  {"nama": "rustc", "bantuan": "--help", "deskripsi": "kompiler Rust"},
+  {"nama": "rustup", "bantuan": "--help", "deskripsi": "pengelola toolchain Rust"},
+  {"nama": "docker", "bantuan": "--help", "deskripsi": "kontainer"},
+  {"nama": "ollama", "bantuan": "--help", "deskripsi": "model bahasa lokal"},
+  {"nama": "npm", "bantuan": "--help", "deskripsi": "paket Node.js"},
+  {"nama": "node", "bantuan": "--help", "deskripsi": "JavaScript runtime"},
+  {"nama": "python", "bantuan": "--help", "deskripsi": "interpreter Python"},
+  {"nama": "pip", "bantuan": "--help", "deskripsi": "paket Python"},
+  {"nama": "winget", "bantuan": "--help", "deskripsi": "pemasang aplikasi Windows"},
+  {"nama": "gh", "bantuan": "--help", "deskripsi": "GitHub CLI"},
+  {"nama": "ping", "bantuan": "/?", "deskripsi": "uji koneksi"},
+  {"nama": "ipconfig", "bantuan": "/?", "deskripsi": "konfigurasi IP"},
+  {"nama": "tasklist", "bantuan": "/?", "deskripsi": "daftar proses"},
+  {"nama": "netstat", "bantuan": "/?", "deskripsi": "koneksi dan port"},
+  {"nama": "robocopy", "bantuan": "/?", "deskripsi": "salin folder tangguh"},
+  {"nama": "dir", "bantuan": "/?", "deskripsi": "isi folder"},
+  {"nama": "where", "bantuan": "/?", "deskripsi": "cari lokasi perintah"},
+  {"nama": "powershell", "bantuan": "-?", "deskripsi": "shell PowerShell"},
+  {"nama": "ffmpeg", "bantuan": "--help", "deskripsi": "konversi audio/video"},
+  {"nama": "curl", "bantuan": "--help", "deskripsi": "permintaan HTTP"},
+  {"nama": "tailscale", "bantuan": "--help", "deskripsi": "jaringan pribadi"},
+  {"nama": "kicad-cli", "bantuan": "--help", "deskripsi": "KiCad (PCB/skematik) lewat CLI"},
+  {"nama": "code", "bantuan": "--help", "deskripsi": "VS Code"},
+  {"nama": "magick", "bantuan": "--help", "deskripsi": "ImageMagick (olah gambar)"},
+  {"nama": "yt-dlp", "bantuan": "--help", "deskripsi": "unduh video"},
+  {"nama": "pnpm", "bantuan": "--help", "deskripsi": "paket Node.js"},
+  {"nama": "yarn", "bantuan": "--help", "deskripsi": "paket Node.js"},
+  {"nama": "uv", "bantuan": "--help", "deskripsi": "paket Python cepat"},
+  {"nama": "go", "bantuan": "--help", "deskripsi": "bahasa Go"},
+  {"nama": "dotnet", "bantuan": "--help", "deskripsi": ".NET"},
+  {"nama": "adb", "bantuan": "--help", "deskripsi": "Android Debug Bridge"}
+]"#;
+
+const FLAG_AMAN: &[&str] = &["--help", "-h", "/?", "-?", "help", "--version", "-help"];
+
+pub struct Alat {
+    pub nama: String,
+    pub bantuan: String,
+    pub deskripsi: String,
+}
+
+pub fn daftar() -> Vec<Alat> {
+    crate::data::json("cli.json", CLI_BAWAAN)
+        .as_array()
+        .map(|a| {
+            a.iter()
+                .filter_map(|x| {
+                    let nama = clean_word(x["nama"].as_str()?)?;
+                    let f = x["bantuan"].as_str().unwrap_or("--help");
+                    Some(Alat { nama, bantuan: if FLAG_AMAN.contains(&f) { f.to_string() } else { "--help".into() }, deskripsi: x["deskripsi"].as_str().unwrap_or("").to_string() })
+                })
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+fn nama_alat() -> Vec<String> {
+    daftar().into_iter().map(|a| a.nama).collect()
+}
+
+/// `/cli tambah <nama> [flag-bantuan] [| deskripsi]` → cli.json.
+pub fn tambah(arg: &str) -> String {
+    let (kiri, desk) = arg.split_once('|').map(|(a, b)| (a.trim(), b.trim())).unwrap_or((arg.trim(), ""));
+    let mut w = kiri.split_whitespace();
+    let Some(nama) = w.next().and_then(clean_word) else { return "Pakai: /cli tambah <nama> [--help|-h|/?] | <deskripsi>".into() };
+    let flag = w.next().filter(|f| FLAG_AMAN.contains(f)).unwrap_or("--help").to_string();
+    let (n2, f2, d2) = (nama.clone(), flag.clone(), desk.to_string());
+    match crate::data::ubah("cli.json", CLI_BAWAAN, move |v| {
+        if let Some(a) = v.as_array_mut() {
+            a.retain(|x| x["nama"].as_str() != Some(n2.as_str()));
+            a.push(serde_json::json!({"nama": n2, "bantuan": f2, "deskripsi": d2}));
+        }
+    }) {
+        Ok(()) => format!("Alat CLI '{nama}' ditambahkan (bantuan: {flag}). '/cli belajar' memasukkan cara pakainya ke pengetahuan."),
+        Err(e) => format!("Gagal menyimpan cli.json: {e}"),
+    }
+}
 
 /// (perintah, deskripsi) obrolan NOVA.
 pub const SLASH: &[(&str, &str)] = &[
@@ -38,10 +118,9 @@ pub const SLASH: &[(&str, &str)] = &[
 ];
 
 /// Alat CLI di daftar putih yang benar-benar ada di PATH laptop ini.
-pub fn terpasang() -> Vec<&'static str> {
-    TOOLS
-        .iter()
-        .copied()
+pub fn terpasang() -> Vec<String> {
+    nama_alat()
+        .into_iter()
         .filter(|t| {
             let mut c = Command::new("where");
             c.arg(t).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
@@ -72,7 +151,7 @@ pub fn belajar_semua() -> String {
 }
 
 pub fn is_tool(w: &str) -> bool {
-    TOOLS.contains(&w.to_lowercase().as_str())
+    nama_alat().contains(&w.to_lowercase())
 }
 
 pub fn complete(prefix: &str) -> Vec<&'static str> {
@@ -99,11 +178,11 @@ fn clean_word(w: &str) -> Option<String> {
 /// `arg` = "<alat> [subperintah]". Hanya --help/-h; maksimal 2 kata; alat harus ada di daftar putih.
 pub fn help(arg: &str) -> String {
     let words: Vec<String> = arg.split_whitespace().filter_map(clean_word).take(2).collect();
-    let Some(tool) = words.first() else { return format!("Sebut nama alatnya, mis. 'bantu git commit'. Yang didukung: {}.", TOOLS.join(", ")) };
-    if !TOOLS.contains(&tool.as_str()) {
-        return format!("'{tool}' tidak ada di daftar alat CLI yang kuizinkan ({}).", TOOLS.join(", "));
-    }
-    let flag = if tool == "git" || tool == "dir" { "-h" } else if tool == "ping" || tool == "ipconfig" || tool == "tasklist" || tool == "netstat" || tool == "robocopy" || tool == "where" { "/?" } else { "--help" };
+    let Some(tool) = words.first() else { return format!("Sebut nama alatnya, mis. 'bantu git commit'. Yang didukung: {}.", nama_alat().join(", ")) };
+    let Some(entri) = daftar().into_iter().find(|a| a.nama == *tool) else {
+        return format!("'{tool}' tidak ada di daftar alat CLI yang kuizinkan ({}). Tambahkan lewat /cli tambah atau cli.json.", nama_alat().join(", "));
+    };
+    let flag = entri.bantuan.as_str();
     let mut c = Command::new(if tool == "dir" { "cmd" } else { tool.as_str() });
     if tool == "dir" {
         c.args(["/C", "dir", "/?"]);

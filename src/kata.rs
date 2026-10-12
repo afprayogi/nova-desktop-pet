@@ -14,33 +14,65 @@ pub fn dasar(w: &str) -> String {
     sastrawi::Stemmer::new(kamus()).stem_word(&w.to_lowercase()).into_owned()
 }
 
-/// Kamus aksi: aksi baku → kata dasar yang berarti sama (termasuk padanan Inggris dan gaul umum).
-const AKSI: &[(&str, &[&str])] = &[
-    ("putar", &["putar", "main", "setel", "stel", "nyala", "dengar", "tonton", "play", "senandung", "lantun"]),
-    ("buka", &["buka", "open", "jalan", "mulai", "launch", "run", "aktif", "luncur"]),
-    ("tutup", &["tutup", "close", "keluar", "henti", "stop", "akhir"]),
-    ("ganti", &["ganti", "ubah", "tukar", "pindah", "switch", "alih", "rubah"]),
-    ("cari", &["cari", "temu", "lacak", "search", "telusur", "kejar"]),
-    ("cek", &["cek", "periksa", "lihat", "tampil", "tunjuk", "status", "tengok", "pantau", "monitor"]),
-    ("matikan", &["mati", "padam", "shutdown", "off"]),
-    ("baca", &["baca", "bacakan", "tampilkan", "read"]),
-    ("tulis", &["tulis", "simpan", "catat", "write", "save", "rekam"]),
-    ("hapus", &["hapus", "buang", "delete", "bersih", "singkir"]),
-    ("kirim", &["kirim", "send", "surat", "emailkan"]),
-    ("hitung", &["hitung", "kalkulasi", "calculate"]),
-    ("terjemah", &["terjemah", "artikan", "translate", "alih bahasa"]),
-    ("unduh", &["unduh", "download", "ambil", "tarik"]),
-    ("ingat", &["ingat", "ingatkan", "remind", "alarm", "jadwal"]),
-];
+/// Kamus aksi bawaan (ditulis ke `kamus_aksi.json` saat pertama dipakai; edit berkas itu atau `/kamusaksi tambah`).
+pub const AKSI_BAWAAN: &str = r#"{
+  "putar": ["putar", "main", "setel", "stel", "nyala", "dengar", "tonton", "play", "senandung", "lantun"],
+  "buka": ["buka", "open", "jalan", "mulai", "launch", "run", "aktif", "luncur"],
+  "tutup": ["tutup", "close", "keluar", "henti", "stop", "akhir"],
+  "ganti": ["ganti", "ubah", "tukar", "pindah", "switch", "alih", "rubah"],
+  "cari": ["cari", "temu", "lacak", "search", "telusur", "kejar"],
+  "cek": ["cek", "periksa", "lihat", "tampil", "tunjuk", "status", "tengok", "pantau", "monitor"],
+  "matikan": ["mati", "padam", "shutdown", "off"],
+  "baca": ["baca", "bacakan", "tampilkan", "read"],
+  "tulis": ["tulis", "simpan", "catat", "write", "save", "rekam"],
+  "hapus": ["hapus", "buang", "delete", "bersih", "singkir"],
+  "kirim": ["kirim", "send", "surat", "emailkan"],
+  "hitung": ["hitung", "kalkulasi", "calculate"],
+  "terjemah": ["terjemah", "artikan", "translate"],
+  "unduh": ["unduh", "download", "ambil", "tarik"],
+  "ingat": ["ingat", "ingatkan", "remind", "alarm", "jadwal"]
+}"#;
+
+fn tabel() -> Vec<(String, Vec<String>)> {
+    crate::data::json("kamus_aksi.json", AKSI_BAWAAN)
+        .as_object()
+        .map(|o| o.iter().map(|(k, a)| (k.to_lowercase(), a.as_array().map(|x| x.iter().filter_map(|s| s.as_str().map(|s| s.to_lowercase())).collect()).unwrap_or_default())).collect())
+        .unwrap_or_default()
+}
+
+/// Tambah kata ke aksi baku (aksi baru dibuat bila belum ada).
+pub fn tambah_aksi(aksi: &str, kata: &[&str]) -> String {
+    let aksi = aksi.trim().to_lowercase();
+    let kata: Vec<String> = kata.iter().map(|k| dasar(k.trim())).filter(|k| !k.is_empty() && k.chars().all(|c| c.is_alphanumeric() || c == '-')).collect();
+    if aksi.is_empty() || kata.is_empty() {
+        return "Pakai: /kamusaksi tambah <aksi> <kata> [kata lain]. Contoh: /kamusaksi tambah putar dengerin".into();
+    }
+    let k2 = kata.clone();
+    let a2 = aksi.clone();
+    match crate::data::ubah("kamus_aksi.json", AKSI_BAWAAN, move |v| {
+        let arr = v.as_object_mut().map(|o| o.entry(a2).or_insert_with(|| serde_json::json!([])));
+        if let Some(serde_json::Value::Array(a)) = arr {
+            for k in k2 {
+                if !a.iter().any(|x| x.as_str() == Some(k.as_str())) {
+                    a.push(k.into());
+                }
+            }
+        }
+    }) {
+        Ok(()) => format!("Kamus aksi: '{aksi}' sekarang juga berarti {}. (disimpan sebagai kata dasar di kamus_aksi.json)", kata.join(", ")),
+        Err(e) => format!("Gagal menyimpan kamus aksi: {e}"),
+    }
+}
 
 /// Aksi baku yang muncul dalam kalimat (urut kemunculan, tanpa duplikat).
-pub fn aksi(kalimat: &str) -> Vec<&'static str> {
-    let mut out: Vec<&'static str> = vec![];
+pub fn aksi(kalimat: &str) -> Vec<String> {
+    let t = tabel();
+    let mut out: Vec<String> = vec![];
     for w in kalimat.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 1) {
         let d = dasar(w);
-        for (baku, ragam) in AKSI {
-            if (ragam.contains(&d.as_str()) || ragam.contains(&w)) && !out.contains(baku) {
-                out.push(baku);
+        for (baku, ragam) in &t {
+            if (ragam.iter().any(|r| *r == d || r == w)) && !out.contains(baku) {
+                out.push(baku.clone());
             }
         }
     }
@@ -48,7 +80,7 @@ pub fn aksi(kalimat: &str) -> Vec<&'static str> {
 }
 
 pub fn punya_aksi(kalimat: &str, a: &str) -> bool {
-    aksi(kalimat).contains(&a)
+    aksi(kalimat).iter().any(|x| x.as_str() == a)
 }
 
 // ---------- kamus gaul → baku ----------
@@ -79,7 +111,8 @@ pub fn jumlah_gaul() -> usize {
 
 /// Kata yang tidak boleh ditulis ulang: nama alat, kata aksi (dan bentukannya), agar perintah tidak rusak oleh kamus gaul.
 fn terlindung(w: &str) -> bool {
-    crate::registry::semua().iter().any(|s| s.nama == w) || AKSI.iter().any(|(b, r)| *b == w || r.contains(&w)) || AKSI.iter().any(|(_, r)| r.contains(&dasar(w).as_str()))
+    let d = dasar(w);
+    crate::registry::semua().iter().any(|s| s.nama == w) || tabel().iter().any(|(b, r)| b == w || r.iter().any(|x| x == w || *x == d))
 }
 
 /// Bentuk baku dari kata gaul/singkatan (None bila tidak ada di kamus atau kata itu terlindung).
