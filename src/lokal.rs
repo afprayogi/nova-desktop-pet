@@ -115,7 +115,7 @@ pub async fn code_chat(http: &reqwest::Client, user: &str) -> Result<String> {
 /// Kalimat majemuk dipecah per klausa berurutan (model kecil lebih akurat per klausa), maks 4 langkah.
 pub async fn plan(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat::Call>, String)> {
     let mut segs = vec![goal.to_string()];
-    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " habis itu ", " selanjutnya ", ";"] {
+    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " dan buat ", " dan buatkan ", " dan tampilkan ", " dan beri ", " dan berikan ", " serta buat ", " habis itu ", " selanjutnya ", ";"] {
         segs = segs.iter().flat_map(|s| s.split(sep).map(String::from).collect::<Vec<_>>()).collect();
     }
     segs.retain(|s| !s.trim().is_empty());
@@ -152,7 +152,7 @@ async fn plan_one(http: &reqwest::Client, goal: &str) -> Result<(Vec<crate::alat
     let sys = format!(
         "Kamu NOVA, asisten laptop yang ramah (panggil pengguna 'Bos'). Balas HANYA JSON {{\"calls\":[{{\"tool\":..,\"arg\":..}}],\"reply\":..}}.\nJika Bos meminta tindakan, isi calls dengan alat yang tepat dan reply satu kalimat ramah. Jika hanya ngobrol/bertanya umum, calls kosong dan reply jawaban singkat yang jujur.\nAlat:\n{}\nFakta: {}",
         top.iter().map(|x| crate::registry::baris(x).chars().take(130).collect::<String>()).collect::<Vec<_>>().join("\n"),
-        crate::fakta::ringkas()
+        format!("{}\nIngatan relevan: {}", crate::fakta::ringkas(), crate::research::truncate(&crate::ingat::context(goal).replace('\n', " "), 450))
     );
     let shots: [(&str, &str); 11] = [
         ("cuaca di bandung", r#"{"calls":[{"tool":"cuaca","arg":"bandung"}],"reply":"Kucek cuaca Bandung ya Bos ☁"}"#),

@@ -385,6 +385,27 @@ pub fn profile() -> Vec<String> {
 
 // ---------- RAG: perakitan konteks dinamis ----------
 
+/// Entitas graf yang terakhir dipakai menjawab (untuk disorot di tab Otak dasbor).
+pub static AKTIF: Mutex<Vec<String>> = Mutex::new(Vec::new());
+
+/// Ingatan yang dipakai untuk kalimat ini, sebagai satu baris obrolan ("🧠 Ingatan terkait: …"); kosong bila tidak ada yang relevan.
+pub fn dipakai(q: &str) -> String {
+    let kata: Vec<String> = crate::teknik::terms(q).into_iter().filter(|w| w.len() > 3).collect();
+    let docs: Vec<Doc> = hybrid(q, 3).into_iter().filter(|d| d.src != "bawaan" && { let t = format!("{} {}", d.title, d.body).to_lowercase(); kata.iter().any(|w| t.contains(w.as_str())) }).collect();
+    let ql = q.to_lowercase();
+    let (gd, rel) = crate::graf::recall(q, 3);
+    let rel: Vec<String> = rel.into_iter().filter(|r| !ql.contains(&r.to_lowercase())).collect(); // entitas yang hanya mengulang kalimat tidak informatif
+    if let Ok(mut a) = AKTIF.lock() {
+        *a = rel.iter().take(24).cloned().collect();
+    }
+    let mut bagian: Vec<String> = docs.iter().map(|d| {
+        let sumber = d.src.split(':').next().unwrap_or("").chars().take(14).collect::<String>();
+        format!("{} ({})", d.title.chars().take(40).collect::<String>(), sumber)
+    }).collect();
+    bagian.extend(rel.iter().take(3).map(|r| format!("#{r}")));
+    if bagian.is_empty() { String::new() } else { format!("🧠 Ingatan terkait: {}", bagian.join(" · ")) }
+}
+
 /// Konteks untuk prompt model (injeksi dinamis) maupun jawaban tanpa model.
 pub fn context(q: &str) -> String {
     let mut s = String::new();

@@ -451,6 +451,9 @@ pub fn rule(s: &str, l: &str) -> Option<(&'static str, String)> {
     if l.starts_with("pantau ") && !l.contains("cuaca") || l.contains("kabari kalau harga") || l.contains("ingatkan kalau harga") || l == "pantauan" || l == "pantau" {
         return Some(("pantau", s.to_string()));
     }
+    if (l.contains("grafik") || l.contains("chart") || l.contains("visualisasi")) && ["ram", "cpu", "memori", "pemakaian", "laptop", "kesehatan", "sistem", "beban", "penggunaan"].iter().any(|k| l.split(|c: char| !c.is_alphanumeric()).any(|w| w == *k)) {
+        return Some(("grafik", String::new()));
+    }
     if (l.starts_with("harga ") || l.contains("grafik ") || l.contains("harga saham") || l.starts_with("kurs dolar") || l.contains("chart ")) && !l.contains("kurs 1") && !l.contains("pantau") {
         return Some(("harga", s.to_string()));
     }

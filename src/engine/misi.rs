@@ -20,7 +20,27 @@ impl Engine {
             return self.agent_say(0, "Oke, Bos 👍 Ada yang mau kubantu?");
         }
         // Putusan tersimpan (kasus.json / terverifikasi / dikonfirmasi) didahulukan; koreksi Bos memaksa kalimat ditanyakan ke model.
-        let paksa = crate::putusan::ambil_paksa(&goal);
+        // "jawab pakai gemini aja ...": Bos meminta model, bukan membuka situs Gemini. Frasa dibuang dari kalimat, lalu aturan lokal dilewati.
+        let (goal, minta_model) = {
+            let low = goal.to_ascii_lowercase();
+            match ["jawab pakai gemini", "jawab pake gemini", "jawab dengan gemini", "pakai gemini", "pake gemini", "gunakan gemini", "pakai model", "jawab pakai ai"].iter().find_map(|k| low.find(k).map(|i| (i, k.len()))) {
+                Some((i, n)) if !low.contains("buka") => {
+                    let mut g = format!("{} {}", &goal[..i], &goal[i + n..]);
+                    for w in [" aja ", " saja ", " dong "] {
+                        g = g.replacen(w, " ", 1);
+                    }
+                    (g.split_whitespace().collect::<Vec<_>>().join(" "), true)
+                }
+                _ => (goal, false),
+            }
+        };
+        let paksa = crate::putusan::ambil_paksa(&goal) || minta_model;
+        if goal.split_whitespace().count() >= 3 && !goal.starts_with('/') {
+            let m = crate::ingat::dipakai(&goal);
+            if !m.is_empty() {
+                self.tx.sys(m);
+            }
+        }
         let tersimpan = if paksa { None } else { crate::putusan::cari(&goal) };
         let mut offline = if paksa { None } else { tersimpan.clone().map(|c| vec![c]).or_else(|| alat::plan_offline(&goal)) };
         let mut g_failed = false;

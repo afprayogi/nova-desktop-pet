@@ -146,7 +146,7 @@ async function load(){try{const d=await (await fetch("/api/stats",H)).json();
 /* ---- otak: graf ala Obsidian ---- */
 const KC={kata:"#6ea6dc",nama:"#e8a33d",berkas:"#5fb98a",domain:"#c97fb5",kode:"#d96b5a"};
 const kc=k=>KC[k]||"#8791a5";
-let G={nodes:[],edges:[],by:new Map(),adj:new Map(),sel:null,hov:null,q:"",tx:0,ty:0,k:1,run:0,drag:null};
+let G={aktif:new Set(),nodes:[],edges:[],by:new Map(),adj:new Map(),sel:null,hov:null,q:"",tx:0,ty:0,k:1,run:0,drag:null};
 async function loadGraf(){try{const r=await (await fetch("/api/graf",H)).json();const n=r.nodes.length;
  G.nodes=r.nodes.map((x,i)=>({...x,x:Math.cos(i*2.4)*Math.sqrt(i+1)*14,y:Math.sin(i*2.4)*Math.sqrt(i+1)*14,vx:0,vy:0,r:3+Math.min(11,Math.sqrt(x.w)*.9)}));
  G.by=new Map(G.nodes.map(x=>[x.id,x]));G.adj=new Map(G.nodes.map(x=>[x.id,[]]));
@@ -160,7 +160,7 @@ function tick(){const N=G.nodes;if(G.run>0||G.drag){G.run--;
 function drawG(){const c=$("#graf"),[g,W,Hh]=fit(c,520);g.clearRect(0,0,W,Hh);g.save();g.translate(W/2+G.tx,Hh/2+G.ty);g.scale(G.k,G.k);
  const act=G.sel||G.hov,nb=act?new Set([act.id,...G.adj.get(act.id).map(x=>x[0])]):null,q=G.q.toLowerCase();
  g.lineWidth=1/G.k;G.edges.forEach(e=>{const a=G.by.get(e[0]),b=G.by.get(e[1]);const on=nb&&(a===act||b===act);g.strokeStyle=on?css("--sel"):css("--line");g.globalAlpha=nb&&!on?.15:on?.9:.7;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()});g.globalAlpha=1;
- G.nodes.forEach(n=>{const hit=q&&n.name.toLowerCase().includes(q),dim=(nb&&!nb.has(n.id))||(q&&!hit);g.globalAlpha=dim?.18:1;g.fillStyle=n===G.sel?css("--sel"):kc(n.kind);g.beginPath();g.arc(n.x,n.y,n.r,0,7);g.fill();if(hit){g.strokeStyle=css("--amber");g.lineWidth=2/G.k;g.stroke()}});
+ G.nodes.forEach(n=>{const hit=(q&&n.name.toLowerCase().includes(q))||G.aktif.has(n.name),dim=(nb&&!nb.has(n.id))||(q&&!n.name.toLowerCase().includes(q)&&!G.aktif.has(n.name));g.globalAlpha=dim?.18:1;g.fillStyle=n===G.sel?css("--sel"):kc(n.kind);g.beginPath();g.arc(n.x,n.y,n.r,0,7);g.fill();if(hit){g.strokeStyle=css("--amber");g.lineWidth=2/G.k;g.stroke()}});
  g.globalAlpha=1;g.fillStyle=css("--text");g.font=(11/G.k)+"px Segoe UI";g.textAlign="center";
  G.nodes.forEach(n=>{const show=n===G.sel||n===G.hov||(nb&&nb.has(n.id)&&n.r>5)||(q&&n.name.toLowerCase().includes(q))||(!nb&&!q&&n.r>8.5&&G.k>.7)||G.k>2.2;if(show)g.fillText(n.name.slice(0,26),n.x,n.y-n.r-3/G.k)});g.restore()}
 function pick(ev){const r=$("#graf").getBoundingClientRect(),x=(ev.clientX-r.left-r.width/2-G.tx)/G.k,y=(ev.clientY-r.top-r.height/2-G.ty)/G.k;let best=null,bd=1e9;G.nodes.forEach(n=>{const d=(n.x-x)**2+(n.y-y)**2;if(d<(n.r+4)**2&&d<bd){bd=d;best=n}});return[best,x,y]}
@@ -177,7 +177,7 @@ function detail(n){if(!n){$("#gside").innerHTML='<div class="lead">Klik sebuah t
  c.onmouseleave=()=>{G.hov=null;drawG()};
  $("#cari").oninput=e=>{G.q=e.target.value;drawG()};addEventListener("resize",()=>{if($("#otak").classList.contains("on"))drawG()})})();
 async function loadOtak(b){if(!G.nodes.length)loadGraf();else{G.run=Math.max(G.run,1);tick()}
- try{const r=await (await fetch("/api/otak"+(b?"?belajar=1":""),H)).json();$("#otl").textContent=r.tingkat+"%";$("#n2").textContent=r.tingkat+"%";$("#ota").textContent="Akurasi prediksi kelelahan "+r.akurasi+"%, "+r.graf_sisi+" garis di graf.";
+ try{const r=await (await fetch("/api/otak"+(b?"?belajar=1":""),H)).json();G.aktif=new Set(r.aktif||[]);$("#otl").textContent=r.tingkat+"%";$("#n2").textContent=r.tingkat+"%";$("#ota").textContent="Akurasi prediksi kelelahan "+r.akurasi+"%, "+r.graf_sisi+" garis di graf.";
  $("#otd").innerHTML=r.dimensi.map(d=>`<div class="row"><span>${esc(d.nama)}</span><span>${d.nilai} / ${d.target}</span></div><div class="bar"><i style="width:${d.persen}%"></i></div>`).join("");line("#cotk",r.riwayat.map(x=>x.tingkat),css("--amber"),100)}catch(e){}}
 $("#otbtn").onclick=async()=>{$("#otbtn").disabled=true;await loadOtak(true);$("#otbtn").disabled=false};
 
@@ -219,7 +219,7 @@ async function putusanMuat(){try{const r=await (await fetch("/api/putusan",H)).j
  $("#plist").querySelectorAll("[data-p]").forEach(b=>b.onclick=async()=>{await fetch("/api/putusan",{method:"POST",headers:{...H.headers,"content-type":"application/json"},body:JSON.stringify({i:+b.dataset.i,aksi:b.dataset.p})});putusanMuat();ajarMuat()})}catch(e){}}
 document.querySelector('[data-s="ajar"]').addEventListener("click",putusanMuat);
 
-load();setInterval(load,5000);addEventListener("resize",load);
+load();setInterval(()=>{load();if($("#otak").classList.contains("on"))loadOtak().then?.(()=>drawG())},5000);addEventListener("resize",load);
 {const h=(location.hash||"").slice(1);show(["ringkas","otak","ajar","net","pc"].includes(h)?h:"ringkas")}
 fetch("/api/otak",H).then(r=>r.json()).then(r=>$("#n2").textContent=r.tingkat+"%").catch(()=>{});
 </script>

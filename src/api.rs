@@ -428,7 +428,9 @@ async fn otak_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extrac
     if q.contains_key("belajar") {
         let _ = tokio::task::spawn_blocking(|| crate::otak::harian(true)).await;
     }
-    Ok(Json(tokio::task::spawn_blocking(crate::otak::json).await.unwrap_or_default()))
+    let mut j = tokio::task::spawn_blocking(crate::otak::json).await.unwrap_or_default();
+    j["aktif"] = serde_json::json!(crate::ingat::AKTIF.lock().map(|a| a.clone()).unwrap_or_default());
+    Ok(Json(j))
 }
 
 /// Monitor koneksi (tanpa admin). `?tangkap=1` menangkap paket ±15 dtk (Windows meminta UAC).

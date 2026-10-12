@@ -70,6 +70,7 @@ fetch <url>   : ambil teks halaman web
 shell <cmd>   : jalankan perintah shell (butuh persetujuan Bos)
 write <path>  : tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)
 open <target> : buka URL/file/aplikasi (butuh persetujuan Bos)
+grafik         : grafik pemakaian RAM dan CPU laptop hari ini (dari data pemantauan) beserta penilaian kesehatan RAM
 cariisi <berkas> :: <pertanyaan>: potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)
 github <kata>   : cari repositori GitHub (bintang, bahasa, lisensi)
 tunggu <detik>  : jeda 1-30 detik di antara langkah
@@ -122,7 +123,7 @@ pub fn assess(c: &Call) -> Risk {
         "pelajari" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "pelajari" | "kurikulum" => Risk::Safe,
         "kirim" => Risk::Confirm("mengirim email ke alamat Bos sendiri".into()),
-        "otak" => Risk::Safe,
+        "otak" | "grafik" => Risk::Safe,
         "cariisi" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Confirm("path tampak sensitif".into()),
         "cariisi" | "github" | "tunggu" => Risk::Safe,
         "kompres" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Block("path sensitif tidak dikompres".into()),
@@ -323,6 +324,7 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
             let a = arg.to_string();
             tokio::task::spawn_blocking(move || crate::alatbaru::kompres(&a)).await.unwrap_or_default()
         }
+        "grafik" => tokio::task::spawn_blocking(crate::grafik::hari_ini).await.unwrap_or_default(),
         "otak" => tokio::task::spawn_blocking(crate::otak::teks).await.unwrap_or_default(),
         "paket" if arg.contains("tangkap") => crate::paket::tangkap(15).await,
         "paket" => crate::paket::teks_monitor(&crate::paket::monitor().await),
@@ -624,7 +626,7 @@ pub fn summarize(text: &str, n: usize) -> String {
 pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     FROM_ML.store(false, Ordering::Relaxed);
     let mut segs = vec![goal.to_string()];
-    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " habis itu ", " abis itu ", " selanjutnya ", ";", " then "] {
+    for sep in [" lalu ", " kemudian ", " terus ", " lantas ", " setelah itu ", " dan buat ", " dan buatkan ", " dan tampilkan ", " dan beri ", " dan berikan ", " serta buat ", " habis itu ", " abis itu ", " selanjutnya ", ";", " then "] {
         segs = segs.iter().flat_map(|s| s.split(sep).map(String::from).collect::<Vec<_>>()).collect();
     }
     segs.retain(|s| !s.trim().is_empty());

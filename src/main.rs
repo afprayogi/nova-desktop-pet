@@ -26,6 +26,7 @@ mod gemini;
 mod engine;
 mod google;
 mod graf;
+mod grafik;
 mod imap;
 mod indeks;
 mod internet;

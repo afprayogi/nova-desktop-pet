@@ -27,6 +27,7 @@ pub enum Nilai {
 const KOSONG: &str = "[]";
 static TUNGGU: Mutex<Option<(String, Call, Call, [String; 2])>> = Mutex::new(None);
 static LAST: Mutex<Option<(String, Call, Instant)>> = Mutex::new(None);
+static TULIS: Mutex<()> = Mutex::new(());
 static PAKSA: Mutex<Option<String>> = Mutex::new(None);
 
 pub fn norm(s: &str) -> String {
@@ -38,6 +39,7 @@ pub fn daftar() -> Vec<Entri> {
 }
 
 fn tulis(f: impl FnOnce(&mut Vec<Entri>)) {
+    let _kunci = TULIS.lock().unwrap_or_else(|e| e.into_inner()); // baca-ubah-tulis harus serial
     let _ = crate::data::ubah("putusan.json", KOSONG, |v| {
         let mut d: Vec<Entri> = serde_json::from_value(v.clone()).unwrap_or_default();
         f(&mut d);

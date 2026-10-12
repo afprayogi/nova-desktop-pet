@@ -448,7 +448,7 @@ pub async fn plan(http: &reqwest::Client, goal: &str) -> Result<Plan> {
             }
         }
     }
-    let sys = plan_sys(&ctx);
+    let sys = format!("{}\n\nINGATAN NOVA (profil, aktivitas, buku, graf; pakai hanya bila relevan):\n{}", plan_sys(&ctx), crate::research::truncate(&crate::ingat::context(goal), 1100));
     let raw = generate(http, &sys, goal, true, false).await?;
     let raw = raw.trim().trim_start_matches("```json").trim_start_matches("```").trim_end_matches("```").trim();
     let p = parse_plan(raw).ok_or_else(|| anyhow!("format jawaban tidak dikenali"))?;
