@@ -37,7 +37,11 @@ pub fn json(nama: &str, bawaan: &str) -> Arc<Value> {
         Err(e) => (serde_json::from_str(bawaan).unwrap_or(Value::Null), e),
     };
     let v = Arc::new(v);
-    m.insert(nama.to_string(), (mtime(nama), v.clone(), galat));
+    // berkas yang baru saja berubah dan gagal diurai mungkin sedang ditulis: jangan di-cache agar dibaca ulang
+    let baru = mtime(nama).and_then(|t| t.elapsed().ok()).is_some_and(|d| d.as_secs() < 2);
+    if galat.is_empty() || !baru {
+        m.insert(nama.to_string(), (mtime(nama), v.clone(), galat));
+    }
     v
 }
 
@@ -68,6 +72,9 @@ pub fn gabung(a: Value, b: Value) -> Value {
             }
             Value::Array(x)
         }
+        // tambahan Bos yang kosong ([] atau {}) tidak boleh menghapus bawaan dengan bentuk lain
+        (a, Value::Array(v)) if v.is_empty() => a,
+        (a, Value::Object(o)) if o.is_empty() => a,
         (_, b) => b,
     }
 }
@@ -98,7 +105,9 @@ pub fn lapis(nama: &str, bawaan: &str) -> Arc<Value> {
 pub fn ubah(nama: &str, bawaan: &str, f: impl FnOnce(&mut Value)) -> Result<(), String> {
     let mut v = (*json(nama, bawaan)).clone();
     f(&mut v);
-    let r = std::fs::write(path(nama), serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?).map_err(|e| e.to_string());
+    // tulis ke berkas sementara lalu ganti (atomik): pembaca lain tidak pernah melihat berkas setengah tertulis
+    let tmp = path(&format!("{nama}.tmp"));
+    let r = std::fs::write(&tmp, serde_json::to_string_pretty(&v).map_err(|e| e.to_string())?).and_then(|_| std::fs::rename(&tmp, path(nama))).map_err(|e| e.to_string());
     // timestamp berkas bisa sama dengan pembacaan sebelumnya (resolusi kasar): paksa baca ulang
     if let Some(m) = CACHE.lock().unwrap().as_mut() {
         m.remove(nama);

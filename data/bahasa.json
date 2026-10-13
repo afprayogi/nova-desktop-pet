@@ -18,7 +18,43 @@
   "saya",
   "aku",
   "mau",
-  "minta"
+  "minta",
+  "hello",
+  "helo",
+  "hallo",
+  "halo2",
+  "selamat",
+  "permisi",
+  "oi",
+  "woi",
+  "bro",
+  "sis",
+  "bang",
+  "kak",
+  "nih",
+  "deh",
+  "lah",
+  "loh",
+  "sih",
+  "kok",
+  "donk",
+  "plis",
+  "pls",
+  "plz",
+  "dah",
+  "mohon",
+  "harap",
+  "kiranya",
+  "mungkin",
+  "barangkali",
+  "sekiranya",
+  "nanya",
+  "tanyakan",
+  "sekadar",
+  "sekedar",
+  "gitu",
+  "gini",
+  "ngomong"
  ],
  "stop_tanya": [
   "apa",
@@ -51,7 +87,92 @@
   "berapa",
   "rangkaian",
   "jelasin",
-  "terangkan"
+  "terangkan",
+  "uraikan",
+  "sebutkan",
+  "sebut",
+  "definisi",
+  "pengertian",
+  "arti",
+  "maksud",
+  "makna",
+  "contoh",
+  "macam",
+  "jenis",
+  "sebab",
+  "alasan",
+  "akibat",
+  "tujuan",
+  "manfaat",
+  "kegunaan",
+  "kelebihan",
+  "kekurangan",
+  "perbedaan",
+  "beda",
+  "persamaan",
+  "sama",
+  "langkah",
+  "tahap",
+  "proses",
+  "mana",
+  "dimana",
+  "kemana",
+  "darimana",
+  "siapakah",
+  "bagaimanakah",
+  "mengapakah",
+  "kapankah",
+  "berapakah",
+  "apaan",
+  "emang",
+  "memang",
+  "sebenarnya",
+  "sebetulnya",
+  "sih",
+  "kok",
+  "dong",
+  "deh",
+  "nih",
+  "tuh",
+  "lho",
+  "loh",
+  "yaitu",
+  "yakni",
+  "ialah",
+  "merupakan",
+  "termasuk",
+  "dalam",
+  "oleh",
+  "serta",
+  "atau",
+  "juga",
+  "pun",
+  "lah",
+  "kan",
+  "toh",
+  "masih",
+  "sudah",
+  "telah",
+  "akan",
+  "sedang",
+  "bakal",
+  "para",
+  "sebuah",
+  "suatu",
+  "seorang",
+  "setiap",
+  "tiap",
+  "semua",
+  "seluruh",
+  "beberapa",
+  "banyak",
+  "sedikit",
+  "sangat",
+  "sekali",
+  "agak",
+  "cukup",
+  "lebih",
+  "paling"
  ],
  "stop_cari": [
   "yang",
@@ -88,7 +209,162 @@
   "it",
   "or",
   "at",
-  "from"
+  "from",
+  "saya",
+  "aku",
+  "kamu",
+  "anda",
+  "dia",
+  "mereka",
+  "kita",
+  "kami",
+  "nya",
+  "sebuah",
+  "suatu",
+  "seorang",
+  "setiap",
+  "semua",
+  "seluruh",
+  "beberapa",
+  "banyak",
+  "sangat",
+  "sekali",
+  "agak",
+  "cukup",
+  "lebih",
+  "paling",
+  "telah",
+  "sudah",
+  "masih",
+  "belum",
+  "sedang",
+  "bakal",
+  "harus",
+  "perlu",
+  "dapat",
+  "bisa",
+  "mampu",
+  "boleh",
+  "mungkin",
+  "ada",
+  "ialah",
+  "yaitu",
+  "yakni",
+  "merupakan",
+  "bahwa",
+  "karena",
+  "sebab",
+  "sehingga",
+  "agar",
+  "supaya",
+  "jika",
+  "kalau",
+  "apabila",
+  "bila",
+  "ketika",
+  "saat",
+  "sewaktu",
+  "sebelum",
+  "sesudah",
+  "setelah",
+  "sambil",
+  "sementara",
+  "walaupun",
+  "meskipun",
+  "namun",
+  "tetapi",
+  "tapi",
+  "melainkan",
+  "serta",
+  "lalu",
+  "kemudian",
+  "lantas",
+  "hingga",
+  "sampai",
+  "antara",
+  "terhadap",
+  "tentang",
+  "mengenai",
+  "seperti",
+  "sebagai",
+  "bagi",
+  "demi",
+  "tanpa",
+  "lewat",
+  "via",
+  "a",
+  "i",
+  "o",
+  "s",
+  "was",
+  "were",
+  "been",
+  "being",
+  "have",
+  "has",
+  "had",
+  "do",
+  "does",
+  "did",
+  "will",
+  "would",
+  "can",
+  "could",
+  "should",
+  "may",
+  "might",
+  "must",
+  "this",
+  "these",
+  "those",
+  "there",
+  "here",
+  "then",
+  "than",
+  "so",
+  "not",
+  "no",
+  "yes",
+  "into",
+  "over",
+  "under",
+  "about",
+  "after",
+  "before",
+  "between",
+  "through",
+  "during",
+  "without",
+  "within",
+  "up",
+  "down",
+  "out",
+  "off",
+  "again",
+  "further",
+  "once",
+  "only",
+  "own",
+  "same",
+  "too",
+  "very",
+  "just",
+  "but",
+  "if",
+  "when",
+  "where",
+  "why",
+  "how",
+  "all",
+  "any",
+  "both",
+  "each",
+  "few",
+  "more",
+  "most",
+  "other",
+  "some",
+  "such"
  ],
  "stop_niat": [
   "di",
@@ -118,7 +394,65 @@
   "bagaimana",
   "berapa",
   "kok",
-  "sih"
+  "sih",
+  "lah",
+  "kah",
+  "pun",
+  "deh",
+  "nih",
+  "tuh",
+  "lho",
+  "loh",
+  "yaitu",
+  "yakni",
+  "agar",
+  "supaya",
+  "jika",
+  "kalau",
+  "bila",
+  "saat",
+  "ketika",
+  "mungkin",
+  "mereka",
+  "kita",
+  "kami",
+  "anda",
+  "dia",
+  "nya",
+  "sebuah",
+  "suatu",
+  "setiap",
+  "semua",
+  "beberapa",
+  "banyak",
+  "sangat",
+  "sekali",
+  "agak",
+  "cukup",
+  "lebih",
+  "paling",
+  "atau",
+  "juga",
+  "serta",
+  "lalu",
+  "kemudian",
+  "karena",
+  "sebab",
+  "tapi",
+  "tetapi",
+  "namun",
+  "dalam",
+  "oleh",
+  "pada",
+  "dari",
+  "antara",
+  "terhadap",
+  "tentang",
+  "seperti",
+  "sebagai",
+  "bagi",
+  "demi",
+  "tanpa"
  ],
  "slang": {
   "yg": "yang",
@@ -146,7 +480,410 @@
   "gimana": "bagaimana",
   "kpn": "kapan",
   "brp": "berapa",
-  "org": "orang"
+  "org": "orang",
+  "bs": "bisa",
+  "bsa": "bisa",
+  "bngt": "banget",
+  "bnget": "banget",
+  "banget": "sangat",
+  "bnr": "benar",
+  "bener": "benar",
+  "bnar": "benar",
+  "btw": "ngomong ngomong",
+  "cm": "cuma",
+  "cmn": "cuma",
+  "cuman": "cuma",
+  "dl": "dulu",
+  "dlu": "dulu",
+  "dpn": "depan",
+  "drpd": "daripada",
+  "dtg": "datang",
+  "dg": "dengan",
+  "dngn": "dengan",
+  "emg": "memang",
+  "emang": "memang",
+  "gt": "begitu",
+  "gitu": "begitu",
+  "gini": "begini",
+  "gmn": "bagaimana",
+  "gmna": "bagaimana",
+  "gmana": "bagaimana",
+  "gimn": "bagaimana",
+  "jgn": "jangan",
+  "jangan2": "jangan jangan",
+  "jd": "jadi",
+  "jdi": "jadi",
+  "jdwl": "jadwal",
+  "jln": "jalan",
+  "jm": "jam",
+  "jam2": "jam jam",
+  "jk": "jika",
+  "kalo": "kalau",
+  "klo": "kalau",
+  "kl": "kalau",
+  "klu": "kalau",
+  "kmrn": "kemarin",
+  "kmren": "kemarin",
+  "kmu": "kamu",
+  "km": "kamu",
+  "kpd": "kepada",
+  "krg": "kurang",
+  "krna": "karena",
+  "ktm": "ketemu",
+  "lbh": "lebih",
+  "lg2": "lagi lagi",
+  "lgi": "lagi",
+  "lgsg": "langsung",
+  "lm": "lama",
+  "lmyn": "lumayan",
+  "lumyn": "lumayan",
+  "mnrt": "menurut",
+  "mksh": "terima kasih",
+  "makasih": "terima kasih",
+  "mkasih": "terima kasih",
+  "thx": "terima kasih",
+  "thanks": "terima kasih",
+  "tks": "terima kasih",
+  "trims": "terima kasih",
+  "trmksh": "terima kasih",
+  "ok": "oke",
+  "oke2": "oke",
+  "okee": "oke",
+  "okay": "oke",
+  "mls": "malas",
+  "mager": "malas gerak",
+  "mau2": "mau mau",
+  "mgkn": "mungkin",
+  "mngkn": "mungkin",
+  "msh": "masih",
+  "mslh": "masalah",
+  "msk": "masuk",
+  "nggk": "tidak",
+  "ngga": "tidak",
+  "engga": "tidak",
+  "enggak": "tidak",
+  "gx": "tidak",
+  "gak2": "tidak tidak",
+  "tdk": "tidak",
+  "tak": "tidak",
+  "ndak": "tidak",
+  "nda": "tidak",
+  "kgk": "tidak",
+  "ngk": "tidak",
+  "nope": "tidak",
+  "yap": "ya",
+  "yup": "ya",
+  "iyah": "iya",
+  "iye": "iya",
+  "iy": "iya",
+  "pdhl": "padahal",
+  "pke": "pakai",
+  "pake": "pakai",
+  "pakek": "pakai",
+  "pk": "pakai",
+  "pgn": "ingin",
+  "pengen": "ingin",
+  "pgen": "ingin",
+  "pngn": "ingin",
+  "pny": "punya",
+  "punya2": "punya punya",
+  "sblm": "sebelum",
+  "sbnrnya": "sebenarnya",
+  "sbg": "sebagai",
+  "sdh": "sudah",
+  "sdg": "sedang",
+  "sdgkn": "sedangkan",
+  "sgt": "sangat",
+  "sj": "saja",
+  "sja": "saja",
+  "sy": "saya",
+  "sya": "saya",
+  "gw": "saya",
+  "gue": "saya",
+  "gua": "saya",
+  "ane": "saya",
+  "lo": "kamu",
+  "lu": "kamu",
+  "elu": "kamu",
+  "anda": "kamu",
+  "situ": "kamu",
+  "tsb": "tersebut",
+  "tdi": "tadi",
+  "tadi2": "tadi tadi",
+  "tmn": "teman",
+  "tmn2": "teman teman",
+  "tlg": "tolong",
+  "tlong": "tolong",
+  "tolg": "tolong",
+  "thn": "tahun",
+  "tp2": "tapi tapi",
+  "trs": "terus",
+  "trus": "terus",
+  "tru": "terus",
+  "ttg": "tentang",
+  "tntg": "tentang",
+  "untk": "untuk",
+  "uda": "sudah",
+  "dah": "sudah",
+  "wkt": "waktu",
+  "wktu": "waktu",
+  "yg2": "yang yang",
+  "yaudah": "ya sudah",
+  "yasudah": "ya sudah",
+  "hbs": "habis",
+  "habis2": "habis habis",
+  "hmm": "hmm",
+  "hrg": "harga",
+  "hrga": "harga",
+  "hr": "hari",
+  "hri": "hari",
+  "jga": "juga",
+  "jgk": "juga",
+  "jwb": "jawab",
+  "jwbn": "jawaban",
+  "kbr": "kabar",
+  "kbar": "kabar",
+  "kyk": "seperti",
+  "kyknya": "sepertinya",
+  "kayak": "seperti",
+  "kaya": "seperti",
+  "kayaknya": "sepertinya",
+  "ky": "seperti",
+  "sprt": "seperti",
+  "spt": "seperti",
+  "lht": "lihat",
+  "liat": "lihat",
+  "lihat2": "lihat lihat",
+  "nanya": "bertanya",
+  "nanyain": "menanyakan",
+  "ngasih": "memberi",
+  "ngirim": "mengirim",
+  "kirim2": "kirim kirim",
+  "nyari": "mencari",
+  "cariin": "carikan",
+  "nyoba": "mencoba",
+  "coba2": "coba coba",
+  "ngecek": "memeriksa",
+  "ngetik": "mengetik",
+  "ngetes": "menguji",
+  "buka2": "buka buka",
+  "bukain": "bukakan",
+  "matiin": "matikan",
+  "nyalain": "nyalakan",
+  "hidupin": "hidupkan",
+  "nutup": "menutup",
+  "tutup2": "tutup tutup",
+  "benerin": "perbaiki",
+  "betulin": "perbaiki",
+  "ngapus": "menghapus",
+  "hapusin": "hapuskan",
+  "ngubah": "mengubah",
+  "ganti2": "ganti ganti",
+  "nambah": "menambah",
+  "tambahin": "tambahkan",
+  "ngurangin": "mengurangi",
+  "nyimpen": "menyimpan",
+  "simpen": "simpan",
+  "nyimpan": "menyimpan",
+  "ngopy": "menyalin",
+  "copas": "salin tempel",
+  "nge-print": "mencetak",
+  "ngeprint": "mencetak",
+  "donlot": "unduh",
+  "ngupload": "mengunggah",
+  "lemot": "lambat",
+  "lelet": "lambat",
+  "ngelag": "tersendat",
+  "nge-lag": "tersendat",
+  "nge-hang": "macet",
+  "ngadat": "macet",
+  "rusak2": "rusak rusak",
+  "ngecrash": "mogok",
+  "handphone": "ponsel",
+  "smartphone": "ponsel",
+  "lappy": "laptop",
+  "leptop": "laptop",
+  "komputer": "komputer",
+  "kompie": "komputer",
+  "inet": "internet",
+  "internetan": "berinternet",
+  "jaringan": "jaringan",
+  "sinyal": "sinyal",
+  "kuota": "kuota",
+  "paketan": "paket data",
+  "bkn": "bukan",
+  "bkan": "bukan",
+  "blg": "bilang",
+  "bilg": "bilang",
+  "blom": "belum",
+  "blum": "belum",
+  "belom": "belum",
+  "blm2": "belum belum",
+  "bru": "baru",
+  "brusan": "barusan",
+  "baru2": "baru baru",
+  "brpa": "berapa",
+  "brapa": "berapa",
+  "berapaan": "berapa",
+  "brg": "barang",
+  "brng": "barang",
+  "bnyk": "banyak",
+  "banyakk": "banyak",
+  "byk": "banyak",
+  "dkt": "dekat",
+  "deket": "dekat",
+  "jauh2": "jauh jauh",
+  "gede": "besar",
+  "gde": "besar",
+  "bsr": "besar",
+  "kcl": "kecil",
+  "kecil2": "kecil kecil",
+  "cpt": "cepat",
+  "cepet": "cepat",
+  "cpat": "cepat",
+  "lmbt": "lambat",
+  "lambat2": "lambat lambat",
+  "bagus2": "bagus bagus",
+  "bgs": "bagus",
+  "jelek2": "jelek jelek",
+  "jlk": "jelek",
+  "mantul": "mantap betul",
+  "mantab": "mantap",
+  "mntp": "mantap",
+  "keren2": "keren",
+  "gokil": "luar biasa",
+  "parah": "parah",
+  "paraah": "parah",
+  "santuy": "santai",
+  "sante": "santai",
+  "santai2": "santai santai",
+  "gercep": "gerak cepat",
+  "gabut": "tidak ada kegiatan",
+  "baper": "terbawa perasaan",
+  "kepo": "ingin tahu",
+  "bucin": "terlalu cinta",
+  "mager2": "malas gerak",
+  "php": "pemberi harapan palsu",
+  "julid": "nyinyir",
+  "receh": "remeh",
+  "gaje": "tidak jelas",
+  "ribet": "rumit",
+  "ribed": "rumit",
+  "simpel": "sederhana",
+  "simple": "sederhana",
+  "gampang": "mudah",
+  "gampil": "mudah",
+  "susah": "sulit",
+  "sulit2": "sulit sulit",
+  "hbis": "habis",
+  "hbs2": "habis habis",
+  "mnt": "menit",
+  "mnt2": "menit menit",
+  "dtk": "detik",
+  "jam-an": "jam jaman",
+  "bsok": "besok",
+  "besuk": "besok",
+  "bsk2": "besok besok",
+  "lsa": "lusa",
+  "skrng": "sekarang",
+  "skr": "sekarang",
+  "sekrg": "sekarang",
+  "sekarang2": "sekarang sekarang",
+  "nnti": "nanti",
+  "ntar": "nanti",
+  "entar": "nanti",
+  "ntr": "nanti",
+  "nti": "nanti",
+  "mlm": "malam",
+  "mlam": "malam",
+  "pgi": "pagi",
+  "pagi2": "pagi pagi",
+  "siang2": "siang siang",
+  "sore2": "sore sore",
+  "sre": "sore",
+  "mlm2": "malam malam",
+  "tgh": "tengah",
+  "tgh2": "tengah tengah",
+  "jt": "juta",
+  "rb": "ribu",
+  "ribu2": "ribu ribu",
+  "jtaan": "jutaan",
+  "rbuan": "ribuan",
+  "rp": "rupiah",
+  "rupiahan": "rupiah",
+  "ratusan": "ratusan",
+  "mnm": "minimal",
+  "mks": "maksimal",
+  "ratarata": "rata rata",
+  "dpt": "dapat",
+  "dapet": "dapat",
+  "dpet": "dapat",
+  "dpat": "dapat",
+  "dapat2": "dapat dapat",
+  "bisa2": "bisa bisa",
+  "ngerti": "mengerti",
+  "ngerti2": "mengerti mengerti",
+  "paham2": "paham paham",
+  "ttp": "tetap",
+  "tetep": "tetap",
+  "tetap2": "tetap tetap",
+  "sllu": "selalu",
+  "slalu": "selalu",
+  "selalu2": "selalu selalu",
+  "srg": "sering",
+  "sering2": "sering sering",
+  "jrg": "jarang",
+  "kdg": "kadang",
+  "kadang2": "kadang kadang",
+  "sm2": "sama sama",
+  "sama2": "sama sama",
+  "bareng": "bersama",
+  "brg2": "bersama sama",
+  "brsm": "bersama",
+  "sndiri": "sendiri",
+  "sendirian": "sendiri",
+  "dlm": "dalam",
+  "dlm2": "dalam dalam",
+  "dtas": "di atas",
+  "diatas": "di atas",
+  "dibawah": "di bawah",
+  "dbwh": "di bawah",
+  "didalam": "di dalam",
+  "diluar": "di luar",
+  "disini": "di sini",
+  "disitu": "di situ",
+  "disana": "di sana",
+  "kesini": "ke sini",
+  "kesitu": "ke situ",
+  "kesana": "ke sana",
+  "ksini": "ke sini",
+  "ksana": "ke sana",
+  "dmn": "di mana",
+  "dmana": "di mana",
+  "dimana": "di mana",
+  "kmn": "ke mana",
+  "kemana": "ke mana",
+  "org2": "orang orang",
+  "orng": "orang",
+  "ortu": "orang tua",
+  "bokap": "ayah",
+  "nyokap": "ibu",
+  "ayah2": "ayah ayah",
+  "mrk": "mereka",
+  "mereka2": "mereka mereka",
+  "pls": "tolong",
+  "plis": "tolong",
+  "please": "tolong",
+  "plz": "tolong",
+  "dong": "dong",
+  "donk": "dong",
+  "deh": "deh",
+  "dech": "deh",
+  "ajah": "saja",
+  "ajj": "saja",
+  "doang": "saja",
+  "doank": "saja",
+  "yang2": "yang yang"
  },
  "sinonim": [
   {
@@ -209,6 +946,957 @@
     "donghua"
    ],
    "tambah": "anime"
+  },
+  {
+   "kata": [
+    "film",
+    "movie",
+    "bioskop",
+    "sinema"
+   ],
+   "tambah": "film movie bioskop"
+  },
+  {
+   "kata": [
+    "serial",
+    "drama",
+    "series"
+   ],
+   "tambah": "serial drama series"
+  },
+  {
+   "kata": [
+    "murah",
+    "hemat",
+    "diskon",
+    "promo",
+    "potongan"
+   ],
+   "tambah": "murah hemat diskon promo"
+  },
+  {
+   "kata": [
+    "mahal",
+    "premium",
+    "eksklusif"
+   ],
+   "tambah": "mahal premium"
+  },
+  {
+   "kata": [
+    "berita",
+    "kabar",
+    "terbaru",
+    "terkini"
+   ],
+   "tambah": "berita terbaru terkini"
+  },
+  {
+   "kata": [
+    "laptop",
+    "notebook",
+    "ultrabook"
+   ],
+   "tambah": "laptop notebook"
+  },
+  {
+   "kata": [
+    "hp",
+    "ponsel",
+    "smartphone",
+    "gawai"
+   ],
+   "tambah": "hp ponsel smartphone"
+  },
+  {
+   "kata": [
+    "error",
+    "galat",
+    "bug",
+    "kesalahan"
+   ],
+   "tambah": "error galat bug"
+  },
+  {
+   "kata": [
+    "resep",
+    "masakan",
+    "makanan",
+    "kuliner"
+   ],
+   "tambah": "resep masakan"
+  },
+  {
+   "kata": [
+    "lagu",
+    "musik",
+    "mp3"
+   ],
+   "tambah": "lagu musik"
+  },
+  {
+   "kata": [
+    "video",
+    "klip",
+    "youtube"
+   ],
+   "tambah": "video klip youtube"
+  },
+  {
+   "kata": [
+    "gambar",
+    "foto",
+    "picture",
+    "image"
+   ],
+   "tambah": "gambar foto image"
+  },
+  {
+   "kata": [
+    "dokumen",
+    "berkas",
+    "file",
+    "arsip"
+   ],
+   "tambah": "dokumen berkas file"
+  },
+  {
+   "kata": [
+    "folder",
+    "direktori",
+    "map"
+   ],
+   "tambah": "folder direktori"
+  },
+  {
+   "kata": [
+    "unduh",
+    "download",
+    "donlot"
+   ],
+   "tambah": "unduh download"
+  },
+  {
+   "kata": [
+    "unggah",
+    "upload"
+   ],
+   "tambah": "unggah upload"
+  },
+  {
+   "kata": [
+    "pasang",
+    "install",
+    "instal"
+   ],
+   "tambah": "pasang install"
+  },
+  {
+   "kata": [
+    "copot",
+    "uninstall",
+    "hapus aplikasi"
+   ],
+   "tambah": "copot uninstall"
+  },
+  {
+   "kata": [
+    "perbarui",
+    "update",
+    "upgrade"
+   ],
+   "tambah": "perbarui update upgrade"
+  },
+  {
+   "kata": [
+    "internet",
+    "jaringan",
+    "koneksi",
+    "online"
+   ],
+   "tambah": "internet jaringan koneksi"
+  },
+  {
+   "kata": [
+    "wifi",
+    "wi fi",
+    "nirkabel"
+   ],
+   "tambah": "wifi wi fi"
+  },
+  {
+   "kata": [
+    "baterai",
+    "batere",
+    "battery"
+   ],
+   "tambah": "baterai battery"
+  },
+  {
+   "kata": [
+    "layar",
+    "monitor",
+    "display"
+   ],
+   "tambah": "layar monitor display"
+  },
+  {
+   "kata": [
+    "suara",
+    "volume",
+    "audio"
+   ],
+   "tambah": "suara volume audio"
+  },
+  {
+   "kata": [
+    "kecerahan",
+    "brightness",
+    "terang"
+   ],
+   "tambah": "kecerahan brightness"
+  },
+  {
+   "kata": [
+    "lambat",
+    "lemot",
+    "lelet",
+    "pelan"
+   ],
+   "tambah": "lambat lemot lelet"
+  },
+  {
+   "kata": [
+    "cepat",
+    "kencang",
+    "ngebut"
+   ],
+   "tambah": "cepat kencang"
+  },
+  {
+   "kata": [
+    "macet",
+    "hang",
+    "freeze",
+    "membeku"
+   ],
+   "tambah": "macet hang freeze"
+  },
+  {
+   "kata": [
+    "mati",
+    "padam",
+    "off"
+   ],
+   "tambah": "mati padam off"
+  },
+  {
+   "kata": [
+    "hidup",
+    "nyala",
+    "on"
+   ],
+   "tambah": "hidup nyala on"
+  },
+  {
+   "kata": [
+    "tidur",
+    "sleep",
+    "hibernasi"
+   ],
+   "tambah": "tidur sleep"
+  },
+  {
+   "kata": [
+    "restart",
+    "mulai ulang",
+    "reboot"
+   ],
+   "tambah": "restart reboot"
+  },
+  {
+   "kata": [
+    "pengingat",
+    "alarm",
+    "reminder"
+   ],
+   "tambah": "pengingat alarm reminder"
+  },
+  {
+   "kata": [
+    "jadwal",
+    "agenda",
+    "kalender"
+   ],
+   "tambah": "jadwal agenda kalender"
+  },
+  {
+   "kata": [
+    "catatan",
+    "memo",
+    "note"
+   ],
+   "tambah": "catatan memo note"
+  },
+  {
+   "kata": [
+    "tugas",
+    "pekerjaan",
+    "task",
+    "todo"
+   ],
+   "tambah": "tugas task todo"
+  },
+  {
+   "kata": [
+    "rapat",
+    "meeting",
+    "pertemuan"
+   ],
+   "tambah": "rapat meeting pertemuan"
+  },
+  {
+   "kata": [
+    "email",
+    "surel",
+    "surat elektronik"
+   ],
+   "tambah": "email surel"
+  },
+  {
+   "kata": [
+    "pesan",
+    "chat",
+    "obrolan"
+   ],
+   "tambah": "pesan chat obrolan"
+  },
+  {
+   "kata": [
+    "cuaca",
+    "hujan",
+    "panas",
+    "mendung"
+   ],
+   "tambah": "cuaca hujan panas"
+  },
+  {
+   "kata": [
+    "harga",
+    "biaya",
+    "tarif",
+    "ongkos"
+   ],
+   "tambah": "harga biaya tarif"
+  },
+  {
+   "kata": [
+    "saham",
+    "bursa",
+    "efek"
+   ],
+   "tambah": "saham bursa"
+  },
+  {
+   "kata": [
+    "kurs",
+    "nilai tukar",
+    "valuta"
+   ],
+   "tambah": "kurs nilai tukar"
+  },
+  {
+   "kata": [
+    "emas",
+    "logam mulia",
+    "antam"
+   ],
+   "tambah": "emas logam mulia"
+  },
+  {
+   "kata": [
+    "bitcoin",
+    "kripto",
+    "crypto"
+   ],
+   "tambah": "bitcoin kripto crypto"
+  },
+  {
+   "kata": [
+    "dolar",
+    "usd"
+   ],
+   "tambah": "dolar usd"
+  },
+  {
+   "kata": [
+    "rupiah",
+    "idr"
+   ],
+   "tambah": "rupiah idr"
+  },
+  {
+   "kata": [
+    "tegangan",
+    "voltase",
+    "volt"
+   ],
+   "tambah": "tegangan voltase volt"
+  },
+  {
+   "kata": [
+    "arus",
+    "ampere",
+    "kuat arus"
+   ],
+   "tambah": "arus ampere"
+  },
+  {
+   "kata": [
+    "hambatan",
+    "resistansi",
+    "tahanan"
+   ],
+   "tambah": "hambatan resistansi tahanan"
+  },
+  {
+   "kata": [
+    "daya",
+    "watt",
+    "power"
+   ],
+   "tambah": "daya watt power"
+  },
+  {
+   "kata": [
+    "kabel",
+    "penghantar",
+    "konduktor"
+   ],
+   "tambah": "kabel penghantar"
+  },
+  {
+   "kata": [
+    "mcb",
+    "pemutus",
+    "sekering",
+    "breaker"
+   ],
+   "tambah": "mcb pemutus breaker"
+  },
+  {
+   "kata": [
+    "motor",
+    "penggerak",
+    "dinamo"
+   ],
+   "tambah": "motor dinamo penggerak"
+  },
+  {
+   "kata": [
+    "trafo",
+    "transformator"
+   ],
+   "tambah": "trafo transformator"
+  },
+  {
+   "kata": [
+    "sensor",
+    "detektor"
+   ],
+   "tambah": "sensor detektor"
+  },
+  {
+   "kata": [
+    "relay",
+    "relai",
+    "kontaktor"
+   ],
+   "tambah": "relay relai kontaktor"
+  },
+  {
+   "kata": [
+    "plc",
+    "pengontrol logika"
+   ],
+   "tambah": "plc kontrol"
+  },
+  {
+   "kata": [
+    "ladder",
+    "diagram tangga"
+   ],
+   "tambah": "ladder diagram"
+  },
+  {
+   "kata": [
+    "grounding",
+    "pentanahan",
+    "arde"
+   ],
+   "tambah": "grounding pentanahan arde"
+  },
+  {
+   "kata": [
+    "pemrograman",
+    "koding",
+    "coding"
+   ],
+   "tambah": "pemrograman koding"
+  },
+  {
+   "kata": [
+    "kode",
+    "source code",
+    "program"
+   ],
+   "tambah": "kode program"
+  },
+  {
+   "kata": [
+    "fungsi",
+    "method",
+    "prosedur"
+   ],
+   "tambah": "fungsi method"
+  },
+  {
+   "kata": [
+    "variabel",
+    "peubah"
+   ],
+   "tambah": "variabel peubah"
+  },
+  {
+   "kata": [
+    "pustaka",
+    "library",
+    "paket"
+   ],
+   "tambah": "pustaka library paket"
+  },
+  {
+   "kata": [
+    "repositori",
+    "repo",
+    "github"
+   ],
+   "tambah": "repositori repo github"
+  },
+  {
+   "kata": [
+    "cabang",
+    "branch"
+   ],
+   "tambah": "cabang branch"
+  },
+  {
+   "kata": [
+    "gabung",
+    "merge"
+   ],
+   "tambah": "gabung merge"
+  },
+  {
+   "kata": [
+    "komit",
+    "commit"
+   ],
+   "tambah": "komit commit"
+  },
+  {
+   "kata": [
+    "percobaan",
+    "test",
+    "pengujian"
+   ],
+   "tambah": "test pengujian"
+  },
+  {
+   "kata": [
+    "bangun",
+    "build",
+    "kompilasi"
+   ],
+   "tambah": "bangun build kompilasi"
+  },
+  {
+   "kata": [
+    "jalankan",
+    "run",
+    "eksekusi"
+   ],
+   "tambah": "jalankan run eksekusi"
+  },
+  {
+   "kata": [
+    "peramban",
+    "browser",
+    "penjelajah"
+   ],
+   "tambah": "peramban browser"
+  },
+  {
+   "kata": [
+    "cari",
+    "search",
+    "telusuri"
+   ],
+   "tambah": "cari search telusuri"
+  },
+  {
+   "kata": [
+    "terjemah",
+    "translate",
+    "alih bahasa"
+   ],
+   "tambah": "terjemah translate"
+  },
+  {
+   "kata": [
+    "ringkas",
+    "rangkum",
+    "ikhtisar"
+   ],
+   "tambah": "ringkas rangkum"
+  },
+  {
+   "kata": [
+    "jelaskan",
+    "terangkan",
+    "uraikan"
+   ],
+   "tambah": "jelaskan terangkan"
+  },
+  {
+   "kata": [
+    "tutorial",
+    "panduan",
+    "petunjuk"
+   ],
+   "tambah": "tutorial panduan petunjuk"
+  },
+  {
+   "kata": [
+    "buku",
+    "ebook",
+    "pdf"
+   ],
+   "tambah": "buku ebook pdf"
+  },
+  {
+   "kata": [
+    "jurnal",
+    "makalah",
+    "paper",
+    "artikel ilmiah"
+   ],
+   "tambah": "jurnal makalah paper"
+  },
+  {
+   "kata": [
+    "kuliah",
+    "kampus",
+    "universitas"
+   ],
+   "tambah": "kuliah kampus universitas"
+  },
+  {
+   "kata": [
+    "sekolah",
+    "belajar",
+    "pelajaran"
+   ],
+   "tambah": "sekolah belajar pelajaran"
+  },
+  {
+   "kata": [
+    "ujian",
+    "tes",
+    "quiz"
+   ],
+   "tambah": "ujian tes kuis"
+  },
+  {
+   "kata": [
+    "kerja",
+    "pekerjaan",
+    "karier"
+   ],
+   "tambah": "kerja pekerjaan karier"
+  },
+  {
+   "kata": [
+    "gaji",
+    "upah",
+    "penghasilan"
+   ],
+   "tambah": "gaji upah penghasilan"
+  },
+  {
+   "kata": [
+    "tabungan",
+    "simpanan"
+   ],
+   "tambah": "tabungan simpanan"
+  },
+  {
+   "kata": [
+    "utang",
+    "pinjaman",
+    "cicilan"
+   ],
+   "tambah": "utang pinjaman cicilan"
+  },
+  {
+   "kata": [
+    "sehat",
+    "kesehatan",
+    "bugar"
+   ],
+   "tambah": "sehat kesehatan bugar"
+  },
+  {
+   "kata": [
+    "sakit",
+    "nyeri"
+   ],
+   "tambah": "sakit nyeri"
+  },
+  {
+   "kata": [
+    "obat",
+    "medis",
+    "farmasi"
+   ],
+   "tambah": "obat medis"
+  },
+  {
+   "kata": [
+    "olahraga",
+    "latihan",
+    "fitnes"
+   ],
+   "tambah": "olahraga latihan fitnes"
+  },
+  {
+   "kata": [
+    "makan",
+    "sarapan",
+    "makan siang",
+    "makan malam"
+   ],
+   "tambah": "makan sarapan"
+  },
+  {
+   "kata": [
+    "minum",
+    "air",
+    "hidrasi"
+   ],
+   "tambah": "minum air"
+  },
+  {
+   "kata": [
+    "liburan",
+    "wisata",
+    "jalan jalan"
+   ],
+   "tambah": "liburan wisata"
+  },
+  {
+   "kata": [
+    "hotel",
+    "penginapan"
+   ],
+   "tambah": "hotel penginapan"
+  },
+  {
+   "kata": [
+    "tiket",
+    "karcis"
+   ],
+   "tambah": "tiket karcis"
+  },
+  {
+   "kata": [
+    "kereta",
+    "krl",
+    "commuter"
+   ],
+   "tambah": "kereta krl"
+  },
+  {
+   "kata": [
+    "pesawat",
+    "penerbangan",
+    "flight"
+   ],
+   "tambah": "pesawat penerbangan"
+  },
+  {
+   "kata": [
+    "mobil",
+    "kendaraan"
+   ],
+   "tambah": "mobil kendaraan"
+  },
+  {
+   "kata": [
+    "motor sepeda",
+    "sepeda motor"
+   ],
+   "tambah": "motor sepeda motor"
+  },
+  {
+   "kata": [
+    "peta",
+    "maps",
+    "lokasi"
+   ],
+   "tambah": "peta maps lokasi"
+  },
+  {
+   "kata": [
+    "alamat",
+    "lokasi",
+    "tempat"
+   ],
+   "tambah": "alamat lokasi"
+  },
+  {
+   "kata": [
+    "sholat",
+    "salat",
+    "waktu sholat"
+   ],
+   "tambah": "sholat salat jadwal"
+  },
+  {
+   "kata": [
+    "kuliner",
+    "restoran",
+    "warung"
+   ],
+   "tambah": "kuliner restoran warung"
+  },
+  {
+   "kata": [
+    "belanja",
+    "beli",
+    "toko"
+   ],
+   "tambah": "belanja beli toko"
+  },
+  {
+   "kata": [
+    "game",
+    "permainan",
+    "gim"
+   ],
+   "tambah": "game gim permainan"
+  },
+  {
+   "kata": [
+    "buku harian",
+    "jurnal pribadi",
+    "diary"
+   ],
+   "tambah": "jurnal diary"
+  },
+  {
+   "kata": [
+    "privasi",
+    "rahasia",
+    "pribadi"
+   ],
+   "tambah": "privasi rahasia"
+  },
+  {
+   "kata": [
+    "keamanan",
+    "aman",
+    "sekuriti"
+   ],
+   "tambah": "keamanan security"
+  },
+  {
+   "kata": [
+    "kata sandi",
+    "password",
+    "sandi"
+   ],
+   "tambah": "kata sandi password"
+  },
+  {
+   "kata": [
+    "cadangan",
+    "backup",
+    "salinan"
+   ],
+   "tambah": "cadangan backup"
+  },
+  {
+   "kata": [
+    "pulihkan",
+    "restore",
+    "kembalikan"
+   ],
+   "tambah": "pulihkan restore"
+  },
+  {
+   "kata": [
+    "bersihkan",
+    "cleanup",
+    "rapikan"
+   ],
+   "tambah": "bersihkan rapikan"
+  },
+  {
+   "kata": [
+    "aplikasi",
+    "app",
+    "program"
+   ],
+   "tambah": "aplikasi app program"
+  },
+  {
+   "kata": [
+    "proses",
+    "process",
+    "tugas latar"
+   ],
+   "tambah": "proses process"
+  },
+  {
+   "kata": [
+    "memori",
+    "ram"
+   ],
+   "tambah": "memori ram"
+  },
+  {
+   "kata": [
+    "penyimpanan",
+    "disk",
+    "storage"
+   ],
+   "tambah": "penyimpanan disk storage"
+  },
+  {
+   "kata": [
+    "prosesor",
+    "cpu"
+   ],
+   "tambah": "prosesor cpu"
+  },
+  {
+   "kata": [
+    "suhu",
+    "temperatur",
+    "panas"
+   ],
+   "tambah": "suhu temperatur"
   }
  ],
  "lanjut": [
@@ -224,7 +1912,41 @@
   "yg",
   "juga",
   "satu",
-  "coba"
+  "coba",
+  "lanjut",
+  "lanjutkan",
+  "kemudian",
+  "setelah",
+  "itu",
+  "sesudah",
+  "selanjutnya",
+  "berikutnya",
+  "next",
+  "seandainya",
+  "misalnya",
+  "gimana",
+  "gmn",
+  "kok",
+  "mengapa",
+  "kenapa",
+  "tetapi",
+  "namun",
+  "padahal",
+  "sedangkan",
+  "kurang",
+  "bukan",
+  "selain",
+  "tambah",
+  "tambahkan",
+  "pula",
+  "lagi",
+  "sekali",
+  "ulangi",
+  "ulang",
+  "mana",
+  "maksudnya",
+  "artinya",
+  "contohnya"
  ],
  "buang_koreksi": [
   "di",
@@ -251,6 +1973,228 @@
   "salah",
   "bukan",
   "jawabannya",
-  "tadi"
- ]
+  "tadi",
+  "maksud-ku",
+  "sebenarnya",
+  "seharusnya",
+  "harusnya",
+  "mestinya",
+  "cuma",
+  "hanya",
+  "keliru",
+  "bener",
+  "benar",
+  "betul",
+  "tepatnya",
+  "ralat",
+  "koreksi",
+  "revisi",
+  "ganti",
+  "ubah",
+  "ganti-ke",
+  "jawabanmu",
+  "jawaban",
+  "pertanyaan",
+  "situs",
+  "website",
+  "web",
+  "link",
+  "tautan",
+  "film",
+  "serial",
+  "drama",
+  "channel",
+  "kanal",
+  "playlist",
+  "artikel",
+  "berita",
+  "halaman",
+  "repo",
+  "repositori",
+  "aplikasi",
+  "app",
+  "tool",
+  "alat",
+  "fitur",
+  "menu"
+ ],
+ "angka_kata": {
+  "nol": 0,
+  "satu": 1,
+  "dua": 2,
+  "tiga": 3,
+  "empat": 4,
+  "lima": 5,
+  "enam": 6,
+  "tujuh": 7,
+  "delapan": 8,
+  "sembilan": 9,
+  "sepuluh": 10,
+  "sebelas": 11,
+  "seratus": 100,
+  "seribu": 1000,
+  "sejuta": 1000000,
+  "setengah": 0.5,
+  "seperempat": 0.25,
+  "sepertiga": 0.333
+ },
+ "negasi": [
+  "tidak",
+  "bukan",
+  "jangan",
+  "belum",
+  "tanpa",
+  "tak",
+  "nggak",
+  "gak",
+  "enggak",
+  "ga"
+ ],
+ "kata_tanya": [
+  "apa",
+  "siapa",
+  "kapan",
+  "dimana",
+  "di-mana",
+  "kemana",
+  "bagaimana",
+  "mengapa",
+  "kenapa",
+  "berapa",
+  "mana",
+  "apakah",
+  "bisakah"
+ ],
+ "hari": [
+  "senin",
+  "selasa",
+  "rabu",
+  "kamis",
+  "jumat",
+  "sabtu",
+  "minggu"
+ ],
+ "bulan": [
+  "januari",
+  "februari",
+  "maret",
+  "april",
+  "mei",
+  "juni",
+  "juli",
+  "agustus",
+  "september",
+  "oktober",
+  "november",
+  "desember"
+ ],
+ "waktu_relatif": {
+  "hari ini": 0,
+  "besok": 1,
+  "lusa": 2,
+  "kemarin": -1,
+  "kemarin lusa": -2,
+  "tadi": 0,
+  "nanti": 0,
+  "pekan depan": 7,
+  "minggu depan": 7,
+  "bulan depan": 30
+ },
+ "alias_kota": {
+  "jkt": "jakarta",
+  "sby": "surabaya",
+  "bdg": "bandung",
+  "jogja": "yogyakarta",
+  "yogya": "yogyakarta",
+  "jog": "yogyakarta",
+  "mlg": "malang",
+  "smg": "semarang",
+  "mdn": "medan",
+  "mks": "makassar",
+  "dps": "denpasar",
+  "bali": "denpasar",
+  "gresik": "gresik",
+  "sda": "sidoarjo",
+  "plb": "palembang",
+  "bpp": "balikpapan",
+  "pdg": "padang",
+  "bks": "bekasi",
+  "tgr": "tangerang",
+  "dpk": "depok",
+  "bgr": "bogor",
+  "pku": "pekanbaru"
+ },
+ "alias_satuan": {
+  "meter": "m",
+  "km": "kilometer",
+  "cm": "sentimeter",
+  "mm": "milimeter",
+  "kg": "kilogram",
+  "gram": "g",
+  "liter": "l",
+  "volt": "v",
+  "ampere": "a",
+  "amp": "a",
+  "ohm": "ω",
+  "watt": "w",
+  "kilowatt": "kw",
+  "hp": "tenaga kuda",
+  "derajat": "°",
+  "celsius": "c",
+  "fahrenheit": "f",
+  "kelvin": "k"
+ },
+ "penegasan": {
+  "ya": [
+   "ya",
+   "iya",
+   "iyah",
+   "oke",
+   "ok",
+   "siap",
+   "lanjut",
+   "gas",
+   "yuk",
+   "boleh",
+   "setuju",
+   "betul",
+   "benar",
+   "sip"
+  ],
+  "tidak": [
+   "tidak",
+   "nggak",
+   "gak",
+   "jangan",
+   "batal",
+   "stop",
+   "cukup",
+   "nanti",
+   "tolak"
+  ]
+ },
+ "salah_ketik": {
+  "yotube": "youtube",
+  "yutub": "youtube",
+  "gogle": "google",
+  "gugel": "google",
+  "guthub": "github",
+  "gitub": "github",
+  "wikipedi": "wikipedia",
+  "kalkulatr": "kalkulator",
+  "batrai": "baterai",
+  "bateri": "baterai",
+  "kecerahn": "kecerahan",
+  "volum": "volume",
+  "jdwl": "jadwal",
+  "pengingt": "pengingat",
+  "catatn": "catatan",
+  "foler": "folder",
+  "fiel": "file",
+  "dowload": "unduh",
+  "donwload": "unduh",
+  "instal": "pasang",
+  "cuacaa": "cuaca",
+  "hargaa": "harga"
+ }
 }

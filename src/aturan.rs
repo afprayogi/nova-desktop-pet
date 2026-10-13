@@ -162,13 +162,23 @@ pub fn layanan_cadangan(s: &str) -> Option<Call> {
 
 pub const ATURAN_BAWAAN: &str = include_str!("../data/aturan.json");
 
-fn aturan_json() -> Vec<serde_json::Value> {
-    crate::data::lapis("aturan.json", ATURAN_BAWAAN).as_array().cloned().unwrap_or_default()
+/// (aturan, awal?) — awal: tambahan Bos dan bawaan berprioritas "tinggi"; sisanya cadangan setelah aturan kode.
+fn aturan_json(awal: bool) -> Vec<serde_json::Value> {
+    let bawaan: Vec<serde_json::Value> = serde_json::from_str(ATURAN_BAWAAN).unwrap_or_default();
+    let nama = |r: &serde_json::Value| r["nama"].as_str().unwrap_or("").to_lowercase();
+    let user: Vec<serde_json::Value> = crate::data::json("aturan.json", "[]").as_array().cloned().unwrap_or_default();
+    let user_nama: Vec<String> = user.iter().map(nama).collect();
+    let mut out: Vec<serde_json::Value> = vec![];
+    if awal {
+        out.extend(user);
+    }
+    out.extend(bawaan.into_iter().filter(|r| !user_nama.contains(&nama(r)) && (r["prioritas"].as_str() == Some("tinggi")) == awal));
+    out
 }
 
 /// Daftar tindakan satu aturan: `tindakan` [{alat,arg}] atau `alat`/`arg` tunggal; `{sisa}` diganti sisa kalimat setelah awalan.
 fn tindakan(r: &serde_json::Value, sisa: &str) -> Vec<Call> {
-    let satu = |x: &serde_json::Value| Some(Call { tool: x["alat"].as_str()?.to_string(), arg: x["arg"].as_str().unwrap_or("").replace("{sisa}", sisa) });
+    let satu = |x: &serde_json::Value| Some(Call { tool: x["alat"].as_str()?.to_string(), arg: x["arg"].as_str().unwrap_or("").replace("{sisa}", &clean(sisa)) });
     match r["tindakan"].as_array() {
         Some(a) => a.iter().filter_map(satu).collect(),
         None => satu(r).into_iter().collect(),
@@ -181,11 +191,25 @@ fn cocok_awalan(s: &str, l: &str, r: &serde_json::Value) -> Option<String> {
 }
 
 /// Aturan satu langkah dari aturan.json (awalan kalimat → alat), mis. "kirim ke email saya …".
-fn json_rule(s: &str, l: &str) -> Option<Call> {
-    aturan_json().iter().find_map(|r| {
+fn json_rule(s: &str, l: &str, awal: bool) -> Option<Call> {
+    aturan_json(awal).iter().find_map(|r| {
         let sisa = cocok_awalan(s, l, r)?;
+        // aturan berargumen tetap hanya berlaku untuk kalimat yang (hampir) sama dengan awalannya; bila masih ada isi lain
+        // ("buka youtube dan carikan video X") aturan layanan/bahasa yang lebih tahu isi kalimat yang menangani.
+        if !r.to_string().contains("{sisa}") && sisa.split(|c: char| !c.is_alphanumeric()).any(|w| !w.is_empty() && !crate::lex::ada("pengisi", w)) {
+            return None;
+        }
         let t = tindakan(r, &sisa);
         (t.len() == 1).then(|| t.into_iter().next()).flatten()
+    })
+}
+
+/// `rute_niat` dari alat.json: pola regex → alat (cadangan terakhir; arg = kalimat itu sendiri).
+fn rute_regex(s: &str, l: &str) -> Option<Call> {
+    let d = crate::data::lapis("alat.json", crate::registry::BAWAAN);
+    d["rute_niat"].as_array()?.iter().find_map(|r| {
+        let re = regex::Regex::new(&format!("(?i){}", r["pola"].as_str()?)).ok()?;
+        (re.is_match(l) && crate::registry::ada(r["alat"].as_str()?)).then(|| Call { tool: r["alat"].as_str().unwrap_or("").to_string(), arg: s.to_string() })
     })
 }
 
@@ -193,7 +217,18 @@ fn json_rule(s: &str, l: &str) -> Option<Call> {
 pub fn makro(goal: &str) -> Option<Vec<Call>> {
     let g = goal.trim().to_lowercase();
     let g = g.trim_matches(|c: char| !c.is_alphanumeric());
-    aturan_json().iter().find_map(|r| {
+    // "makro pagi" / "rutinitas malam": urutan alat dari makro_bawaan di alat.json
+    if let Some(nama) = ["makro ", "rutinitas ", "rutin "].iter().find_map(|p| g.strip_prefix(p)) {
+        let d = crate::data::lapis("alat.json", crate::registry::BAWAAN);
+        if let Some(l) = d["makro_bawaan"].as_array().and_then(|a| a.iter().find(|m| m["nama"].as_str().is_some_and(|n| n.eq_ignore_ascii_case(nama.trim())))) {
+            let c: Vec<Call> = l["langkah"].as_array().into_iter().flatten().filter_map(|x| x.as_str()).filter(|t| crate::registry::ada(t)).map(|t| Call { tool: t.to_string(), arg: String::new() }).collect();
+            if c.len() > 1 {
+                return Some(c);
+            }
+        }
+    }
+    aturan_json(true).into_iter().chain(aturan_json(false)).find_map(|r| {
+        let r = &r;
         let t = tindakan(r, "");
         (t.len() > 1 && r["awalan"].as_array()?.iter().filter_map(|x| x.as_str()).any(|a| a.to_lowercase() == g)).then_some(t)
     })
@@ -204,12 +239,15 @@ pub fn rule(s: &str) -> Option<Call> {
     crate::ajar::cocok(s).or_else(|| rule_dasar(s))
 }
 
+/// Urutan: aturan JSON awal (tambahan Bos + bawaan berprioritas tinggi) → aturan kode → aturan JSON bawaan (cadangan).
 pub fn rule_dasar(s: &str) -> Option<Call> {
+    let (s0, l0) = (strip_fillers(s), strip_fillers(s).to_ascii_lowercase());
+    json_rule(s0, &l0, true).or_else(|| rule_kode(s)).or_else(|| json_rule(s0, &l0, false)).or_else(|| rute_regex(s0, &l0))
+}
+
+fn rule_kode(s: &str) -> Option<Call> {
     let s = strip_fillers(s);
     let l = s.to_ascii_lowercase();
-    if let Some(c) = json_rule(s, &l) {
-        return Some(c);
-    }
     if let Some(a) = crate::daya::dari_kalimat(&l) {
         return Some(Call { tool: "daya".into(), arg: a.into() });
     }

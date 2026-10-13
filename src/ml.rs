@@ -99,7 +99,7 @@ pub fn classify(text: &str) -> Option<(String, f32)> {
     let mut sc: Vec<(&str, f32)> = best.into_iter().collect();
     sc.sort_by(|a, b| b.1.total_cmp(&a.1));
     let (top, second) = (sc.first()?, sc.get(1).map(|x| x.1).unwrap_or(0.0));
-    let r = (top.1 >= 0.30 && top.1 - second >= 0.03).then(|| (top.0.to_string(), top.1));
+    let r = (top.1 >= 0.38 && top.1 - second >= 0.03).then(|| (top.0.to_string(), top.1));
     drop(g);
     r.filter(|(l, _)| !is_negative(text, l))
 }

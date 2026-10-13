@@ -50,9 +50,16 @@ impl Default for Config {
 pub fn data_dir() -> PathBuf {
     // Tes unit memakai folder sementara sendiri agar tidak berbagi database dengan NOVA yang sedang berjalan.
     if cfg!(test) {
-        let d = std::env::temp_dir().join(format!("nova_test_{}", std::process::id()));
-        let _ = std::fs::create_dir_all(&d);
-        return d;
+        // pid bisa dipakai ulang Windows antar-proses: tambahkan waktu agar tiap proses tes mulai dari folder kosong
+        static D: std::sync::OnceLock<PathBuf> = std::sync::OnceLock::new();
+        return D
+            .get_or_init(|| {
+                let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0);
+                let d = std::env::temp_dir().join(format!("nova_test_{}_{t}", std::process::id()));
+                let _ = std::fs::create_dir_all(&d);
+                d
+            })
+            .clone();
     }
     let d = std::env::var("KH_DATA_DIR")
         .ok()

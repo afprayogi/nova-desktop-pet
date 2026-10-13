@@ -180,7 +180,14 @@ pub fn complete(prefix: &str) -> Vec<&'static str> {
 
 pub fn find(q: &str) -> String {
     let q = q.trim().to_lowercase();
-    let hits: Vec<String> = SLASH.iter().filter(|(c, d)| q.is_empty() || c.contains(&q) || d.to_lowercase().contains(&q)).map(|(c, d)| format!("{c} — {d}")).collect();
+    let mut hits: Vec<String> = SLASH.iter().filter(|(c, d)| q.is_empty() || c.contains(&q) || d.to_lowercase().contains(&q)).map(|(c, d)| format!("{c} — {d}")).collect();
+    // perintah dari teks.json (bawaan + tambahan Bos) yang belum ada di daftar di atas
+    for p in crate::teknik::teks_json()["perintah"].as_array().into_iter().flatten() {
+        let (n, d) = (p["nama"].as_str().unwrap_or(""), p["deskripsi"].as_str().unwrap_or(""));
+        if !n.is_empty() && (q.is_empty() || n.contains(&q) || d.to_lowercase().contains(&q)) && !hits.iter().any(|h| h.starts_with(&format!("{n} "))) {
+            hits.push(format!("{n} — {d}"));
+        }
+    }
     if hits.is_empty() {
         format!("Tidak ada perintah NOVA yang cocok dengan '{q}'. Ketik /bantuan untuk semua, atau tanya bebas (mis. 'kecerahan 40', 'jam berapa', 'cari file pdf motor').")
     } else {

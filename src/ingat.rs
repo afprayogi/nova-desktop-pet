@@ -457,7 +457,7 @@ mod tests {
     fn hybrid_finds_with_typo_and_graph_links() {
         let d = hybrid("kapasitor perbaikan faktor daya", 3);
         assert!(d.iter().any(|x| x.title.contains("Faktor daya")));
-        let typo = hybrid("pentanahann gounding", 8); 
+        let typo = hybrid("pentanahann gounding", 8);
         assert!(typo.iter().any(|x| x.title.contains("Pentanahan")));
         assert!(!related("Motor induksi", 5).is_empty());
     }

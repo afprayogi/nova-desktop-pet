@@ -122,6 +122,11 @@ fn single_instance(name: &str) -> bool {
     }
 }
 
+/// Peran bawaan (tertanam) untuk sinkron pengetahuan sistem.
+pub(crate) fn engine_peran_bawaan() -> &'static str {
+    include_str!("../data/peran.json")
+}
+
 fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     // Pembantu admin penangkap paket (dijalankan lewat UAC oleh paket::tangkap): `nova.exe --paket <detik> <berkas.json>`.

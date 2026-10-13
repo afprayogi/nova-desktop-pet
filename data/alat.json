@@ -1,332 +1,6000 @@
-[
- {
-  "nama": "kurikulum",
-  "arg": "<buku|topik> [N hari|minggu] [N menit|jam]",
-  "deskripsi": "jadwal belajar dari buku + pengingat"
- },
- {
-  "nama": "berita",
-  "arg": "[topik]",
-  "deskripsi": "berita terbaru sesuai minat (butuh internet)"
- },
- {
-  "nama": "kepribadian",
-  "arg": "",
-  "deskripsi": "preferensi yang sudah kupelajari tentang Bos"
- },
- {
-  "nama": "cari",
-  "arg": "<apa>",
-  "deskripsi": "cari file di komputer (nama, jenis, waktu, atau 'berisi kata')"
- },
- {
-  "nama": "rapikan",
-  "arg": "<folder>",
-  "deskripsi": "pratinjau merapikan folder per jenis file (dijalankan setelah Bos membalas ya)"
- },
- {
-  "nama": "apps",
-  "arg": "",
-  "deskripsi": "pratinjau aplikasi berat yang tidak dipakai (ditutup sopan setelah Bos membalas ya)"
- },
- {
-  "nama": "urungkan",
-  "arg": "",
-  "deskripsi": "kembalikan file hasil rapikan terakhir"
- },
- {
-  "nama": "meme",
-  "arg": "[topik]",
-  "deskripsi": "hibur dengan meme"
- },
- {
-  "nama": "bukapath",
-  "arg": "<jalur>",
-  "deskripsi": "buka berkas/folder yang baru Bos seret/pilih (hanya jalur itu)"
- },
- {
-  "nama": "jadwal",
-  "arg": "",
-  "deskripsi": "rencana tidur — apakah masih bisa tidur 8 jam dengan jadwal/pengingat/acara yang ada"
- },
- {
-  "nama": "otomatis",
-  "arg": "<kecerahan|suara> <on|off>",
-  "deskripsi": "atur kecerahan/suara otomatis menurut jam & kebiasaan"
- },
- {
-  "nama": "wifi",
-  "arg": "",
-  "deskripsi": "Wi-Fi tersambung + jaringan di sekitar"
- },
- {
-  "nama": "port",
-  "arg": "",
-  "deskripsi": "port yang sedang listening beserta prosesnya"
- },
- {
-  "nama": "bukafile",
-  "arg": "<nama>",
-  "deskripsi": "cari berkas lalu BUKA langsung (dokumen/gambar/media; yang bisa dieksekusi hanya ditunjukkan foldernya)"
- },
- {
-  "nama": "cli",
-  "arg": "<alat> [sub]",
-  "deskripsi": "bantuan perintah CLI (git, cargo, docker, ollama, npm, python, winget, ping, dll.; hanya --help)"
- },
- {
-  "nama": "atur",
-  "arg": "<kecerahan|volume> <N|+N|-N|mute|unmute|?>",
-  "deskripsi": "atur kecerahan layar / volume suara"
- },
- {
-  "nama": "waktu",
-  "arg": "",
-  "deskripsi": "jam, hari, tanggal sekarang"
- },
- {
-  "nama": "web",
-  "arg": "<tanya>",
-  "deskripsi": "cari informasi terbaru di internet"
- },
- {
-  "nama": "harga",
-  "arg": "<aset>",
-  "deskripsi": "harga + grafik 30 hari (saham bbca/AAPL, kurs dolar, emas, bitcoin, ihsg)"
- },
- {
-  "nama": "pantau",
-  "arg": "<aset> di atas|di bawah <angka>",
-  "deskripsi": "kabari saat harga melewati ambang; cuacapantau <kota>: pengingat hujan/panas"
- },
- {
-  "nama": "gitringkas",
-  "arg": "[folder]",
-  "deskripsi": "ringkasan repo git (status, commit terakhir, diff) + saran pesan commit"
- },
- {
-  "nama": "halaman",
-  "arg": "<url>",
-  "deskripsi": "ringkas isi halaman web; csv <jalur.csv>: analisis cepat berkas CSV"
- },
- {
-  "nama": "hitung",
-  "arg": "<ekspresi>",
-  "deskripsi": "kalkulator (+ - * / ^ %, sqrt, sin, cos, ln, pi), mis. hitung 12*(3+4)^2"
- },
- {
-  "nama": "konversi",
-  "arg": "<angka> <satuan> ke <satuan>",
-  "deskripsi": "panjang, massa, daya, tekanan, energi, suhu, dll."
- },
- {
-  "nama": "zona",
-  "arg": "<kota/jam>",
-  "deskripsi": "waktu di kota lain atau konversi jam, mis. jam 14:00 wib di london"
- },
- {
-  "nama": "ohm",
-  "arg": "<V= I= R= P=>",
-  "deskripsi": "hukum Ohm dari dua nilai; fase3 <P= V= cos=>: arus 3 fase"
- },
- {
-  "nama": "hari",
-  "arg": "<tanggal>",
-  "deskripsi": "berapa hari lagi/yang lalu; password [panjang]: kata sandi acak"
- },
- {
-  "nama": "catat",
-  "arg": "<teks> | catatan [kata|hapus N]",
-  "deskripsi": "catatan cepat"
- },
- {
-  "nama": "cuaca",
-  "arg": "[kota]",
-  "deskripsi": "cuaca & prakiraan 3 hari; kurs <jumlah> <MATA> ke <MATA>: nilai tukar"
- },
- {
-  "nama": "wiki",
-  "arg": "<topik>",
-  "deskripsi": "ringkasan Wikipedia; berpikir <masalah>: penalaran langkah demi langkah; terjemah <teks> ke <bahasa>"
- },
- {
-  "nama": "jurnal",
-  "arg": "<topik [tahun]>",
-  "deskripsi": "cari jurnal/makalah ilmiah (OpenAlex), mis. semantic 2026 kurang 5 tahun"
- },
- {
-  "nama": "gambar",
-  "arg": "<kata kunci>",
-  "deskripsi": "cari gambar di internet (thumbnail + tautan sumber)"
- },
- {
-  "nama": "bersih",
-  "arg": "",
-  "deskripsi": "bersihkan cache aman (Temp, npm, pip, Hugging Face) — butuh persetujuan"
- },
- {
-  "nama": "kode",
-  "arg": "<nama folder>",
-  "deskripsi": "buka folder proyek di VS Code (dicari otomatis di D:/repo, Documents, dll.)"
- },
- {
-  "nama": "winapp",
-  "arg": "<nama>",
-  "deskripsi": "buka aplikasi bawaan Windows (kalkulator, notepad, paint, pengaturan wifi, dll.)"
- },
- {
-  "nama": "tugas",
-  "arg": "<teks>",
-  "deskripsi": "set/lihat tugas utama hari ini ('selesai' untuk menandai)"
- },
- {
-  "nama": "musik",
-  "arg": "",
-  "deskripsi": "putar musik fokus (folder Musik atau pencarian browser)"
- },
- {
-  "nama": "bukahasil",
-  "arg": "<n>",
-  "deskripsi": "buka folder hasil pencarian ke-n di Explorer"
- },
- {
-  "nama": "ingatan",
-  "arg": "<topik>",
-  "deskripsi": "apa yang pernah kita bahas tentang topik (graf ingatan jangka panjang)"
- },
- {
-  "nama": "graphify",
-  "arg": "<folder>",
-  "deskripsi": "petakan folder kode/dokumen ke graf ingatan"
- },
- {
-  "nama": "email",
-  "arg": "",
-  "deskripsi": "ringkasan email belum dibaca di semua akun (Google + IMAP)"
- },
- {
-  "nama": "baterai",
-  "arg": "",
-  "deskripsi": "sisa baterai + prediksi habis/penuh (model belajar per konteks)"
- },
- {
-  "nama": "ngobrol",
-  "arg": "<teks>",
-  "deskripsi": "sapaan/obrolan ringan"
- },
- {
-  "nama": "tanya",
-  "arg": "<teks>",
-  "deskripsi": "pertanyaan/hitungan teknik listrik, elektronika, PLC (kalkulator + basis pengetahuan)"
- },
- {
-  "nama": "pelajari",
-  "arg": "<path>",
-  "deskripsi": "serap PDF/txt/md ke basis pengetahuan (untuk dijawab lewat tanya)"
- },
- {
-  "nama": "remind",
-  "arg": "<teks>",
-  "deskripsi": "pengingat, mis. 'jam 15:30 rapat' atau '20 menit lagi minum'"
- },
- {
-  "nama": "agenda",
-  "arg": "",
-  "deskripsi": "agenda hari ini / kebiasaan / laporan tidur"
- },
- {
-  "nama": "habit",
-  "arg": "",
-  "deskripsi": "agenda hari ini / kebiasaan / laporan tidur"
- },
- {
-  "nama": "tidur",
-  "arg": "",
-  "deskripsi": "agenda hari ini / kebiasaan / laporan tidur"
- },
- {
-  "nama": "layar",
-  "arg": "",
-  "deskripsi": "baca isi layar dengan OCR Tesseract lokal (butuh izin Bos); arg 'ringkas' untuk ringkasan"
- },
- {
-  "nama": "pdf",
-  "arg": "<path>",
-  "deskripsi": "ambil teks PDF/txt/md (untuk diringkas)"
- },
- {
-  "nama": "ringkas",
-  "arg": "<path>",
-  "deskripsi": "ringkasan ekstraktif PDF/txt/md tanpa model"
- },
- {
-  "nama": "health",
-  "arg": "",
-  "deskripsi": "kondisi CPU/RAM/disk dan proses terberat"
- },
- {
-  "nama": "info",
-  "arg": "",
-  "deskripsi": "info OS, folder kerja, waktu"
- },
- {
-  "nama": "ls",
-  "arg": "<path>",
-  "deskripsi": "isi folder"
- },
- {
-  "nama": "read",
-  "arg": "<path>",
-  "deskripsi": "baca file teks"
- },
- {
-  "nama": "ps",
-  "arg": "",
-  "deskripsi": "daftar proses"
- },
- {
-  "nama": "fetch",
-  "arg": "<url>",
-  "deskripsi": "ambil teks halaman web"
- },
- {
-  "nama": "shell",
-  "arg": "<cmd>",
-  "deskripsi": "jalankan perintah shell (butuh persetujuan Bos)"
- },
- {
-  "nama": "write",
-  "arg": "<path>",
-  "deskripsi": "tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)"
- },
- {
-  "nama": "open",
-  "arg": "<target>",
-  "deskripsi": "buka URL/file/aplikasi (butuh persetujuan Bos)"
- },
- {
-  "nama": "grafik",
-  "arg": "",
-  "deskripsi": "grafik pemakaian RAM dan CPU laptop hari ini (dari data pemantauan) beserta penilaian kesehatan RAM"
- },
- {
-  "nama": "cariisi",
-  "arg": "<berkas> :: <pertanyaan>",
-  "deskripsi": "potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)"
- },
- {
-  "nama": "github",
-  "arg": "<kata>",
-  "deskripsi": "cari repositori GitHub (bintang, bahasa, lisensi)"
- },
- {
-  "nama": "tunggu",
-  "arg": "<detik>",
-  "deskripsi": "jeda 1-30 detik di antara langkah"
- },
- {
-  "nama": "kompres",
-  "arg": "<folder|berkas>",
-  "deskripsi": "buat zip di sebelahnya (butuh persetujuan)"
- }
-]
+{
+ "meta": {
+  "nama": "Katalog Alat Asisten Bos",
+  "versi": "2.0.0",
+  "bahasa": "id",
+  "jumlah_alat": 76,
+  "dibuat_oleh": "gen_alat.py",
+  "kompatibel_dengan": "alat.json v1"
+ },
+ "kebijakan_global": {
+  "sapaan": "Bos",
+  "gaya": "ringkas, hangat, langsung ke inti",
+  "aksi_berisiko": "selalu pratinjau, minta ya, lalu jalankan; tidak ada persetujuan yang diwariskan",
+  "privasi": [
+   "data tetap lokal",
+   "jangan kirim isi berkas ke luar tanpa izin",
+   "redaksi kata sandi/token di log"
+  ],
+  "batas_global": {
+   "maks_alat_per_giliran": 5,
+   "maks_rantai": 8,
+   "timeout_total_detik": 600
+  },
+  "fallback": "jika alat tidak cocok, tanya klarifikasi satu kalimat"
+ },
+ "keamanan_standar": {
+  "redaksi_rahasia": true,
+  "tolak_jalur": [
+   "C:/Windows/System32",
+   "~/.ssh",
+   "~/.gnupg",
+   "*.pem",
+   "*.key",
+   ".env"
+  ],
+  "tolak_pola_perintah": [
+   "rm -rf /",
+   "format ",
+   "del /s /q C:\\",
+   "shutdown",
+   "reg delete"
+  ],
+  "konfirmasi_ulang_jika": [
+   "hapus permanen",
+   "di luar folder kerja",
+   "ukuran > 1 GB"
+  ]
+ },
+ "galat_standar": [
+  {
+   "kode": "E_ARG",
+   "arti": "Argumen kurang atau salah format",
+   "tindakan": "Tampilkan sintaks dan satu contoh, minta Bos mengulang"
+  },
+  {
+   "kode": "E_IZIN",
+   "arti": "Bos belum memberi persetujuan",
+   "tindakan": "Tanyakan ya/tidak; jangan eksekusi tanpa jawaban ya"
+  },
+  {
+   "kode": "E_JARINGAN",
+   "arti": "Tidak ada koneksi internet",
+   "tindakan": "Coba ulang 2x dengan jeda; jika gagal, sarankan mode luring"
+  },
+  {
+   "kode": "E_WAKTU",
+   "arti": "Operasi melewati batas waktu",
+   "tindakan": "Hentikan proses, laporkan hasil parsial"
+  },
+  {
+   "kode": "E_JALUR",
+   "arti": "Jalur tidak ditemukan atau terlarang",
+   "tindakan": "Sarankan 'cari' atau 'ls' untuk menemukan jalur"
+  },
+  {
+   "kode": "E_INTERNAL",
+   "arti": "Kesalahan tak terduga",
+   "tindakan": "Catat ke log audit, jangan bocorkan jejak tumpukan ke Bos"
+  }
+ ],
+ "keluaran_standar": {
+  "format": [
+   "teks",
+   "json"
+  ],
+  "bahasa": "id",
+  "sapaan": "Bos",
+  "sertakan_waktu_eksekusi": true
+ },
+ "observabilitas_standar": {
+  "metrik": [
+   "jumlah_panggilan",
+   "durasi_ms",
+   "tingkat_galat"
+  ],
+  "catat_ke": "log/alat.log",
+  "sampling": 1.0
+ },
+ "kategori": {
+  "produktivitas": [
+   "kurikulum",
+   "meme",
+   "jadwal",
+   "catat",
+   "tugas",
+   "musik",
+   "email",
+   "remind",
+   "agenda",
+   "habit",
+   "tidur",
+   "tunggu",
+   "riwayat",
+   "makro",
+   "bantuan",
+   "pomodoro"
+  ],
+  "web": [
+   "berita",
+   "web",
+   "halaman",
+   "cuaca",
+   "wiki",
+   "jurnal",
+   "gambar",
+   "fetch",
+   "github"
+  ],
+  "kognisi": [
+   "kepribadian",
+   "ingatan",
+   "ngobrol"
+  ],
+  "berkas": [
+   "cari",
+   "rapikan",
+   "urungkan",
+   "bukapath",
+   "bukafile",
+   "kode",
+   "bukahasil",
+   "graphify",
+   "pelajari",
+   "pdf",
+   "ringkas",
+   "ls",
+   "read",
+   "write",
+   "open",
+   "cariisi",
+   "kompres",
+   "cadangan",
+   "hash",
+   "validasi",
+   "ekspor"
+  ],
+  "sistem": [
+   "apps",
+   "otomatis",
+   "wifi",
+   "port",
+   "atur",
+   "waktu",
+   "bersih",
+   "winapp",
+   "baterai",
+   "layar",
+   "health",
+   "info",
+   "ps",
+   "grafik",
+   "dns",
+   "diagnosa"
+  ],
+  "pengembang": [
+   "cli",
+   "gitringkas",
+   "shell"
+  ],
+  "keuangan": [
+   "harga",
+   "pantau"
+  ],
+  "kalkulasi": [
+   "hitung",
+   "konversi",
+   "zona",
+   "ohm",
+   "hari",
+   "tanya"
+  ]
+ },
+ "rute_niat": [
+  {
+   "pola": "^(jam|pukul)\\b",
+   "alat": "waktu"
+  },
+  {
+   "pola": "\\b(cuaca|hujan)\\b",
+   "alat": "cuaca"
+  },
+  {
+   "pola": "\\b(harga|kurs|saham)\\b",
+   "alat": "harga"
+  },
+  {
+   "pola": "\\bcari\\b.*\\b(file|berkas)\\b",
+   "alat": "cari"
+  },
+  {
+   "pola": "\\b(ingatkan|remind)\\b",
+   "alat": "remind"
+  },
+  {
+   "pola": "^\\d[\\d\\s+\\-*/^().]*$",
+   "alat": "hitung"
+  }
+ ],
+ "makro_bawaan": [
+  {
+   "nama": "pagi",
+   "langkah": [
+    "waktu",
+    "cuaca",
+    "agenda",
+    "email",
+    "berita"
+   ]
+  },
+  {
+   "nama": "malam",
+   "langkah": [
+    "jadwal",
+    "tidur",
+    "baterai"
+   ]
+  },
+  {
+   "nama": "rawat",
+   "langkah": [
+    "health",
+    "bersih",
+    "apps"
+   ]
+  },
+  {
+   "nama": "riset",
+   "langkah": [
+    "web",
+    "jurnal",
+    "halaman",
+    "ringkas",
+    "catat"
+   ]
+  },
+  {
+   "nama": "proyek",
+   "langkah": [
+    "kode",
+    "gitringkas",
+    "musik"
+   ]
+  }
+ ],
+ "alat": [
+  {
+   "id": "alat.kurikulum",
+   "nama": "kurikulum",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<buku|topik> [N hari|minggu] [N menit|jam]",
+   "deskripsi": "jadwal belajar dari buku + pengingat",
+   "ringkas": "jadwal belajar dari buku + pengingat",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/kurikulum"
+   ],
+   "parameter": [
+    {
+     "nama": "buku",
+     "sintaks": "<buku|topik>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter buku|topik",
+     "opsi": [
+      "buku",
+      "topik"
+     ]
+    },
+    {
+     "nama": "N",
+     "sintaks": "[N hari|minggu]",
+     "tipe": "integer",
+     "wajib": false,
+     "deskripsi": "Parameter N hari|minggu"
+    },
+    {
+     "nama": "N",
+     "sintaks": "[N menit|jam]",
+     "tipe": "integer",
+     "wajib": false,
+     "deskripsi": "Parameter N menit|jam"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "kurikulum buku",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "kurikulum buku --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "kurikulum dong",
+    "tolong jalankan kurikulum",
+    "coba kurikulum sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "kurikulum buku => berhasil",
+    "kurikulum buku xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.berita",
+   "nama": "berita",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[topik]",
+   "deskripsi": "berita terbaru sesuai minat (butuh internet)",
+   "ringkas": "berita terbaru sesuai minat (butuh internet)",
+   "kategori": "web",
+   "sub_perintah": [],
+   "alias": [
+    "/berita",
+    "news"
+   ],
+   "parameter": [
+    {
+     "nama": "topik",
+     "sintaks": "[topik]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter topik"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "berita",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "berita --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "berita dong",
+    "tolong jalankan berita",
+    "coba berita sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "berita => berhasil",
+    "berita xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.kepribadian",
+   "nama": "kepribadian",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "preferensi yang sudah kupelajari tentang Bos",
+   "ringkas": "preferensi yang sudah kupelajari tentang Bos",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/kepribadian"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "kepribadian",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "kepribadian --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "kepribadian dong",
+    "tolong jalankan kepribadian",
+    "coba kepribadian sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "kepribadian => berhasil",
+    "kepribadian xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.cari",
+   "nama": "cari",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<apa>",
+   "deskripsi": "cari file di komputer (nama, jenis, waktu, atau 'berisi kata')",
+   "ringkas": "cari file di komputer (nama, jenis, waktu, atau 'berisi kata')",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/cari",
+    "find",
+    "search"
+   ],
+   "parameter": [
+    {
+     "nama": "apa",
+     "sintaks": "<apa>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter apa"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "cari contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "cari contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "cari dong",
+    "tolong jalankan cari",
+    "coba cari sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "cari contoh => berhasil",
+    "cari contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.rapikan",
+   "nama": "rapikan",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<folder>",
+   "deskripsi": "pratinjau merapikan folder per jenis file (dijalankan setelah Bos membalas ya)",
+   "ringkas": "pratinjau merapikan folder per jenis file (dijalankan setelah Bos membalas ya)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/rapikan"
+   ],
+   "parameter": [
+    {
+     "nama": "folder",
+     "sintaks": "<folder>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter folder"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "rapikan D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "rapikan D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "rapikan dong",
+    "tolong jalankan rapikan",
+    "coba rapikan sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": true,
+    "pratinjau_dulu": true
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "rapikan D:/Dokumen/contoh.txt => berhasil",
+    "rapikan D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.apps",
+   "nama": "apps",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "pratinjau aplikasi berat yang tidak dipakai (ditutup sopan setelah Bos membalas ya)",
+   "ringkas": "pratinjau aplikasi berat yang tidak dipakai (ditutup sopan setelah Bos membalas ",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/apps"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "apps",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "apps --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "apps dong",
+    "tolong jalankan apps",
+    "coba apps sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": true
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "apps => berhasil",
+    "apps xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.urungkan",
+   "nama": "urungkan",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "kembalikan file hasil rapikan terakhir",
+   "ringkas": "kembalikan file hasil rapikan terakhir",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/urungkan"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "urungkan",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "urungkan --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "urungkan dong",
+    "tolong jalankan urungkan",
+    "coba urungkan sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": true,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "urungkan => berhasil",
+    "urungkan xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.meme",
+   "nama": "meme",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[topik]",
+   "deskripsi": "hibur dengan meme",
+   "ringkas": "hibur dengan meme",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/meme"
+   ],
+   "parameter": [
+    {
+     "nama": "topik",
+     "sintaks": "[topik]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter topik"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "meme",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "meme --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "meme dong",
+    "tolong jalankan meme",
+    "coba meme sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "meme => berhasil",
+    "meme xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.bukapath",
+   "nama": "bukapath",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<jalur>",
+   "deskripsi": "buka berkas/folder yang baru Bos seret/pilih (hanya jalur itu)",
+   "ringkas": "buka berkas/folder yang baru Bos seret/pilih (hanya jalur itu)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/bukapath"
+   ],
+   "parameter": [
+    {
+     "nama": "jalur",
+     "sintaks": "<jalur>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter jalur"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "bukapath D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "bukapath D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "bukapath dong",
+    "tolong jalankan bukapath",
+    "coba bukapath sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "bukapath D:/Dokumen/contoh.txt => berhasil",
+    "bukapath D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.jadwal",
+   "nama": "jadwal",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "rencana tidur — apakah masih bisa tidur 8 jam dengan jadwal/pengingat/acara yang ada",
+   "ringkas": "rencana tidur — apakah masih bisa tidur 8 jam dengan jadwal/pengingat/acara yang",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/jadwal"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "jadwal",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "jadwal --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "jadwal dong",
+    "tolong jalankan jadwal",
+    "coba jadwal sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [
+     "waktu"
+    ],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "jadwal => berhasil",
+    "jadwal xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.otomatis",
+   "nama": "otomatis",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<kecerahan|suara> <on|off>",
+   "deskripsi": "atur kecerahan/suara otomatis menurut jam & kebiasaan",
+   "ringkas": "atur kecerahan/suara otomatis menurut jam & kebiasaan",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/otomatis"
+   ],
+   "parameter": [
+    {
+     "nama": "kecerahan",
+     "sintaks": "<kecerahan|suara>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter kecerahan|suara",
+     "opsi": [
+      "kecerahan",
+      "suara"
+     ]
+    },
+    {
+     "nama": "on",
+     "sintaks": "<on|off>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter on|off",
+     "opsi": [
+      "on",
+      "off"
+     ]
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "otomatis kecerahan on",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "otomatis kecerahan on --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "otomatis dong",
+    "tolong jalankan otomatis",
+    "coba otomatis sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "otomatis kecerahan on => berhasil",
+    "otomatis kecerahan on xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.wifi",
+   "nama": "wifi",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "Wi-Fi tersambung + jaringan di sekitar",
+   "ringkas": "Wi-Fi tersambung + jaringan di sekitar",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/wifi"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "wifi",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "wifi --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "wifi dong",
+    "tolong jalankan wifi",
+    "coba wifi sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "wifi => berhasil",
+    "wifi xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.port",
+   "nama": "port",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "port yang sedang listening beserta prosesnya",
+   "ringkas": "port yang sedang listening beserta prosesnya",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/port",
+    "netstat"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "port",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "port --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "port dong",
+    "tolong jalankan port",
+    "coba port sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "port => berhasil",
+    "port xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.bukafile",
+   "nama": "bukafile",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<nama>",
+   "deskripsi": "cari berkas lalu BUKA langsung (dokumen/gambar/media; yang bisa dieksekusi hanya ditunjukkan foldernya)",
+   "ringkas": "cari berkas lalu BUKA langsung (dokumen/gambar/media",
+   "kategori": "berkas",
+   "sub_perintah": [
+    "yang bisa dieksekusi hanya ditunjukkan foldernya)"
+   ],
+   "alias": [
+    "/bukafile"
+   ],
+   "parameter": [
+    {
+     "nama": "nama",
+     "sintaks": "<nama>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter nama"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "bukafile contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "bukafile contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "bukafile dong",
+    "tolong jalankan bukafile",
+    "coba bukafile sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "bukafile contoh => berhasil",
+    "bukafile contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.cli",
+   "nama": "cli",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<alat> [sub]",
+   "deskripsi": "bantuan perintah CLI (git, cargo, docker, ollama, npm, python, winget, ping, dll.; hanya --help)",
+   "ringkas": "bantuan perintah CLI (git, cargo, docker, ollama, npm, python, winget, ping, dll",
+   "kategori": "pengembang",
+   "sub_perintah": [
+    "hanya --help)"
+   ],
+   "alias": [
+    "/cli"
+   ],
+   "parameter": [
+    {
+     "nama": "alat",
+     "sintaks": "<alat>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter alat"
+    },
+    {
+     "nama": "sub",
+     "sintaks": "[sub]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter sub"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "cli contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "cli contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "cli dong",
+    "tolong jalankan cli",
+    "coba cli sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "cli contoh => berhasil",
+    "cli contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.atur",
+   "nama": "atur",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<kecerahan|volume> <N|+N|-N|mute|unmute|?>",
+   "deskripsi": "atur kecerahan layar / volume suara",
+   "ringkas": "atur kecerahan layar / volume suara",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/atur"
+   ],
+   "parameter": [
+    {
+     "nama": "kecerahan",
+     "sintaks": "<kecerahan|volume>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter kecerahan|volume",
+     "opsi": [
+      "kecerahan",
+      "volume"
+     ]
+    },
+    {
+     "nama": "N",
+     "sintaks": "<N|+N|-N|mute|unmute|?>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter N|+N|-N|mute|unmute|?",
+     "opsi": [
+      "N",
+      "+N",
+      "-N",
+      "mute",
+      "unmute",
+      "?"
+     ]
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "atur kecerahan N",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "atur kecerahan N --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "atur dong",
+    "tolong jalankan atur",
+    "coba atur sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "atur kecerahan N => berhasil",
+    "atur kecerahan N xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.waktu",
+   "nama": "waktu",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "jam, hari, tanggal sekarang",
+   "ringkas": "jam, hari, tanggal sekarang",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/waktu",
+    "jam",
+    "time"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "waktu",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "waktu --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "waktu dong",
+    "tolong jalankan waktu",
+    "coba waktu sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "waktu => berhasil",
+    "waktu xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.web",
+   "nama": "web",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<tanya>",
+   "deskripsi": "cari informasi terbaru di internet",
+   "ringkas": "cari informasi terbaru di internet",
+   "kategori": "web",
+   "sub_perintah": [],
+   "alias": [
+    "/web",
+    "google",
+    "internet"
+   ],
+   "parameter": [
+    {
+     "nama": "tanya",
+     "sintaks": "<tanya>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter tanya"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "web contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "web contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "web dong",
+    "tolong jalankan web",
+    "coba web sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "web contoh => berhasil",
+    "web contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.harga",
+   "nama": "harga",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<aset>",
+   "deskripsi": "harga + grafik 30 hari (saham bbca/AAPL, kurs dolar, emas, bitcoin, ihsg)",
+   "ringkas": "harga + grafik 30 hari (saham bbca/AAPL, kurs dolar, emas, bitcoin, ihsg)",
+   "kategori": "keuangan",
+   "sub_perintah": [],
+   "alias": [
+    "/harga",
+    "price",
+    "kurs",
+    "saham"
+   ],
+   "parameter": [
+    {
+     "nama": "aset",
+     "sintaks": "<aset>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter aset"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "harga contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "harga contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "harga dong",
+    "tolong jalankan harga",
+    "coba harga sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "harga contoh => berhasil",
+    "harga contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.pantau",
+   "nama": "pantau",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<aset> di atas|di bawah <angka>",
+   "deskripsi": "kabari saat harga melewati ambang; cuacapantau <kota>: pengingat hujan/panas",
+   "ringkas": "kabari saat harga melewati ambang",
+   "kategori": "keuangan",
+   "sub_perintah": [
+    "cuacapantau <kota>: pengingat hujan/panas"
+   ],
+   "alias": [
+    "/pantau"
+   ],
+   "parameter": [
+    {
+     "nama": "aset",
+     "sintaks": "<aset>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter aset"
+    },
+    {
+     "nama": "angka",
+     "sintaks": "<angka>",
+     "tipe": "integer",
+     "wajib": true,
+     "deskripsi": "Parameter angka"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "pantau contoh 5",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "pantau contoh 5 --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "pantau dong",
+    "tolong jalankan pantau",
+    "coba pantau sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "pantau contoh 5 => berhasil",
+    "pantau contoh 5 xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.gitringkas",
+   "nama": "gitringkas",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[folder]",
+   "deskripsi": "ringkasan repo git (status, commit terakhir, diff) + saran pesan commit",
+   "ringkas": "ringkasan repo git (status, commit terakhir, diff) + saran pesan commit",
+   "kategori": "pengembang",
+   "sub_perintah": [],
+   "alias": [
+    "/gitringkas"
+   ],
+   "parameter": [
+    {
+     "nama": "folder",
+     "sintaks": "[folder]",
+     "tipe": "path",
+     "wajib": false,
+     "deskripsi": "Parameter folder"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "gitringkas",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "gitringkas --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "gitringkas dong",
+    "tolong jalankan gitringkas",
+    "coba gitringkas sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "gitringkas => berhasil",
+    "gitringkas xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.halaman",
+   "nama": "halaman",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<url>",
+   "deskripsi": "ringkas isi halaman web; csv <jalur.csv>: analisis cepat berkas CSV",
+   "ringkas": "ringkas isi halaman web",
+   "kategori": "web",
+   "sub_perintah": [
+    "csv <jalur.csv>: analisis cepat berkas CSV"
+   ],
+   "alias": [
+    "/halaman"
+   ],
+   "parameter": [
+    {
+     "nama": "url",
+     "sintaks": "<url>",
+     "tipe": "url",
+     "wajib": true,
+     "deskripsi": "Parameter url"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "halaman https://contoh.id",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "halaman https://contoh.id --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "halaman dong",
+    "tolong jalankan halaman",
+    "coba halaman sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "halaman https://contoh.id => berhasil",
+    "halaman https://contoh.id xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.hitung",
+   "nama": "hitung",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<ekspresi>",
+   "deskripsi": "kalkulator (+ - * / ^ %, sqrt, sin, cos, ln, pi), mis. hitung 12*(3+4)^2",
+   "ringkas": "kalkulator (+ - * / ^ %, sqrt, sin, cos, ln, pi), mis. hitung 12*(3+4)^2",
+   "kategori": "kalkulasi",
+   "sub_perintah": [],
+   "alias": [
+    "/hitung",
+    "calc",
+    "kalkulator"
+   ],
+   "parameter": [
+    {
+     "nama": "ekspresi",
+     "sintaks": "<ekspresi>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter ekspresi"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "hitung contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "hitung contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "hitung dong",
+    "tolong jalankan hitung",
+    "coba hitung sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "hitung contoh => berhasil",
+    "hitung contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.konversi",
+   "nama": "konversi",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<angka> <satuan> ke <satuan>",
+   "deskripsi": "panjang, massa, daya, tekanan, energi, suhu, dll.",
+   "ringkas": "panjang, massa, daya, tekanan, energi, suhu, dll.",
+   "kategori": "kalkulasi",
+   "sub_perintah": [],
+   "alias": [
+    "/konversi",
+    "convert",
+    "satuan"
+   ],
+   "parameter": [
+    {
+     "nama": "angka",
+     "sintaks": "<angka>",
+     "tipe": "integer",
+     "wajib": true,
+     "deskripsi": "Parameter angka"
+    },
+    {
+     "nama": "satuan",
+     "sintaks": "<satuan>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter satuan"
+    },
+    {
+     "nama": "satuan",
+     "sintaks": "<satuan>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter satuan"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "konversi 5 contoh contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "konversi 5 contoh contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "konversi dong",
+    "tolong jalankan konversi",
+    "coba konversi sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "konversi 5 contoh contoh => berhasil",
+    "konversi 5 contoh contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.zona",
+   "nama": "zona",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<kota/jam>",
+   "deskripsi": "waktu di kota lain atau konversi jam, mis. jam 14:00 wib di london",
+   "ringkas": "waktu di kota lain atau konversi jam, mis. jam 14:00 wib di london",
+   "kategori": "kalkulasi",
+   "sub_perintah": [],
+   "alias": [
+    "/zona",
+    "timezone",
+    "tz"
+   ],
+   "parameter": [
+    {
+     "nama": "kota/jam",
+     "sintaks": "<kota/jam>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter kota/jam"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "zona contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "zona contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "zona dong",
+    "tolong jalankan zona",
+    "coba zona sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [
+     "waktu"
+    ],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "zona contoh => berhasil",
+    "zona contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ohm",
+   "nama": "ohm",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<V= I= R= P=>",
+   "deskripsi": "hukum Ohm dari dua nilai; fase3 <P= V= cos=>: arus 3 fase",
+   "ringkas": "hukum Ohm dari dua nilai",
+   "kategori": "kalkulasi",
+   "sub_perintah": [
+    "fase3 <P= V= cos=>: arus 3 fase"
+   ],
+   "alias": [
+    "/ohm"
+   ],
+   "parameter": [
+    {
+     "nama": "V",
+     "sintaks": "<V= I= R= P=>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter V= I= R= P="
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "ohm contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ohm contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ohm dong",
+    "tolong jalankan ohm",
+    "coba ohm sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "ohm contoh => berhasil",
+    "ohm contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.hari",
+   "nama": "hari",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<tanggal>",
+   "deskripsi": "berapa hari lagi/yang lalu; password [panjang]: kata sandi acak",
+   "ringkas": "berapa hari lagi/yang lalu",
+   "kategori": "kalkulasi",
+   "sub_perintah": [
+    "password [panjang]: kata sandi acak"
+   ],
+   "alias": [
+    "/hari"
+   ],
+   "parameter": [
+    {
+     "nama": "tanggal",
+     "sintaks": "<tanggal>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter tanggal"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "hari contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "hari contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "hari dong",
+    "tolong jalankan hari",
+    "coba hari sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [
+     "waktu"
+    ],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "hari contoh => berhasil",
+    "hari contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.catat",
+   "nama": "catat",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<teks> | catatan [kata|hapus N]",
+   "deskripsi": "catatan cepat",
+   "ringkas": "catatan cepat",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/catat",
+    "note",
+    "memo"
+   ],
+   "parameter": [
+    {
+     "nama": "teks",
+     "sintaks": "<teks>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter teks"
+    },
+    {
+     "nama": "kata",
+     "sintaks": "[kata|hapus N]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter kata|hapus N"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "catat contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "catat contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "catat dong",
+    "tolong jalankan catat",
+    "coba catat sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "catat contoh => berhasil",
+    "catat contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.cuaca",
+   "nama": "cuaca",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[kota]",
+   "deskripsi": "cuaca & prakiraan 3 hari; kurs <jumlah> <MATA> ke <MATA>: nilai tukar",
+   "ringkas": "cuaca & prakiraan 3 hari",
+   "kategori": "web",
+   "sub_perintah": [
+    "kurs <jumlah> <MATA> ke <MATA>: nilai tukar"
+   ],
+   "alias": [
+    "/cuaca",
+    "weather",
+    "hujan"
+   ],
+   "parameter": [
+    {
+     "nama": "kota",
+     "sintaks": "[kota]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter kota"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "cuaca",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "cuaca --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "cuaca dong",
+    "tolong jalankan cuaca",
+    "coba cuaca sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "cuaca => berhasil",
+    "cuaca xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.wiki",
+   "nama": "wiki",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<topik>",
+   "deskripsi": "ringkasan Wikipedia; berpikir <masalah>: penalaran langkah demi langkah; terjemah <teks> ke <bahasa>",
+   "ringkas": "ringkasan Wikipedia",
+   "kategori": "web",
+   "sub_perintah": [
+    "berpikir <masalah>: penalaran langkah demi langkah",
+    "terjemah <teks> ke <bahasa>"
+   ],
+   "alias": [
+    "/wiki",
+    "wikipedia"
+   ],
+   "parameter": [
+    {
+     "nama": "topik",
+     "sintaks": "<topik>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter topik"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "wiki contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "wiki contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "wiki dong",
+    "tolong jalankan wiki",
+    "coba wiki sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "wiki contoh => berhasil",
+    "wiki contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.jurnal",
+   "nama": "jurnal",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<topik [tahun]>",
+   "deskripsi": "cari jurnal/makalah ilmiah (OpenAlex), mis. semantic 2026 kurang 5 tahun",
+   "ringkas": "cari jurnal/makalah ilmiah (OpenAlex), mis. semantic 2026 kurang 5 tahun",
+   "kategori": "web",
+   "sub_perintah": [],
+   "alias": [
+    "/jurnal",
+    "paper",
+    "makalah"
+   ],
+   "parameter": [
+    {
+     "nama": "topik",
+     "sintaks": "<topik [tahun]",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter topik [tahun"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "jurnal contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "jurnal contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "jurnal dong",
+    "tolong jalankan jurnal",
+    "coba jurnal sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "jurnal contoh => berhasil",
+    "jurnal contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.gambar",
+   "nama": "gambar",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<kata kunci>",
+   "deskripsi": "cari gambar di internet (thumbnail + tautan sumber)",
+   "ringkas": "cari gambar di internet (thumbnail + tautan sumber)",
+   "kategori": "web",
+   "sub_perintah": [],
+   "alias": [
+    "/gambar",
+    "image",
+    "foto"
+   ],
+   "parameter": [
+    {
+     "nama": "kata",
+     "sintaks": "<kata kunci>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter kata kunci"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "gambar contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "gambar contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "gambar dong",
+    "tolong jalankan gambar",
+    "coba gambar sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "gambar contoh => berhasil",
+    "gambar contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.bersih",
+   "nama": "bersih",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "bersihkan cache aman (Temp, npm, pip, Hugging Face) — butuh persetujuan",
+   "ringkas": "bersihkan cache aman (Temp, npm, pip, Hugging Face) — butuh persetujuan",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/bersih",
+    "clean",
+    "cleanup"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "bersih",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "bersih --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "bersih dong",
+    "tolong jalankan bersih",
+    "coba bersih sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "tinggi",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": true
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 1
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "bersih => berhasil",
+    "bersih xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.kode",
+   "nama": "kode",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<nama folder>",
+   "deskripsi": "buka folder proyek di VS Code (dicari otomatis di D:/repo, Documents, dll.)",
+   "ringkas": "buka folder proyek di VS Code (dicari otomatis di D:/repo, Documents, dll.)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/kode"
+   ],
+   "parameter": [
+    {
+     "nama": "nama",
+     "sintaks": "<nama folder>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter nama folder"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "kode D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "kode D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "kode dong",
+    "tolong jalankan kode",
+    "coba kode sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "kode D:/Dokumen/contoh.txt => berhasil",
+    "kode D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.winapp",
+   "nama": "winapp",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<nama>",
+   "deskripsi": "buka aplikasi bawaan Windows (kalkulator, notepad, paint, pengaturan wifi, dll.)",
+   "ringkas": "buka aplikasi bawaan Windows (kalkulator, notepad, paint, pengaturan wifi, dll.)",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/winapp"
+   ],
+   "parameter": [
+    {
+     "nama": "nama",
+     "sintaks": "<nama>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter nama"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "winapp contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "winapp contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "winapp dong",
+    "tolong jalankan winapp",
+    "coba winapp sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "winapp contoh => berhasil",
+    "winapp contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.tugas",
+   "nama": "tugas",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<teks>",
+   "deskripsi": "set/lihat tugas utama hari ini ('selesai' untuk menandai)",
+   "ringkas": "set/lihat tugas utama hari ini ('selesai' untuk menandai)",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/tugas",
+    "task",
+    "todo"
+   ],
+   "parameter": [
+    {
+     "nama": "teks",
+     "sintaks": "<teks>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter teks"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "tugas contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "tugas contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "tugas dong",
+    "tolong jalankan tugas",
+    "coba tugas sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "tugas contoh => berhasil",
+    "tugas contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.musik",
+   "nama": "musik",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "putar musik fokus (folder Musik atau pencarian browser)",
+   "ringkas": "putar musik fokus (folder Musik atau pencarian browser)",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/musik"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "musik",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "musik --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "musik dong",
+    "tolong jalankan musik",
+    "coba musik sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "musik => berhasil",
+    "musik xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.bukahasil",
+   "nama": "bukahasil",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<n>",
+   "deskripsi": "buka folder hasil pencarian ke-n di Explorer",
+   "ringkas": "buka folder hasil pencarian ke-n di Explorer",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/bukahasil"
+   ],
+   "parameter": [
+    {
+     "nama": "n",
+     "sintaks": "<n>",
+     "tipe": "integer",
+     "wajib": true,
+     "deskripsi": "Parameter n"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "bukahasil 5",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "bukahasil 5 --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "bukahasil dong",
+    "tolong jalankan bukahasil",
+    "coba bukahasil sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "bukahasil 5 => berhasil",
+    "bukahasil 5 xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ingatan",
+   "nama": "ingatan",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<topik>",
+   "deskripsi": "apa yang pernah kita bahas tentang topik (graf ingatan jangka panjang)",
+   "ringkas": "apa yang pernah kita bahas tentang topik (graf ingatan jangka panjang)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/ingatan"
+   ],
+   "parameter": [
+    {
+     "nama": "topik",
+     "sintaks": "<topik>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter topik"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "ingatan contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ingatan contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ingatan dong",
+    "tolong jalankan ingatan",
+    "coba ingatan sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "ingatan contoh => berhasil",
+    "ingatan contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.graphify",
+   "nama": "graphify",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<folder>",
+   "deskripsi": "petakan folder kode/dokumen ke graf ingatan",
+   "ringkas": "petakan folder kode/dokumen ke graf ingatan",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/graphify"
+   ],
+   "parameter": [
+    {
+     "nama": "folder",
+     "sintaks": "<folder>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter folder"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "graphify D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "graphify D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "graphify dong",
+    "tolong jalankan graphify",
+    "coba graphify sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "graphify D:/Dokumen/contoh.txt => berhasil",
+    "graphify D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.email",
+   "nama": "email",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "ringkasan email belum dibaca di semua akun (Google + IMAP)",
+   "ringkas": "ringkasan email belum dibaca di semua akun (Google + IMAP)",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/email",
+    "surel",
+    "mail"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "email",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "email --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "email dong",
+    "tolong jalankan email",
+    "coba email sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "email => berhasil",
+    "email xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.baterai",
+   "nama": "baterai",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "sisa baterai + prediksi habis/penuh (model belajar per konteks)",
+   "ringkas": "sisa baterai + prediksi habis/penuh (model belajar per konteks)",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/baterai",
+    "battery"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "baterai",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "baterai --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "baterai dong",
+    "tolong jalankan baterai",
+    "coba baterai sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "baterai => berhasil",
+    "baterai xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ngobrol",
+   "nama": "ngobrol",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<teks>",
+   "deskripsi": "sapaan/obrolan ringan",
+   "ringkas": "sapaan/obrolan ringan",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/ngobrol",
+    "chat",
+    "halo"
+   ],
+   "parameter": [
+    {
+     "nama": "teks",
+     "sintaks": "<teks>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter teks"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "ngobrol contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ngobrol contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ngobrol dong",
+    "tolong jalankan ngobrol",
+    "coba ngobrol sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "ngobrol contoh => berhasil",
+    "ngobrol contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.tanya",
+   "nama": "tanya",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<teks>",
+   "deskripsi": "pertanyaan/hitungan teknik listrik, elektronika, PLC (kalkulator + basis pengetahuan)",
+   "ringkas": "pertanyaan/hitungan teknik listrik, elektronika, PLC (kalkulator + basis pengeta",
+   "kategori": "kalkulasi",
+   "sub_perintah": [],
+   "alias": [
+    "/tanya"
+   ],
+   "parameter": [
+    {
+     "nama": "teks",
+     "sintaks": "<teks>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter teks"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "tanya contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "tanya contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "tanya dong",
+    "tolong jalankan tanya",
+    "coba tanya sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "tanya contoh => berhasil",
+    "tanya contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.pelajari",
+   "nama": "pelajari",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<path>",
+   "deskripsi": "serap PDF/txt/md ke basis pengetahuan (untuk dijawab lewat tanya)",
+   "ringkas": "serap PDF/txt/md ke basis pengetahuan (untuk dijawab lewat tanya)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/pelajari"
+   ],
+   "parameter": [
+    {
+     "nama": "path",
+     "sintaks": "<path>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter path"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "pelajari D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "pelajari D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "pelajari dong",
+    "tolong jalankan pelajari",
+    "coba pelajari sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "pelajari D:/Dokumen/contoh.txt => berhasil",
+    "pelajari D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.remind",
+   "nama": "remind",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<teks>",
+   "deskripsi": "pengingat, mis. 'jam 15:30 rapat' atau '20 menit lagi minum'",
+   "ringkas": "pengingat, mis. 'jam 15:30 rapat' atau '20 menit lagi minum'",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/remind",
+    "ingatkan",
+    "alarm"
+   ],
+   "parameter": [
+    {
+     "nama": "teks",
+     "sintaks": "<teks>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter teks"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "remind contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "remind contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "remind dong",
+    "tolong jalankan remind",
+    "coba remind sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [
+     "waktu"
+    ],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "remind contoh => berhasil",
+    "remind contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.agenda",
+   "nama": "agenda",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "agenda hari ini / kebiasaan / laporan tidur",
+   "ringkas": "agenda hari ini / kebiasaan / laporan tidur",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/agenda"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "agenda",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "agenda --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "agenda dong",
+    "tolong jalankan agenda",
+    "coba agenda sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "agenda => berhasil",
+    "agenda xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.habit",
+   "nama": "habit",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "agenda hari ini / kebiasaan / laporan tidur",
+   "ringkas": "agenda hari ini / kebiasaan / laporan tidur",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/habit"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "habit",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "habit --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "habit dong",
+    "tolong jalankan habit",
+    "coba habit sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "habit => berhasil",
+    "habit xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.tidur",
+   "nama": "tidur",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "agenda hari ini / kebiasaan / laporan tidur",
+   "ringkas": "agenda hari ini / kebiasaan / laporan tidur",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/tidur"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "tidur",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "tidur --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "tidur dong",
+    "tolong jalankan tidur",
+    "coba tidur sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "tidur => berhasil",
+    "tidur xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.layar",
+   "nama": "layar",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "baca isi layar dengan OCR Tesseract lokal (butuh izin Bos); arg 'ringkas' untuk ringkasan",
+   "ringkas": "baca isi layar dengan OCR Tesseract lokal (butuh izin Bos)",
+   "kategori": "sistem",
+   "sub_perintah": [
+    "arg 'ringkas' untuk ringkasan"
+   ],
+   "alias": [
+    "/layar"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "layar",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "layar --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "layar dong",
+    "tolong jalankan layar",
+    "coba layar sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "layar => berhasil",
+    "layar xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.pdf",
+   "nama": "pdf",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<path>",
+   "deskripsi": "ambil teks PDF/txt/md (untuk diringkas)",
+   "ringkas": "ambil teks PDF/txt/md (untuk diringkas)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/pdf"
+   ],
+   "parameter": [
+    {
+     "nama": "path",
+     "sintaks": "<path>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter path"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "pdf D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "pdf D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "pdf dong",
+    "tolong jalankan pdf",
+    "coba pdf sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "pdf D:/Dokumen/contoh.txt => berhasil",
+    "pdf D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ringkas",
+   "nama": "ringkas",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<path>",
+   "deskripsi": "ringkasan ekstraktif PDF/txt/md tanpa model",
+   "ringkas": "ringkasan ekstraktif PDF/txt/md tanpa model",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/ringkas"
+   ],
+   "parameter": [
+    {
+     "nama": "path",
+     "sintaks": "<path>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter path"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "ringkas D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ringkas D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ringkas dong",
+    "tolong jalankan ringkas",
+    "coba ringkas sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "ringkas D:/Dokumen/contoh.txt => berhasil",
+    "ringkas D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.health",
+   "nama": "health",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "kondisi CPU/RAM/disk dan proses terberat",
+   "ringkas": "kondisi CPU/RAM/disk dan proses terberat",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/health",
+    "kesehatan",
+    "status"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "health",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "health --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "health dong",
+    "tolong jalankan health",
+    "coba health sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "health => berhasil",
+    "health xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.info",
+   "nama": "info",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "info OS, folder kerja, waktu",
+   "ringkas": "info OS, folder kerja, waktu",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/info",
+    "sysinfo"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "info",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "info --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "info dong",
+    "tolong jalankan info",
+    "coba info sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "info => berhasil",
+    "info xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ls",
+   "nama": "ls",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<path>",
+   "deskripsi": "isi folder",
+   "ringkas": "isi folder",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/ls",
+    "dir",
+    "isi"
+   ],
+   "parameter": [
+    {
+     "nama": "path",
+     "sintaks": "<path>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter path"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "ls D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ls D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ls dong",
+    "tolong jalankan ls",
+    "coba ls sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "ls D:/Dokumen/contoh.txt => berhasil",
+    "ls D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.read",
+   "nama": "read",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<path>",
+   "deskripsi": "baca file teks",
+   "ringkas": "baca file teks",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/read",
+    "baca",
+    "cat"
+   ],
+   "parameter": [
+    {
+     "nama": "path",
+     "sintaks": "<path>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter path"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "read D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "read D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "read dong",
+    "tolong jalankan read",
+    "coba read sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "read D:/Dokumen/contoh.txt => berhasil",
+    "read D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ps",
+   "nama": "ps",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "daftar proses",
+   "ringkas": "daftar proses",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/ps",
+    "proses"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "ps",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ps --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ps dong",
+    "tolong jalankan ps",
+    "coba ps sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "ps => berhasil",
+    "ps xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.fetch",
+   "nama": "fetch",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<url>",
+   "deskripsi": "ambil teks halaman web",
+   "ringkas": "ambil teks halaman web",
+   "kategori": "web",
+   "sub_perintah": [],
+   "alias": [
+    "/fetch"
+   ],
+   "parameter": [
+    {
+     "nama": "url",
+     "sintaks": "<url>",
+     "tipe": "url",
+     "wajib": true,
+     "deskripsi": "Parameter url"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "fetch https://contoh.id",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "fetch https://contoh.id --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "fetch dong",
+    "tolong jalankan fetch",
+    "coba fetch sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "fetch https://contoh.id => berhasil",
+    "fetch https://contoh.id xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.shell",
+   "nama": "shell",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<cmd>",
+   "deskripsi": "jalankan perintah shell (butuh persetujuan Bos)",
+   "ringkas": "jalankan perintah shell (butuh persetujuan Bos)",
+   "kategori": "pengembang",
+   "sub_perintah": [],
+   "alias": [
+    "/shell",
+    "cmd",
+    "terminal"
+   ],
+   "parameter": [
+    {
+     "nama": "cmd",
+     "sintaks": "<cmd>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter cmd"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "shell contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "shell contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "shell dong",
+    "tolong jalankan shell",
+    "coba shell sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "tinggi",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 1
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "shell contoh => berhasil",
+    "shell contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.write",
+   "nama": "write",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<path>",
+   "deskripsi": "tulis file; baris pertama arg = path, sisanya isi (butuh persetujuan Bos)",
+   "ringkas": "tulis file",
+   "kategori": "berkas",
+   "sub_perintah": [
+    "baris pertama arg = path, sisanya isi (butuh persetujuan Bos)"
+   ],
+   "alias": [
+    "/write"
+   ],
+   "parameter": [
+    {
+     "nama": "path",
+     "sintaks": "<path>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter path"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "write D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "write D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "write dong",
+    "tolong jalankan write",
+    "coba write sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "tinggi",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": true,
+    "pratinjau_dulu": true
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 1
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "write D:/Dokumen/contoh.txt => berhasil",
+    "write D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.open",
+   "nama": "open",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<target>",
+   "deskripsi": "buka URL/file/aplikasi (butuh persetujuan Bos)",
+   "ringkas": "buka URL/file/aplikasi (butuh persetujuan Bos)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/open",
+    "buka"
+   ],
+   "parameter": [
+    {
+     "nama": "target",
+     "sintaks": "<target>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter target"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "open contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "open contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "open dong",
+    "tolong jalankan open",
+    "coba open sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "tinggi",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 1
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "open contoh => berhasil",
+    "open contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.grafik",
+   "nama": "grafik",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "grafik pemakaian RAM dan CPU laptop hari ini (dari data pemantauan) beserta penilaian kesehatan RAM",
+   "ringkas": "grafik pemakaian RAM dan CPU laptop hari ini (dari data pemantauan) beserta peni",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/grafik"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "grafik",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "grafik --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "grafik dong",
+    "tolong jalankan grafik",
+    "coba grafik sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "grafik => berhasil",
+    "grafik xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.cariisi",
+   "nama": "cariisi",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<berkas> :: <pertanyaan>",
+   "deskripsi": "potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)",
+   "ringkas": "potongan paling relevan dari isi sebuah berkas (txt/md/csv/json/pdf/docx)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/cariisi"
+   ],
+   "parameter": [
+    {
+     "nama": "berkas",
+     "sintaks": "<berkas>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter berkas"
+    },
+    {
+     "nama": "pertanyaan",
+     "sintaks": "<pertanyaan>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter pertanyaan"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "cariisi D:/Dokumen/contoh.txt contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "cariisi D:/Dokumen/contoh.txt contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "cariisi dong",
+    "tolong jalankan cariisi",
+    "coba cariisi sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "cariisi D:/Dokumen/contoh.txt contoh => berhasil",
+    "cariisi D:/Dokumen/contoh.txt contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.github",
+   "nama": "github",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<kata>",
+   "deskripsi": "cari repositori GitHub (bintang, bahasa, lisensi)",
+   "ringkas": "cari repositori GitHub (bintang, bahasa, lisensi)",
+   "kategori": "web",
+   "sub_perintah": [],
+   "alias": [
+    "/github"
+   ],
+   "parameter": [
+    {
+     "nama": "kata",
+     "sintaks": "<kata>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter kata"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "github contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "github contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "github dong",
+    "tolong jalankan github",
+    "coba github sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "github contoh => berhasil",
+    "github contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.tunggu",
+   "nama": "tunggu",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<detik>",
+   "deskripsi": "jeda 1-30 detik di antara langkah",
+   "ringkas": "jeda 1-30 detik di antara langkah",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/tunggu"
+   ],
+   "parameter": [
+    {
+     "nama": "detik",
+     "sintaks": "<detik>",
+     "tipe": "integer",
+     "wajib": true,
+     "deskripsi": "Parameter detik"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "tunggu 5",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "tunggu 5 --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "tunggu dong",
+    "tolong jalankan tunggu",
+    "coba tunggu sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "tunggu 5 => berhasil",
+    "tunggu 5 xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.kompres",
+   "nama": "kompres",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<folder|berkas>",
+   "deskripsi": "buat zip di sebelahnya (butuh persetujuan)",
+   "ringkas": "buat zip di sebelahnya (butuh persetujuan)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/kompres",
+    "zip"
+   ],
+   "parameter": [
+    {
+     "nama": "folder",
+     "sintaks": "<folder|berkas>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter folder|berkas",
+     "opsi": [
+      "folder",
+      "berkas"
+     ]
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "kompres folder",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "kompres folder --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "kompres dong",
+    "tolong jalankan kompres",
+    "coba kompres sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": true,
+    "pratinjau_dulu": true
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "kompres folder => berhasil",
+    "kompres folder xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.cadangan",
+   "nama": "cadangan",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<folder> [tujuan]",
+   "deskripsi": "cadangkan folder ke zip bertanda waktu + verifikasi hash (butuh persetujuan)",
+   "ringkas": "cadangkan folder ke zip bertanda waktu + verifikasi hash (butuh persetujuan)",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/cadangan"
+   ],
+   "parameter": [
+    {
+     "nama": "folder",
+     "sintaks": "<folder>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter folder"
+    },
+    {
+     "nama": "tujuan",
+     "sintaks": "[tujuan]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter tujuan"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "cadangan D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "cadangan D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "cadangan dong",
+    "tolong jalankan cadangan",
+    "coba cadangan sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": true,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": true,
+    "pratinjau_dulu": true
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_IZIN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "cadangan D:/Dokumen/contoh.txt => berhasil",
+    "cadangan D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.hash",
+   "nama": "hash",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<berkas> [sha256|md5|sha1]",
+   "deskripsi": "hitung checksum berkas untuk verifikasi keutuhan",
+   "ringkas": "hitung checksum berkas untuk verifikasi keutuhan",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/hash"
+   ],
+   "parameter": [
+    {
+     "nama": "berkas",
+     "sintaks": "<berkas>",
+     "tipe": "path",
+     "wajib": true,
+     "deskripsi": "Parameter berkas"
+    },
+    {
+     "nama": "sha256",
+     "sintaks": "[sha256|md5|sha1]",
+     "tipe": "enum",
+     "wajib": false,
+     "deskripsi": "Parameter sha256|md5|sha1",
+     "opsi": [
+      "sha256",
+      "md5",
+      "sha1"
+     ]
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "hash D:/Dokumen/contoh.txt",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "hash D:/Dokumen/contoh.txt --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "hash dong",
+    "tolong jalankan hash",
+    "coba hash sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "hash D:/Dokumen/contoh.txt => berhasil",
+    "hash D:/Dokumen/contoh.txt xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.dns",
+   "nama": "dns",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<domain>",
+   "deskripsi": "cek DNS, latensi ping, dan status jaringan sebuah domain",
+   "ringkas": "cek DNS, latensi ping, dan status jaringan sebuah domain",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/dns"
+   ],
+   "parameter": [
+    {
+     "nama": "domain",
+     "sintaks": "<domain>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter domain"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "dns contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "dns contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "dns dong",
+    "tolong jalankan dns",
+    "coba dns sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": true,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 2,
+    "batas_per_menit": 30,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": true
+   },
+   "galat_khusus": [
+    "E_JARINGAN"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "dns contoh => berhasil",
+    "dns contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.diagnosa",
+   "nama": "diagnosa",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "pemeriksaan menyeluruh: CPU, RAM, disk, baterai, jaringan, port, lalu beri saran",
+   "ringkas": "pemeriksaan menyeluruh: CPU, RAM, disk, baterai, jaringan, port, lalu beri saran",
+   "kategori": "sistem",
+   "sub_perintah": [],
+   "alias": [
+    "/diagnosa"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "diagnosa",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "diagnosa --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "diagnosa dong",
+    "tolong jalankan diagnosa",
+    "coba diagnosa sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "diagnosa => berhasil",
+    "diagnosa xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.riwayat",
+   "nama": "riwayat",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[N]",
+   "deskripsi": "lihat N perintah terakhir yang dijalankan beserta hasilnya",
+   "ringkas": "lihat N perintah terakhir yang dijalankan beserta hasilnya",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/riwayat"
+   ],
+   "parameter": [
+    {
+     "nama": "N",
+     "sintaks": "[N]",
+     "tipe": "integer",
+     "wajib": false,
+     "deskripsi": "Parameter N"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "riwayat",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "riwayat --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "riwayat dong",
+    "tolong jalankan riwayat",
+    "coba riwayat sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "riwayat => berhasil",
+    "riwayat xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.makro",
+   "nama": "makro",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<nama> [jalankan|simpan|hapus]",
+   "deskripsi": "rangkai beberapa alat menjadi satu alur kerja bernama",
+   "ringkas": "rangkai beberapa alat menjadi satu alur kerja bernama",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/makro"
+   ],
+   "parameter": [
+    {
+     "nama": "nama",
+     "sintaks": "<nama>",
+     "tipe": "string",
+     "wajib": true,
+     "deskripsi": "Parameter nama"
+    },
+    {
+     "nama": "jalankan",
+     "sintaks": "[jalankan|simpan|hapus]",
+     "tipe": "enum",
+     "wajib": false,
+     "deskripsi": "Parameter jalankan|simpan|hapus",
+     "opsi": [
+      "jalankan",
+      "simpan",
+      "hapus"
+     ]
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "makro contoh",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "makro contoh --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "makro dong",
+    "tolong jalankan makro",
+    "coba makro sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "makro contoh => berhasil",
+    "makro contoh xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.validasi",
+   "nama": "validasi",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<berkas.json|csv>",
+   "deskripsi": "periksa sintaks dan kewarasan data berkas JSON/CSV",
+   "ringkas": "periksa sintaks dan kewarasan data berkas JSON/CSV",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/validasi"
+   ],
+   "parameter": [
+    {
+     "nama": "berkas.json",
+     "sintaks": "<berkas.json|csv>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter berkas.json|csv",
+     "opsi": [
+      "berkas.json",
+      "csv"
+     ]
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "validasi berkas.json",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "validasi berkas.json --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "validasi dong",
+    "tolong jalankan validasi",
+    "coba validasi sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "validasi berkas.json => berhasil",
+    "validasi berkas.json xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.bantuan",
+   "nama": "bantuan",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[alat]",
+   "deskripsi": "daftar alat, sintaks, dan contoh pemakaian",
+   "ringkas": "daftar alat, sintaks, dan contoh pemakaian",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/bantuan"
+   ],
+   "parameter": [
+    {
+     "nama": "alat",
+     "sintaks": "[alat]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter alat"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "bantuan",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "bantuan --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "bantuan dong",
+    "tolong jalankan bantuan",
+    "coba bantuan sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "bantuan => berhasil",
+    "bantuan xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.ekspor",
+   "nama": "ekspor",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "<ingatan|catatan|tugas> [jalur]",
+   "deskripsi": "ekspor data pribadi Bos ke berkas md/json",
+   "ringkas": "ekspor data pribadi Bos ke berkas md/json",
+   "kategori": "berkas",
+   "sub_perintah": [],
+   "alias": [
+    "/ekspor"
+   ],
+   "parameter": [
+    {
+     "nama": "ingatan",
+     "sintaks": "<ingatan|catatan|tugas>",
+     "tipe": "enum",
+     "wajib": true,
+     "deskripsi": "Parameter ingatan|catatan|tugas",
+     "opsi": [
+      "ingatan",
+      "catatan",
+      "tugas"
+     ]
+    },
+    {
+     "nama": "jalur",
+     "sintaks": "[jalur]",
+     "tipe": "path",
+     "wajib": false,
+     "deskripsi": "Parameter jalur"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "ekspor ingatan",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "ekspor ingatan --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "ekspor dong",
+    "tolong jalankan ekspor",
+    "coba ekspor sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "sedang",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": false,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 120,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": true,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": [
+     "catat",
+     "ringkas",
+     "tugas",
+     "remind"
+    ]
+   },
+   "uji": [
+    "ekspor ingatan => berhasil",
+    "ekspor ingatan xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.pomodoro",
+   "nama": "pomodoro",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "[fokus] [istirahat]",
+   "deskripsi": "sesi fokus berkala dengan pengingat dan pencatatan",
+   "ringkas": "sesi fokus berkala dengan pengingat dan pencatatan",
+   "kategori": "produktivitas",
+   "sub_perintah": [],
+   "alias": [
+    "/pomodoro"
+   ],
+   "parameter": [
+    {
+     "nama": "fokus",
+     "sintaks": "[fokus]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter fokus"
+    },
+    {
+     "nama": "istirahat",
+     "sintaks": "[istirahat]",
+     "tipe": "string",
+     "wajib": false,
+     "deskripsi": "Parameter istirahat"
+    }
+   ],
+   "contoh": [
+    {
+     "perintah": "pomodoro",
+     "catatan": "pemakaian dasar"
+    },
+    {
+     "perintah": "pomodoro --json",
+     "catatan": "keluaran terstruktur untuk dirangkai"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "pomodoro dong",
+    "tolong jalankan pomodoro",
+    "coba pomodoro sekarang"
+   ],
+   "perilaku": {
+    "tingkat_risiko": "rendah",
+    "butuh_persetujuan": false,
+    "butuh_internet": false,
+    "idempoten": true,
+    "bisa_dibatalkan": false,
+    "pratinjau_dulu": false
+   },
+   "batasan": {
+    "timeout_detik": 30,
+    "maks_keluaran_karakter": 8000,
+    "coba_ulang": 0,
+    "batas_per_menit": 60,
+    "konkurensi_maks": 4
+   },
+   "keamanan": {
+    "sandbox": false,
+    "profil": "standar",
+    "log_audit": true
+   },
+   "keluaran": {
+    "sertakan_sumber": false
+   },
+   "galat_khusus": [
+    "E_ARG"
+   ],
+   "rangkaian": {
+    "bergantung_pada": [],
+    "dapat_dirangkai_dengan": []
+   },
+   "uji": [
+    "pomodoro => berhasil",
+    "pomodoro xx => galat ditangani dengan pesan jelas"
+   ]
+  }
+ ],
+ "korpus_pemicu": [
+  "kurikulum: kurikulum dong #1",
+  "berita: berita dong #1",
+  "kepribadian: kepribadian dong #1",
+  "cari: cari dong #1",
+  "rapikan: rapikan dong #1",
+  "apps: apps dong #1",
+  "urungkan: urungkan dong #1",
+  "meme: meme dong #1",
+  "bukapath: bukapath dong #1",
+  "jadwal: jadwal dong #1",
+  "otomatis: otomatis dong #1",
+  "wifi: wifi dong #1",
+  "port: port dong #1",
+  "bukafile: bukafile dong #1",
+  "cli: cli dong #1",
+  "atur: atur dong #1",
+  "waktu: waktu dong #1",
+  "web: web dong #1",
+  "harga: harga dong #1",
+  "pantau: pantau dong #1",
+  "gitringkas: gitringkas dong #1",
+  "halaman: halaman dong #1",
+  "hitung: hitung dong #1",
+  "konversi: konversi dong #1",
+  "zona: zona dong #1",
+  "ohm: ohm dong #1",
+  "hari: hari dong #1",
+  "catat: catat dong #1",
+  "cuaca: cuaca dong #1",
+  "wiki: wiki dong #1"
+ ]
+}

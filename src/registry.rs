@@ -12,6 +12,9 @@ pub struct Skema {
     pub nama: String,
     pub arg: String,
     pub deskripsi: String,
+    /// contoh kalimat alami yang memicu alat ini (untuk pencarian alat relevan)
+    #[serde(skip)]
+    pub pemicu: String,
     pub risiko: String,
 }
 
@@ -30,8 +33,10 @@ fn isi() -> Arc<Isi> {
             return i.clone();
         }
     }
+    // bentuk lama: daftar; bentuk katalog v2: objek dengan kunci "alat" (deskripsi/ringkas, pemicu_bahasa_alami, contoh, ...)
     let mut skema: Vec<Skema> = v
         .as_array()
+        .or_else(|| v["alat"].as_array())
         .map(|a| {
             a.iter()
                 .filter_map(|x| {
@@ -44,14 +49,16 @@ fn isi() -> Arc<Isi> {
                         crate::alat::Risk::Confirm(_) => "butuh persetujuan",
                         crate::alat::Risk::Block(_) => "bergantung argumen", // probe "x" ditolak validasi argumen, bukan alatnya
                     };
-                    Some(Skema { nama: n, arg: x["arg"].as_str().unwrap_or("").into(), deskripsi: x["deskripsi"].as_str().unwrap_or("").into(), risiko: r.into() })
+                    let desk = x["ringkas"].as_str().filter(|d| !d.is_empty()).or_else(|| x["deskripsi"].as_str()).unwrap_or("");
+                    let pemicu: Vec<&str> = x["pemicu_bahasa_alami"].as_array().into_iter().flatten().filter_map(|p| p.as_str()).take(12).collect();
+                    Some(Skema { nama: n, arg: x["arg"].as_str().unwrap_or("").into(), deskripsi: desk.into(), pemicu: pemicu.join("; "), risiko: r.into() })
                 })
                 .collect()
         })
         .unwrap_or_default();
     skema.sort_by(|a, b| a.nama.cmp(&b.nama));
     skema.dedup_by(|a, b| a.nama == b.nama);
-    let vek = skema.iter().map(|s| crate::ingat::embed(&format!("{} {} {}", s.nama, s.arg, s.deskripsi))).collect();
+    let vek = skema.iter().map(|s| crate::ingat::embed(&format!("{} {} {} {}", s.nama, s.arg, s.deskripsi, s.pemicu))).collect();
     let i = Arc::new(Isi { skema, vek });
     *c = Some((v, i.clone()));
     i
@@ -76,7 +83,7 @@ pub fn relevan(q: &str, k: usize) -> Vec<Skema> {
         .zip(&i.vek)
         .map(|(sk, v)| {
             let cos: f32 = v.iter().zip(&qv).map(|(a, b)| a * b).sum();
-            let teks = format!("{} {}", sk.nama, sk.deskripsi).to_lowercase();
+            let teks = format!("{} {} {}", sk.nama, sk.deskripsi, sk.pemicu).to_lowercase();
             let lex = kata.iter().filter(|w| teks.contains(w.as_str())).count() as f32 / kata.len().max(1) as f32;
             (cos + 0.6 * lex, sk)
         })

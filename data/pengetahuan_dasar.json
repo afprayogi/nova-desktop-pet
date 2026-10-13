@@ -1,142 +1,755 @@
 [
  {
   "judul": "Hukum Ohm",
-  "isi": "V = I x R. Daya P = V x I = I^2 x R = V^2 / R. Satuan: V volt, I ampere, R ohm, P watt."
+  "isi": "V = I x R. Daya P = V x I = I^2 x R = V^2 / R. Satuan: V volt, I ampere, R ohm, P watt.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "hukum",
+   "ohm",
+   "dasar"
+  ]
  },
  {
   "judul": "Daya AC satu fasa",
-  "isi": "P = V x I x cos(phi) (watt), S = V x I (VA), Q = V x I x sin(phi) (VAR). S^2 = P^2 + Q^2. Faktor daya = P/S."
+  "isi": "P = V x I x cos(phi) (watt), S = V x I (VA), Q = V x I x sin(phi) (VAR). S^2 = P^2 + Q^2. Faktor daya = P/S.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "daya",
+   "satu",
+   "fasa",
+   "dasar"
+  ]
  },
  {
   "judul": "Daya AC tiga fasa",
-  "isi": "P = akar3 x V(L-L) x I x cos(phi). S = akar3 x V x I. Tegangan fasa-netral = V(L-L)/akar3 (380 V -> 220 V). Arus saluran = P / (akar3 x V x cos phi)."
+  "isi": "P = akar3 x V(L-L) x I x cos(phi). S = akar3 x V x I. Tegangan fasa-netral = V(L-L)/akar3 (380 V -> 220 V). Arus saluran = P / (akar3 x V x cos phi).",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "daya",
+   "tiga",
+   "fasa",
+   "dasar"
+  ]
  },
  {
   "judul": "Faktor daya dan kapasitor",
-  "isi": "Perbaikan cos phi: Qc (kVAR) = P(kW) x (tan phi1 - tan phi2). Kapasitor mengurangi kVAR reaktif, arus saluran, dan rugi-rugi. Hindari kompensasi berlebih (leading) dan resonansi harmonik; gunakan reaktor detuned bila ada beban nonlinier."
+  "isi": "Perbaikan cos phi: Qc (kVAR) = P(kW) x (tan phi1 - tan phi2). Kapasitor mengurangi kVAR reaktif, arus saluran, dan rugi-rugi. Hindari kompensasi berlebih (leading) dan resonansi harmonik; gunakan reaktor detuned bila ada beban nonlinier.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "faktor",
+   "daya",
+   "kapasitor",
+   "dasar"
+  ]
  },
  {
   "judul": "Drop tegangan",
-  "isi": "1 fasa: dV = 2 x rho x L x I / A. 3 fasa: dV = akar3 x rho x L x I x cos phi / A (reaktansi diabaikan). rho tembaga ~0,0175 ohm.mm2/m (20C), aluminium ~0,028. Umumnya batas drop tegangan beban 3-5%; periksa PUIL."
+  "isi": "1 fasa: dV = 2 x rho x L x I / A. 3 fasa: dV = akar3 x rho x L x I x cos phi / A (reaktansi diabaikan). rho tembaga ~0,0175 ohm.mm2/m (20C), aluminium ~0,028. Umumnya batas drop tegangan beban 3-5%; periksa PUIL.",
+  "kategori": "kabel",
+  "kata_kunci": [
+   "drop",
+   "tegangan",
+   "kabel"
+  ]
  },
  {
   "judul": "Kemampuan hantar arus (KHA) kabel",
-  "isi": "Kabel dipilih agar KHA (Iz) >= arus beban (Ib) setelah faktor koreksi suhu, pengelompokan, dan cara pemasangan. Pengaman In memenuhi Ib <= In <= Iz. Cek tabel KHA PUIL 2011 / IEC 60364-5-52."
+  "isi": "Kabel dipilih agar KHA (Iz) >= arus beban (Ib) setelah faktor koreksi suhu, pengelompokan, dan cara pemasangan. Pengaman In memenuhi Ib <= In <= Iz. Cek tabel KHA PUIL 2011 / IEC 60364-5-52.",
+  "kategori": "kabel",
+  "kata_kunci": [
+   "kemampuan",
+   "hantar",
+   "arus",
+   "kha",
+   "kabel",
+   "kabel"
+  ]
  },
  {
   "judul": "MCB, MCCB, ELCB/RCD",
-  "isi": "MCB: proteksi beban lebih (termal) dan hubung singkat (magnetik); kurva B/C/D menentukan batas trip magnetik. MCCB untuk arus lebih besar dan dapat diatur. RCD/ELCB mendeteksi arus bocor ke tanah (30 mA untuk proteksi manusia) dan TIDAK menggantikan MCB."
+  "isi": "MCB: proteksi beban lebih (termal) dan hubung singkat (magnetik); kurva B/C/D menentukan batas trip magnetik. MCCB untuk arus lebih besar dan dapat diatur. RCD/ELCB mendeteksi arus bocor ke tanah (30 mA untuk proteksi manusia) dan TIDAK menggantikan MCB.",
+  "kategori": "proteksi",
+  "kata_kunci": [
+   "mcb",
+   "mccb",
+   "elcb/rcd",
+   "proteksi"
+  ]
  },
  {
   "judul": "Pentanahan (grounding)",
-  "isi": "Fungsi: keselamatan (arus gangguan mengalir ke tanah, pengaman trip) dan referensi tegangan. Elektroda: batang, pelat, pita. Ukur tahanan dengan earth tester. Semua bagian konduktif terbuka dihubungkan ke PE. Nilai tahanan yang diizinkan tergantung sistem (TN/TT/IT): lihat PUIL."
+  "isi": "Fungsi: keselamatan (arus gangguan mengalir ke tanah, pengaman trip) dan referensi tegangan. Elektroda: batang, pelat, pita. Ukur tahanan dengan earth tester. Semua bagian konduktif terbuka dihubungkan ke PE. Nilai tahanan yang diizinkan tergantung sistem (TN/TT/IT): lihat PUIL.",
+  "kategori": "proteksi",
+  "kata_kunci": [
+   "pentanahan",
+   "grounding",
+   "proteksi"
+  ]
  },
  {
   "judul": "Sistem TN, TT, IT",
-  "isi": "TN: netral sumber ditanahkan, BKT ke netral (TN-S, TN-C-S). TT: BKT punya tanah sendiri, wajib RCD. IT: sumber tak ditanahkan/impedansi tinggi, perlu monitor isolasi."
+  "isi": "TN: netral sumber ditanahkan, BKT ke netral (TN-S, TN-C-S). TT: BKT punya tanah sendiri, wajib RCD. IT: sumber tak ditanahkan/impedansi tinggi, perlu monitor isolasi.",
+  "kategori": "proteksi",
+  "kata_kunci": [
+   "sistem",
+   "proteksi"
+  ]
  },
  {
   "judul": "Warna kabel instalasi",
-  "isi": "Umum PUIL 2011: L1 merah, L2 kuning, L3 hitam, netral biru, PE kuning-hijau. Instalasi lama bisa berbeda; selalu uji dengan alat, jangan hanya percaya warna."
+  "isi": "Umum PUIL 2011: L1 merah, L2 kuning, L3 hitam, netral biru, PE kuning-hijau. Instalasi lama bisa berbeda; selalu uji dengan alat, jangan hanya percaya warna.",
+  "kategori": "kabel",
+  "kata_kunci": [
+   "warna",
+   "kabel",
+   "instalasi",
+   "kabel"
+  ]
  },
  {
   "judul": "Keselamatan kerja listrik",
-  "isi": "Selalu: matikan, kunci dan beri tanda (LOTO), uji tidak bertegangan dengan tester yang diverifikasi, tanahkan bila perlu, baru bekerja. Gunakan APD sesuai (sarung tangan isolasi, kacamata, sepatu safety). Bekerja bertegangan hanya oleh yang berwenang."
+  "isi": "Selalu: matikan, kunci dan beri tanda (LOTO), uji tidak bertegangan dengan tester yang diverifikasi, tanahkan bila perlu, baru bekerja. Gunakan APD sesuai (sarung tangan isolasi, kacamata, sepatu safety). Bekerja bertegangan hanya oleh yang berwenang.",
+  "kategori": "keselamatan",
+  "kata_kunci": [
+   "keselamatan",
+   "kerja",
+   "listrik",
+   "keselamatan"
+  ]
  },
  {
   "judul": "Hubung singkat",
-  "isi": "Arus hubung singkat = V / Z total loop. Pengaman harus mampu memutus (breaking capacity Icu/Icn) lebih besar dari arus hubung singkat di titik pemasangan, dan waktu trip memenuhi syarat sentuh tak langsung."
+  "isi": "Arus hubung singkat = V / Z total loop. Pengaman harus mampu memutus (breaking capacity Icu/Icn) lebih besar dari arus hubung singkat di titik pemasangan, dan waktu trip memenuhi syarat sentuh tak langsung.",
+  "kategori": "proteksi",
+  "kata_kunci": [
+   "hubung",
+   "singkat",
+   "proteksi"
+  ]
  },
  {
   "judul": "Motor induksi",
-  "isi": "Kecepatan sinkron ns = 120 x f / p (rpm). Slip s = (ns - n)/ns. Arus beban penuh 3 fasa I = P / (akar3 x V x eta x cos phi). Arus start DOL ~5-8 x In."
+  "isi": "Kecepatan sinkron ns = 120 x f / p (rpm). Slip s = (ns - n)/ns. Arus beban penuh 3 fasa I = P / (akar3 x V x eta x cos phi). Arus start DOL ~5-8 x In.",
+  "kategori": "motor",
+  "kata_kunci": [
+   "motor",
+   "induksi",
+   "motor"
+  ]
  },
  {
   "judul": "Metode start motor",
-  "isi": "DOL (langsung) sederhana tapi arus start besar. Bintang-segitiga mengurangi arus start ~1/3 (motor harus delta di 380 V). Soft starter menaikkan tegangan bertahap. VSD/inverter mengatur frekuensi sehingga torsi dan kecepatan terkontrol dan arus start rendah."
+  "isi": "DOL (langsung) sederhana tapi arus start besar. Bintang-segitiga mengurangi arus start ~1/3 (motor harus delta di 380 V). Soft starter menaikkan tegangan bertahap. VSD/inverter mengatur frekuensi sehingga torsi dan kecepatan terkontrol dan arus start rendah.",
+  "kategori": "motor",
+  "kata_kunci": [
+   "metode",
+   "start",
+   "motor",
+   "motor"
+  ]
  },
  {
   "judul": "Proteksi motor",
-  "isi": "Perlu: pengaman hubung singkat (MCB/MCCB/fuse), relai beban lebih termal (TOR) atau MPCB, dan opsional proteksi fasa hilang/urutan fasa. Setel TOR sekitar arus nominal pelat nama."
+  "isi": "Perlu: pengaman hubung singkat (MCB/MCCB/fuse), relai beban lebih termal (TOR) atau MPCB, dan opsional proteksi fasa hilang/urutan fasa. Setel TOR sekitar arus nominal pelat nama.",
+  "kategori": "motor",
+  "kata_kunci": [
+   "proteksi",
+   "motor",
+   "motor"
+  ]
  },
  {
   "judul": "Trafo",
-  "isi": "Rasio V1/V2 = N1/N2 = I2/I1. Arus nominal I = S / (akar3 x V). Rugi besi tetap, rugi tembaga bergantung beban. Impedansi % menentukan arus hubung singkat sekunder: Isc = In / Z%."
+  "isi": "Rasio V1/V2 = N1/N2 = I2/I1. Arus nominal I = S / (akar3 x V). Rugi besi tetap, rugi tembaga bergantung beban. Impedansi % menentukan arus hubung singkat sekunder: Isc = In x 100 / Z% (Z% dalam persen).",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "trafo",
+   "sumber"
+  ]
  },
  {
   "judul": "Kontaktor dan relai",
-  "isi": "Relai: saklar kecil dikendalikan kumparan, untuk sinyal kontrol. Kontaktor: untuk beban daya, kontak utama + bantu. Pilih kategori AC-1 (resistif), AC-3 (motor). Pasang peredam (snubber/dioda flyback) pada kumparan DC."
+  "isi": "Relai: saklar kecil dikendalikan kumparan, untuk sinyal kontrol. Kontaktor: untuk beban daya, kontak utama + bantu. Pilih kategori AC-1 (resistif), AC-3 (motor). Pasang peredam (snubber/dioda flyback) pada kumparan DC.",
+  "kategori": "kontrol",
+  "kata_kunci": [
+   "kontaktor",
+   "relai",
+   "kontrol"
+  ]
  },
  {
   "judul": "Harmonisa",
-  "isi": "Beban nonlinier (VSD, UPS, LED driver) menyebabkan arus harmonik: panas berlebih di netral dan trafo, kapasitor rusak. Ukur THD; mitigasi dengan filter, trafo K-factor, reaktor."
+  "isi": "Beban nonlinier (VSD, UPS, LED driver) menyebabkan arus harmonik: panas berlebih di netral dan trafo, kapasitor rusak. Ukur THD; mitigasi dengan filter, trafo K-factor, reaktor.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "harmonisa",
+   "dasar"
+  ]
  },
  {
   "judul": "UPS dan baterai",
-  "isi": "Kapasitas baterai (Wh) = V x Ah. Waktu cadangan ~ (Wh x efisiensi x DoD) / beban W. Aki timbal-asam disarankan DoD <=50%. Pilih UPS dengan daya VA >= beban/ (pf) dengan margin 20-25%."
+  "isi": "Kapasitas baterai (Wh) = V x Ah. Waktu cadangan ~ (Wh x efisiensi x DoD) / beban W. Aki timbal-asam disarankan DoD <=50%. Pilih UPS dengan daya VA >= beban/ (pf) dengan margin 20-25%.",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "ups",
+   "baterai",
+   "sumber"
+  ]
  },
  {
   "judul": "PLTS (solar PV)",
-  "isi": "Daya panel (Wp) x jam matahari efektif (~4 jam di Indonesia) x efisiensi sistem (~0,75) = energi harian. String: jumlah modul seri menentukan Voc total (harus < batas inverter pada suhu dingin). Pasang proteksi DC, SPD, dan pentanahan."
+  "isi": "Daya panel (Wp) x jam matahari efektif (~4 jam di Indonesia) x efisiensi sistem (~0,75) = energi harian. String: jumlah modul seri menentukan Voc total (harus < batas inverter pada suhu dingin). Pasang proteksi DC, SPD, dan pentanahan.",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "plts",
+   "solar",
+   "sumber"
+  ]
  },
  {
   "judul": "Resistor, kapasitor, induktor",
-  "isi": "R: menghambat arus. C: menyimpan muatan, Xc = 1/(2 pi f C). L: menyimpan energi magnet, XL = 2 pi f L. Seri R: Rt = R1+R2; paralel: 1/Rt = 1/R1+1/R2. Kapasitor seri kebalikannya."
+  "isi": "R: menghambat arus. C: menyimpan muatan, Xc = 1/(2 pi f C). L: menyimpan energi magnet, XL = 2 pi f L. Seri R: Rt = R1+R2; paralel: 1/Rt = 1/R1+1/R2. Kapasitor seri kebalikannya.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "resistor",
+   "kapasitor",
+   "induktor",
+   "elektronika"
+  ]
  },
  {
   "judul": "Filter RC dan frekuensi cutoff",
-  "isi": "fc = 1 / (2 pi R C). Low-pass: melewatkan frekuensi rendah; high-pass sebaliknya. Pada fc amplitudo turun ke 70,7% (-3 dB)."
+  "isi": "fc = 1 / (2 pi R C). Low-pass: melewatkan frekuensi rendah; high-pass sebaliknya. Pada fc amplitudo turun ke 70,7% (-3 dB).",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "filter",
+   "frekuensi",
+   "cutoff",
+   "elektronika"
+  ]
  },
  {
   "judul": "LED dan resistor pembatas",
-  "isi": "R = (Vsumber - Vf) / If. Contoh: 5 V, LED merah Vf 2 V, If 10 mA -> R = 300 ohm (pakai 330). Daya resistor = I^2 x R."
+  "isi": "R = (Vsumber - Vf) / If. Contoh: 5 V, LED merah Vf 2 V, If 10 mA -> R = 300 ohm (pakai 330). Daya resistor = I^2 x R.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "led",
+   "resistor",
+   "pembatas",
+   "elektronika"
+  ]
  },
  {
   "judul": "Dioda dan transistor",
-  "isi": "Dioda: konduksi searah, Vf ~0,7 V (Si). Transistor BJT: arus basis mengendalikan Ic = beta x Ib. MOSFET: tegangan gate mengendalikan arus; cocok untuk saklar daya. Pasang dioda flyback pada beban induktif."
+  "isi": "Dioda: konduksi searah, Vf ~0,7 V (Si). Transistor BJT: arus basis mengendalikan Ic = beta x Ib. MOSFET: tegangan gate mengendalikan arus; cocok untuk saklar daya. Pasang dioda flyback pada beban induktif.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "dioda",
+   "transistor",
+   "elektronika"
+  ]
  },
  {
   "judul": "Op-amp",
-  "isi": "Penguat inverting: Av = -Rf/Rin. Non-inverting: Av = 1 + Rf/Rin. Op-amp ideal: impedansi masuk tak hingga, input + dan - bertegangan sama pada umpan balik negatif."
+  "isi": "Penguat inverting: Av = -Rf/Rin. Non-inverting: Av = 1 + Rf/Rin. Op-amp ideal: impedansi masuk tak hingga, input + dan - bertegangan sama pada umpan balik negatif.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "op-amp",
+   "elektronika"
+  ]
  },
  {
   "judul": "PWM",
-  "isi": "Pulse width modulation: duty cycle D = ton/T. Tegangan rata-rata = D x Vsumber. Dipakai untuk dimmer, kontrol kecepatan motor DC, dan konverter daya."
+  "isi": "Pulse width modulation: duty cycle D = ton/T. Tegangan rata-rata = D x Vsumber. Dipakai untuk dimmer, kontrol kecepatan motor DC, dan konverter daya.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "pwm",
+   "elektronika"
+  ]
  },
  {
   "judul": "ADC dan resolusi",
-  "isi": "Resolusi LSB = Vref / 2^n. ADC 10 bit, Vref 5 V -> 4,88 mV per langkah. Perhatikan teorema Nyquist: sampling >= 2x frekuensi sinyal tertinggi, dan beri filter anti-aliasing."
+  "isi": "Resolusi LSB = Vref / 2^n. ADC 10 bit, Vref 5 V -> 4,88 mV per langkah. Perhatikan teorema Nyquist: sampling >= 2x frekuensi sinyal tertinggi, dan beri filter anti-aliasing.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "adc",
+   "resolusi",
+   "elektronika"
+  ]
  },
  {
   "judul": "PLC dasar",
-  "isi": "PLC bekerja siklus scan: baca input -> jalankan program -> tulis output. Bahasa IEC 61131-3: Ladder (LD), Function Block (FBD), Structured Text (ST), Instruction List, SFC. Input/output digital dan analog; perhatikan sumber (PNP) vs sink (NPN)."
+  "isi": "PLC bekerja siklus scan: baca input -> jalankan program -> tulis output. Bahasa IEC 61131-3: Ladder (LD), Function Block (FBD), Structured Text (ST), Instruction List, SFC. Input/output digital dan analog; perhatikan sumber (PNP) vs sink (NPN).",
+  "kategori": "plc",
+  "kata_kunci": [
+   "plc",
+   "dasar",
+   "plc"
+  ]
  },
  {
   "judul": "Ladder logic",
-  "isi": "Kontak NO/NC mewakili input; coil mewakili output. Rangkaian seal-in (self-holding): kontak coil paralel dengan tombol START, seri dengan STOP (NC) untuk menahan motor tetap hidup. Gunakan interlock agar dua output berlawanan tak aktif bersamaan."
+  "isi": "Kontak NO/NC mewakili input; coil mewakili output. Rangkaian seal-in (self-holding): kontak coil paralel dengan tombol START, seri dengan STOP (NC) untuk menahan motor tetap hidup. Gunakan interlock agar dua output berlawanan tak aktif bersamaan.",
+  "kategori": "plc",
+  "kata_kunci": [
+   "ladder",
+   "logic",
+   "plc"
+  ]
  },
  {
   "judul": "Sinyal analog 4-20 mA",
-  "isi": "4 mA = 0%, 20 mA = 100%. Nilai di bawah 4 mA menandakan kabel putus (live zero). Skala: nilai = (I - 4)/16 x rentang. Tahan noise dan jarak jauh lebih baik daripada 0-10 V."
+  "isi": "4 mA = 0%, 20 mA = 100%. Nilai di bawah 4 mA menandakan kabel putus (live zero). Skala: nilai = (I - 4)/16 x rentang. Tahan noise dan jarak jauh lebih baik daripada 0-10 V.",
+  "kategori": "plc",
+  "kata_kunci": [
+   "sinyal",
+   "analog",
+   "4-20",
+   "plc"
+  ]
  },
  {
   "judul": "Sensor umum",
-  "isi": "Proximity induktif (logam), kapasitif (benda apa saja), fotoelektrik, limit switch, termokopel (tipe K ~41 uV/C), RTD PT100 (100 ohm pada 0C, ~0,385 ohm/C), load cell, encoder."
+  "isi": "Proximity induktif (logam), kapasitif (benda apa saja), fotoelektrik, limit switch, termokopel (tipe K ~41 uV/C), RTD PT100 (100 ohm pada 0C, ~0,385 ohm/C), load cell, encoder.",
+  "kategori": "sensor",
+  "kata_kunci": [
+   "sensor",
+   "umum",
+   "sensor"
+  ]
  },
  {
   "judul": "Komunikasi industri",
-  "isi": "Modbus RTU (RS-485, master-slave, 9600-115200 bps, hingga 32 node tanpa repeater), Modbus TCP, Profibus, Profinet, EtherNet/IP, CAN. RS-485 butuh terminasi 120 ohm di ujung bus dan kabel twisted pair."
+  "isi": "Modbus RTU (RS-485, master-slave, 9600-115200 bps, hingga 32 node tanpa repeater), Modbus TCP, Profibus, Profinet, EtherNet/IP, CAN. RS-485 butuh terminasi 120 ohm di ujung bus dan kabel twisted pair.",
+  "kategori": "plc",
+  "kata_kunci": [
+   "komunikasi",
+   "industri",
+   "plc"
+  ]
  },
  {
   "judul": "IP rating",
-  "isi": "IP + 2 digit: digit1 proteksi padat (0-6), digit2 proteksi air (0-9). IP54: tahan debu terbatas dan cipratan; IP65: kedap debu dan semprotan air; IP67: dapat direndam sementara."
+  "isi": "IP + 2 digit: digit1 proteksi padat (0-6), digit2 proteksi air (0-9). IP54: tahan debu terbatas dan cipratan; IP65: kedap debu dan semprotan air; IP67: dapat direndam sementara.",
+  "kategori": "standar",
+  "kata_kunci": [
+   "rating",
+   "standar"
+  ]
  },
  {
   "judul": "Konversi satuan daya",
-  "isi": "1 HP = 746 W (mekanik), 1 kW = 1,341 HP, 1 PK ~ 735,5 W. kVA = kW / cos phi. 1 kWh = 1000 W selama 1 jam."
+  "isi": "1 HP = 746 W (mekanik), 1 kW = 1,341 HP, 1 PK ~ 735,5 W. kVA = kW / cos phi. 1 kWh = 1000 W selama 1 jam.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "konversi",
+   "satuan",
+   "daya",
+   "dasar"
+  ]
  },
  {
   "judul": "Resistivitas bahan",
-  "isi": "Tembaga 0,0175 ohm.mm2/m, aluminium 0,028, besi ~0,10. Resistansi R = rho x L / A. Naik sekitar 0,4% per derajat C untuk tembaga."
+  "isi": "Tembaga 0,0175 ohm.mm2/m, aluminium 0,028, besi ~0,10. Resistansi R = rho x L / A. Naik sekitar 0,4% per derajat C untuk tembaga.",
+  "kategori": "kabel",
+  "kata_kunci": [
+   "resistivitas",
+   "bahan",
+   "kabel"
+  ]
+ },
+ {
+  "judul": "Hukum Kirchhoff",
+  "isi": "KCL: jumlah arus masuk titik cabang = jumlah arus keluar. KVL: jumlah aljabar tegangan sepanjang loop tertutup = 0. Dasar analisis rangkaian bercabang.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "hukum",
+   "kirchhoff",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Pembagi tegangan dan arus",
+  "isi": "Pembagi tegangan: Vout = Vin x R2 / (R1 + R2). Pembagi arus (dua cabang paralel): I1 = Itotal x R2 / (R1 + R2). Beban di keluaran pembagi mengubah hasil; pakai resistor jauh lebih besar dari beban.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "pembagi",
+   "tegangan",
+   "arus",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Energi dan biaya listrik",
+  "isi": "Energi (kWh) = daya (kW) x waktu (jam). Biaya = kWh x tarif per kWh. Contoh: 2 kW selama 3 jam = 6 kWh.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "energi",
+   "biaya",
+   "listrik",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Impedansi dan resonansi",
+  "isi": "Z = akar(R^2 + X^2), X = XL - XC, cos phi = R/Z. Resonansi seri/paralel pada f0 = 1 / (2 pi akar(L x C)); saat resonansi seri, XL = XC dan arus maksimum.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "impedansi",
+   "resonansi",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Beban bintang dan segitiga",
+  "isi": "Bintang (Y): V(L-L) = akar3 x Vfasa, Isaluran = Ifasa. Segitiga (delta): V(L-L) = Vfasa, Isaluran = akar3 x Ifasa. Daya total tiga fasa tetap P = akar3 x V(L-L) x I x cos phi.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "beban",
+   "bintang",
+   "segitiga",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Kurva MCB B, C, D",
+  "isi": "Batas trip magnetik: kurva B 3-5 x In (beban resistif, kabel panjang), C 5-10 x In (umum, beban campuran), D 10-20 x In (arus start tinggi seperti trafo dan motor). Pilih agar tetap trip pada arus hubung singkat terkecil.",
+  "kategori": "proteksi",
+  "kata_kunci": [
+   "kurva",
+   "mcb",
+   "proteksi"
+  ]
+ },
+ {
+  "judul": "Penampang kabel standar",
+  "isi": "Ukuran standar mm2: 1,5; 2,5; 4; 6; 10; 16; 25; 35; 50; 70; 95; 120; 150; 185; 240. Umumnya penerangan memakai tembaga minimal 1,5 mm2 dan stopkontak 2,5 mm2; periksa PUIL.",
+  "kategori": "kabel",
+  "kata_kunci": [
+   "penampang",
+   "kabel",
+   "standar",
+   "kabel"
+  ]
+ },
+ {
+  "judul": "Arus beban perkiraan cepat",
+  "isi": "Satu fasa 220 V: I = P / (V x cos phi), kira-kira 4,5 A per kW pada cos phi 1. Motor tiga fasa 380 V: kira-kira 2 A per kW. Hanya perkiraan awal; selalu cek pelat nama.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "arus",
+   "beban",
+   "perkiraan",
+   "cepat",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Inverter dan VSD",
+  "isi": "VSD menjaga V/f konstan sampai frekuensi dasar (50 Hz) sehingga torsi konstan; di atas itu daya konstan dan torsi turun. Isi parameter dari pelat nama motor, atur waktu ramp up/down, batas arus, dan frekuensi minimum. Kabel panjang motor butuh reaktor/filter dV/dt.",
+  "kategori": "motor",
+  "kata_kunci": [
+   "inverter",
+   "vsd",
+   "motor"
+  ]
+ },
+ {
+  "judul": "Forward-reverse dan bintang-segitiga kontrol",
+  "isi": "Forward-reverse: dua kontaktor dengan interlock (kontak NC saling silang) dan tukar dua fasa. Bintang-segitiga: kontaktor utama, bintang, segitiga; timer berpindah dari bintang ke segitiga setelah motor mendekati kecepatan nominal; bintang dan segitiga tidak boleh aktif bersamaan.",
+  "kategori": "motor",
+  "kata_kunci": [
+   "forward-reverse",
+   "bintang-segitiga",
+   "kontrol",
+   "motor"
+  ]
+ },
+ {
+  "judul": "Genset dan ATS",
+  "isi": "Kapasitas genset kVA = kW / cos phi (umumnya 0,8) dengan margin 20-25 persen; perhitungkan arus start motor terbesar. ATS memindahkan sumber PLN dan genset dengan interlock agar kedua sumber tidak pernah tersambung paralel. AMF menyalakan genset otomatis saat PLN padam.",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "genset",
+   "ats",
+   "sumber"
+  ]
+ },
+ {
+  "judul": "SPD dan penangkal petir",
+  "isi": "SPD tipe 1/2/3 melindungi dari lonjakan; pilih tegangan proteksi (Up) di bawah ketahanan peralatan, pasang dekat panel, dan sambungan ke tanah sependek mungkin. Penangkal petir eksternal: terminal udara, konduktor turun, pentanahan, dan ekuipotensial; sasaran tahanan pentanahan umumnya rendah (sekitar 5 ohm atau kurang), cek standar.",
+  "kategori": "proteksi",
+  "kata_kunci": [
+   "spd",
+   "penangkal",
+   "petir",
+   "proteksi"
+  ]
+ },
+ {
+  "judul": "Alat ukur listrik",
+  "isi": "Multimeter: V, A, ohm, kontinuitas. Clamp meter: arus tanpa memutus rangkaian. Megger (uji isolasi): umumnya 500 V DC untuk rangkaian tegangan rendah dan nilai minimal sekitar 1 Mohm menurut IEC 60364-6; putuskan sumber dan lepas beban elektronik sebelum menguji. Earth tester: tahanan pentanahan.",
+  "kategori": "ukur",
+  "kata_kunci": [
+   "alat",
+   "ukur",
+   "listrik",
+   "ukur"
+  ]
+ },
+ {
+  "judul": "Faktor kebutuhan dan diversitas",
+  "isi": "Daya kebutuhan = faktor kebutuhan x daya terpasang. Tidak semua beban menyala bersamaan, jadi kapasitas trafo/genset dihitung dari beban maksimum nyata, bukan jumlah semua beban.",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "faktor",
+   "kebutuhan",
+   "diversitas",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Denda kVARh PLN",
+  "isi": "Pelanggan industri umumnya dikenai biaya kelebihan kVARh bila cos phi di bawah sekitar 0,85. Pasang kapasitor bank otomatis (APFC) untuk menjaga di atas batas; periksa ketentuan kontrak terbaru.",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "denda",
+   "kvarh",
+   "pln",
+   "sumber"
+  ]
+ },
+ {
+  "judul": "SSR dan relai elektromekanik",
+  "isi": "SSR: tanpa bagian bergerak, cepat, senyap, tapi ada arus bocor dan panas (pakai heatsink). Relai elektromekanik: isolasi baik, tahan lonjakan, tetapi kontak aus. Pilih SSR untuk switching sering (pemanas, PID); relai untuk beban umum.",
+  "kategori": "kontrol",
+  "kata_kunci": [
+   "ssr",
+   "relai",
+   "elektromekanik",
+   "kontrol"
+  ]
+ },
+ {
+  "judul": "Sensor suhu",
+  "isi": "Termokopel: tahan suhu tinggi, tipe K umum, butuh kompensasi cold junction. RTD PT100: akurat dan stabil, 2/3/4 kabel (3 atau 4 kabel mengurangi kesalahan kabel). Termistor NTC: sangat sensitif, rentang sempit, tak linier.",
+  "kategori": "sensor",
+  "kata_kunci": [
+   "sensor",
+   "suhu",
+   "sensor"
+  ]
+ },
+ {
+  "judul": "Arduino dan ESP32",
+  "isi": "Arduino Uno: logika 5 V, arus per pin sebaiknya di bawah 20 mA (maksimum mutlak 40 mA). ESP32: logika 3,3 V, pin tidak toleran 5 V; pakai pembagi tegangan atau level shifter. Beban besar lewat transistor/MOSFET/relai, jangan langsung dari pin.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "arduino",
+   "esp32",
+   "elektronika"
+  ]
+ },
+ {
+  "judul": "Pull-up, pull-down, dan debounce",
+  "isi": "Pin input tak boleh mengambang: pakai pull-up atau pull-down (umumnya 4,7-10 kohm). Tombol mekanik memantul beberapa milidetik; atasi dengan kapasitor kecil atau debounce perangkat lunak sekitar 10-50 ms.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "pull-up",
+   "pull-down",
+   "debounce",
+   "elektronika"
+  ]
+ },
+ {
+  "judul": "UART, I2C, SPI",
+  "isi": "UART: TX/RX, kedua sisi harus baud sama. I2C: dua kabel SDA/SCL, alamat 7 bit, perlu pull-up (sekitar 4,7 kohm), banyak perangkat. SPI: MOSI, MISO, SCK, CS; cepat, satu CS per perangkat.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "uart",
+   "i2c",
+   "spi",
+   "elektronika"
+  ]
+ },
+ {
+  "judul": "Regulator tegangan",
+  "isi": "Linear (misal 7805): sederhana, disipasi P = (Vin - Vout) x I menjadi panas, Vin minimal sekitar 7 V untuk 5 V. Buck/switching: efisiensi tinggi, cocok beda tegangan besar, tapi ada riak dan derau; tambah kapasitor dan induktor sesuai datasheet.",
+  "kategori": "elektronika",
+  "kata_kunci": [
+   "regulator",
+   "tegangan",
+   "elektronika"
+  ]
+ },
+ {
+  "judul": "Baterai Li-ion",
+  "isi": "Sel Li-ion: nominal 3,7 V, penuh 4,2 V, batas bawah sekitar 3,0 V. Susunan 2S = 7,4 V. Wajib BMS (proteksi lebih-cas, lebih-buang, arus lebih, suhu). C-rate: 1C = arus yang menghabiskan kapasitas dalam 1 jam.",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "baterai",
+   "li-ion",
+   "sumber"
+  ]
+ },
+ {
+  "judul": "Pengisian aki timbal-asam",
+  "isi": "Aki 12 V VRLA: float sekitar 13,5-13,8 V, penyerapan sekitar 14,4-14,8 V (cek datasheet), kompensasi suhu bila perlu. Jangan buang melewati DoD yang dianjurkan; pengisian berlebih memendekkan umur.",
+  "kategori": "sumber",
+  "kata_kunci": [
+   "pengisian",
+   "aki",
+   "timbal-asam",
+   "sumber"
+  ]
+ },
+ {
+  "judul": "Motor stepper dan servo",
+  "isi": "Stepper 1,8 derajat per langkah = 200 langkah per putaran; microstepping memperhalus gerak tetapi torsi per langkah turun. Servo memakai umpan balik (encoder) sehingga posisi dan torsi terkontrol; butuh tuning.",
+  "kategori": "motor",
+  "kata_kunci": [
+   "motor",
+   "stepper",
+   "servo",
+   "motor"
+  ]
+ },
+ {
+  "judul": "Pneumatik dasar",
+  "isi": "Valve 3/2 untuk silinder kerja tunggal, 5/2 untuk kerja ganda. Tekanan kerja umum sekitar 6 bar. Pasang unit FRL (filter, regulator, lubrikator) dan atur kecepatan silinder dengan katup kontrol aliran di sisi buang.",
+  "kategori": "aktuator",
+  "kata_kunci": [
+   "pneumatik",
+   "dasar",
+   "aktuator"
+  ]
+ },
+ {
+  "judul": "Kontrol PID",
+  "isi": "u = Kp x e + Ki x integral(e) + Kd x de/dt. P mempercepat respons, I menghilangkan galat tunak, D meredam lonjakan. Tuning: mulai dari P saja, tambah I perlahan, D bila perlu; pakai anti-windup dan batas keluaran.",
+  "kategori": "kontrol",
+  "kata_kunci": [
+   "kontrol",
+   "pid",
+   "kontrol"
+  ]
+ },
+ {
+  "judul": "Timer dan counter PLC",
+  "isi": "Timer IEC: TON (tunda hidup), TOF (tunda mati), TP (pulsa). Counter: CTU (naik), CTD (turun), CTUD. Preset dan nilai berjalan disimpan di blok data instance; reset counter secara eksplisit.",
+  "kategori": "plc",
+  "kata_kunci": [
+   "timer",
+   "counter",
+   "plc",
+   "plc"
+  ]
+ },
+ {
+  "judul": "Skala sinyal analog PLC",
+  "isi": "Nilai teknik = Min + (raw - rawMin) / (rawMax - rawMin) x (Max - Min). Siemens S7-1200/1500 memetakan 4-20 mA ke 0-27648. Deteksi kabel putus saat arus di bawah sekitar 3,6 mA; beri alarm, bukan nilai nol.",
+  "kategori": "plc",
+  "kata_kunci": [
+   "skala",
+   "sinyal",
+   "analog",
+   "plc",
+   "plc"
+  ]
+ },
+ {
+  "judul": "Standar kelistrikan",
+  "isi": "PUIL 2011 (SNI 0225:2011) untuk instalasi di Indonesia. IEC 60364 instalasi tegangan rendah, IEC 61439 panel hubung bagi, IEC 60947 peralatan switching, IEC 61131-3 bahasa PLC. Rujuk edisi terbaru dan peraturan setempat.",
+  "kategori": "standar",
+  "kata_kunci": [
+   "standar",
+   "kelistrikan",
+   "standar"
+  ]
+ },
+ {
+  "judul": "Bahaya arus listrik pada tubuh",
+  "isi": "Kira-kira: 1 mA mulai terasa, sekitar 10 mA otot sulit melepas, 30 mA ke atas berisiko fibrilasi jantung bila cukup lama. Karena itu RCD 30 mA dipakai. Tegangan dan jalur arus menentukan akibat; semua tegangan harus dihormati.",
+  "kategori": "keselamatan",
+  "kata_kunci": [
+   "bahaya",
+   "arus",
+   "listrik",
+   "tubuh",
+   "keselamatan"
+  ]
+ },
+ {
+  "judul": "Pertolongan korban listrik",
+  "isi": "Matikan sumber tenaga atau lepas korban dengan benda kering non-konduktif; jangan sentuh langsung. Panggil bantuan medis, periksa napas dan nadi, lakukan RJP bila tidak bernapas. Korban tersengat tetap perlu diperiksa dokter.",
+  "kategori": "keselamatan",
+  "kata_kunci": [
+   "pertolongan",
+   "korban",
+   "listrik",
+   "keselamatan"
+  ]
+ },
+ {
+  "judul": "Daya pompa",
+  "isi": "P(kW) = Q(m3/jam) x H(m) / (367 x efisiensi). Q debit, H head total (termasuk rugi pipa). Tambahkan margin 10-20 persen untuk pemilihan motor.",
+  "kategori": "mekanik",
+  "kata_kunci": [
+   "daya",
+   "pompa",
+   "mekanik"
+  ]
+ },
+ {
+  "judul": "Hukum afinitas pompa dan kipas",
+  "isi": "Debit sebanding kecepatan (Q ~ n), head sebanding kuadrat (H ~ n^2), daya sebanding pangkat tiga (P ~ n^3). Menurunkan kecepatan 20 persen dengan VSD menurunkan daya sekitar separuh.",
+  "kategori": "mekanik",
+  "kata_kunci": [
+   "hukum",
+   "afinitas",
+   "pompa",
+   "kipas",
+   "mekanik"
+  ]
+ },
+ {
+  "judul": "Pemanas listrik",
+  "isi": "Energi panas Q = m x c x delta T; air c = 4,18 kJ/(kg.K). Daya P = m x c x delta T / (waktu x efisiensi). Contoh: 10 kg air naik 50 derajat dalam 1 jam, efisiensi 0,9: sekitar 0,64 kW.",
+  "kategori": "mekanik",
+  "kata_kunci": [
+   "pemanas",
+   "listrik",
+   "mekanik"
+  ]
+ },
+ {
+  "judul": "Pendingin ruangan (AC)",
+  "isi": "1 PK kira-kira 9.000 BTU/jam atau sekitar 2,6 kW pendinginan; daya listrik sekitar 0,7-0,9 kW untuk model non-inverter. Beban pendinginan bergantung luas, sinar matahari, dan penghuni.",
+  "kategori": "mekanik",
+  "kata_kunci": [
+   "pendingin",
+   "ruangan",
+   "mekanik"
+  ]
+ },
+ {
+  "judul": "Pencahayaan",
+  "isi": "Lux = lumen / m2. Kebutuhan umum: ruang kerja sekitar 300-500 lux. LED modern mencapai 100 lumen/W atau lebih. Jumlah lampu = (lux x luas) / (lumen per lampu x faktor pemanfaatan x faktor pemeliharaan).",
+  "kategori": "dasar",
+  "kata_kunci": [
+   "pencahayaan",
+   "dasar"
+  ]
+ },
+ {
+  "judul": "Pengaman termal kabel",
+  "isi": "Panas kabel P = I^2 x R x L. Kabel yang menghangat berarti arus mendekati batas KHA, kontak longgar, atau penampang kurang. Periksa sambungan dengan kamera termal secara berkala.",
+  "kategori": "kabel",
+  "kata_kunci": [
+   "pengaman",
+   "termal",
+   "kabel",
+   "kabel"
+  ]
  }
 ]

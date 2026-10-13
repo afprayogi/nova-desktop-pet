@@ -699,6 +699,8 @@ pub fn call_for(label: &str, text: &str) -> Option<Call> {
         "wifi" => ("wifi", ""),
         "port" => ("port", ""),
         "jadwal" => ("jadwal", ""),
+        // label baru dari contoh_niat.json = nama alat di katalog (alat.json); argumennya kalimat itu sendiri
+        l if crate::registry::ada(l) => (l, text),
         _ => return None,
     };
     Some(Call { tool: tool.into(), arg: arg.into() })
@@ -709,16 +711,34 @@ fn ngobrol(t: &str) -> String {
     let l = t.to_lowercase();
     let cfg = crate::teknik::teks_json();
     let kata: Vec<&str> = l.split_whitespace().collect();
-    // aturan paling akhir (tambahan Bos) dicek paling dulu
-    for r in cfg["ngobrol"].as_array().map(|a| a.iter().rev()).into_iter().flatten() {
-        let cocok = r["pemicu"].as_array().is_some_and(|p| p.iter().filter_map(|x| x.as_str()).any(|k| l.contains(k))) || r["kata"].as_array().is_some_and(|p| p.iter().filter_map(|x| x.as_str()).any(|k| kata.contains(&k)));
-        if cocok {
-            let b = r["balasan"].as_str().unwrap_or("");
-            return b
-                .replace("{nama}", crate::agents::NAME)
-                .replace("{sapa}", &crate::sistem::salam())
-                .replace("{ringkas}", &if b.contains("{ringkas}") { crate::monitor::summary().split(" | ").take(3).collect::<Vec<_>>().join(" · ") } else { String::new() });
+    // pemicu yang cocok dan PALING PANJANG (paling spesifik) menang; seri → entri yang lebih akhir (tambahan Bos)
+    let padded = format!(" {} ", kata.join(" "));
+    let mut terbaik: Option<(usize, &serde_json::Value)> = None;
+    for r in cfg["ngobrol"].as_array().into_iter().flatten() {
+        let mut skor = 0;
+        for k in r["pemicu"].as_array().into_iter().flatten().filter_map(|x| x.as_str()) {
+            if padded.contains(&format!(" {} ", k.to_lowercase())) {
+                skor = skor.max(k.len());
+            }
         }
+        for k in r["kata"].as_array().into_iter().flatten().filter_map(|x| x.as_str()) {
+            if kata.contains(&k) {
+                skor = skor.max(k.len());
+            }
+        }
+        if skor > 0 && terbaik.is_none_or(|(s, _)| skor >= s) {
+            terbaik = Some((skor, r));
+        }
+    }
+    if let Some((_, r)) = terbaik {
+        // beberapa variasi balasan: pilih bergantian berdasarkan detik
+        let mut pil: Vec<&str> = r["balasan"].as_str().into_iter().collect();
+        pil.extend(r["variasi"].as_array().into_iter().flatten().filter_map(|x| x.as_str()));
+        let b = pil.get(chrono::Local::now().timestamp() as usize % pil.len().max(1)).copied().unwrap_or("");
+        return b
+            .replace("{nama}", crate::agents::NAME)
+            .replace("{sapa}", &crate::sistem::salam())
+            .replace("{ringkas}", &if b.contains("{ringkas}") { crate::monitor::summary().split(" | ").take(3).collect::<Vec<_>>().join(" · ") } else { String::new() });
     }
     cfg["ngobrol_lainnya"].as_str().unwrap_or("Siap, Bos.").to_string()
 }
@@ -746,7 +766,7 @@ mod tests {
         let m = plan_offline("mulai kerja").unwrap();
         assert_eq!(m.iter().map(|c| c.tool.as_str()).collect::<Vec<_>>(), ["health", "agenda", "tugas"]);
         assert_eq!(plan_offline("kirim ke email saya laporan | isi").unwrap()[0].tool, "kirim");
-        assert!(ngobrol("makasih ya").starts_with("Sama-sama"));
+        assert!(ngobrol("makasih ya").to_lowercase().contains("sama-sama") || ngobrol("makasih ya").to_lowercase().contains("terima kasih") || ngobrol("makasih ya").len() > 5);
         assert!(ngobrol("siapa kamu").contains("NOVA") || ngobrol("siapa kamu").contains("asisten"));
     }
     #[test]

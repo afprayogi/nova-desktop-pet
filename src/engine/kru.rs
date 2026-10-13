@@ -14,6 +14,15 @@ fn daftar_peran() -> Vec<(String, String, String, String)> {
         .unwrap_or_default()
 }
 
+/// Boleh tidaknya `peran` memakai `tool` menurut `alat_boleh` / `alat_dilarang` di peran.json (kosong = bebas).
+fn izin(peran: &str, tool: &str) -> bool {
+    let d = crate::data::lapis("peran.json", PERAN_BAWAAN);
+    let Some(x) = d.as_array().and_then(|a| a.iter().find(|x| x["nama"].as_str().is_some_and(|n| n.eq_ignore_ascii_case(peran)))) else { return true };
+    let daftar = |k: &str| -> Vec<String> { x[k].as_array().into_iter().flatten().filter_map(|v| v.as_str().map(|s| s.to_lowercase())).collect() };
+    let (boleh, larang) = (daftar("alat_boleh"), daftar("alat_dilarang"));
+    !larang.iter().any(|t| t == tool) && (boleh.is_empty() || boleh.iter().any(|t| t == tool))
+}
+
 fn planner() -> String {
     let r: Vec<String> = daftar_peran().iter().map(|(n, _, t, _)| format!("{n} ({t})")).collect();
     format!("Kamu manajer kru asisten laptop. Pecah tujuan menjadi 2-4 tugas BERURUTAN (hasil tugas awal dipakai tugas berikutnya). Peran: {}. Peran penulis selalu terakhir. Balas HANYA JSON: {{\"tugas\":[{{\"peran\":\"peneliti\",\"deskripsi\":\"...\",\"hasil\":\"hasil yang diharapkan\"}}]}}", r.join(", "))
@@ -90,6 +99,10 @@ impl Engine {
                 }
                 if peran == "penulis" || !dipakai.insert((tool.clone(), arg.clone())) {
                     obs.push_str("(tidak bisa: penulis tanpa alat, atau alat+argumen itu sudah dipakai — beri final)\n");
+                    continue;
+                }
+                if !izin(peran, &tool) {
+                    obs.push_str(&format!("alat {tool} tidak diizinkan untuk peran {peran} (peran.json); pakai alat lain atau beri final.\n"));
                     continue;
                 }
                 let call = Call { tool: tool.clone(), arg: arg.clone() };

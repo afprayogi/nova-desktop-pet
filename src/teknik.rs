@@ -22,17 +22,67 @@ fn sinkron_dasar(c: &Connection) -> rusqlite::Result<()> {
     if c.query_row("SELECT v FROM meta WHERE k='dasar'", [], |r| r.get::<_, String>(0)).ok().as_deref() == Some(sig.as_str()) {
         return Ok(());
     }
-    c.execute("DELETE FROM kb WHERE src='bawaan'", [])?;
-    for e in v.as_array().into_iter().flatten() {
-        if let (Some(t), Some(b)) = (e["judul"].as_str(), e["isi"].as_str()) {
-            c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,'bawaan')", (t, b))?;
+    // satu transaksi: pembaca lain tidak boleh melihat pengetahuan dasar setengah terhapus
+    c.execute_batch("BEGIN IMMEDIATE")?;
+    let r = (|| -> rusqlite::Result<()> {
+        c.execute("DELETE FROM kb WHERE src='bawaan'", [])?;
+        for e in v.as_array().into_iter().flatten() {
+            if let (Some(t), Some(b)) = (e["judul"].as_str(), e["isi"].as_str()) {
+                let kunci = e["kata_kunci"].as_array().map(|k| k.iter().filter_map(|x| x.as_str()).collect::<Vec<_>>().join(" ")).unwrap_or_default();
+                let isi = if kunci.is_empty() { b.to_string() } else { format!("{b} (kata kunci: {kunci})") };
+                c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,'bawaan')", (t, &isi))?;
+            }
         }
+        c.execute("INSERT OR REPLACE INTO meta VALUES('dasar',?1)", [&sig])?;
+        Ok(())
+    })();
+    c.execute_batch(if r.is_ok() { "COMMIT" } else { "ROLLBACK" })?;
+    r
+}
+
+/// Pengetahuan tentang NOVA sendiri (alat, perintah, peran, kebijakan) dari data JSON → kb sumber `sistem:*`, agar NOVA bisa menjawab
+/// "apa yang bisa kamu lakukan / bagaimana memakai X" dari otaknya. Diselaraskan bila isi data berubah.
+fn sinkron_sistem(c: &Connection) -> rusqlite::Result<()> {
+    let alat = crate::data::lapis("alat.json", crate::registry::BAWAAN);
+    let teks = teks_json();
+    let peran = crate::data::lapis("peran.json", crate::engine_peran_bawaan());
+    let s = |v: &serde_json::Value| v.as_str().unwrap_or("").to_string();
+    let lst = |v: &serde_json::Value, n: usize| v.as_array().into_iter().flatten().filter_map(|x| x.as_str()).take(n).collect::<Vec<_>>().join(", ");
+    let mut docs: Vec<(String, String, String)> = vec![];
+    for t in alat["alat"].as_array().into_iter().flatten() {
+        let ctoh: Vec<String> = t["contoh"].as_array().into_iter().flatten().filter_map(|x| x["perintah"].as_str().map(String::from)).take(3).collect();
+        let p = &t["perilaku"];
+        docs.push((format!("Alat {}", s(&t["nama"])), format!("Alat {} {}: {}. Kategori: {}. Alias: {}. Cara memicu: {}. Risiko {}{}. Contoh: {}. Bisa dirangkai dengan: {}.", s(&t["nama"]), s(&t["arg"]), s(&t["deskripsi"]), s(&t["kategori"]), lst(&t["alias"], 4), lst(&t["pemicu_bahasa_alami"], 4), p["tingkat_risiko"].as_str().unwrap_or("-"), if p["butuh_persetujuan"].as_bool() == Some(true) { ", butuh persetujuan Bos" } else { "" }, ctoh.join("; "), lst(&t["rangkaian"]["dapat_dirangkai_dengan"], 6)), "sistem:alat".into()));
     }
-    c.execute("INSERT OR REPLACE INTO meta VALUES('dasar',?1)", [&sig])?;
-    Ok(())
+    for p in teks["perintah"].as_array().into_iter().flatten() {
+        docs.push((format!("Perintah {}", s(&p["nama"])), format!("Perintah {}: {}. Sintaks: {}. Contoh: {}.{}", s(&p["nama"]), s(&p["deskripsi"]), s(&p["sintaks"]), s(&p["contoh"]), if p["butuh_persetujuan"].as_bool() == Some(true) { " Butuh persetujuan." } else { "" }), "sistem:perintah".into()));
+    }
+    for r in peran.as_array().into_iter().flatten() {
+        docs.push((format!("Peran {}", s(&r["judul"])), format!("Peran {} ({}): {} {} Kemampuan: {}. Alat boleh: {}. Alat dilarang: {}.", s(&r["judul"]), s(&r["nama"]), s(&r["tugas"]), s(&r["latar"]), lst(&r["kemampuan"], 6), lst(&r["alat_boleh"], 12), lst(&r["alat_dilarang"], 8)), "sistem:peran".into()));
+    }
+    let k = &alat["kebijakan_global"];
+    let a = &alat["keamanan_standar"];
+    docs.push(("Kebijakan dan keamanan NOVA".into(), format!("Gaya: {}. Aksi berisiko: {}. Privasi: {}. Jalur yang ditolak: {}. Pola perintah yang ditolak: {}. Konfirmasi ulang bila: {}.", s(&k["gaya"]), s(&k["aksi_berisiko"]), lst(&k["privasi"], 6), lst(&a["tolak_jalur"], 10), lst(&a["tolak_pola_perintah"], 10), lst(&a["konfirmasi_ulang_jika"], 6)), "sistem:kebijakan".into()));
+    let sig = format!("{:x}", docs.iter().flat_map(|d| d.1.bytes()).fold(0xcbf29ce484222325u64, |h, b| (h ^ b as u64).wrapping_mul(0x100000001b3)));
+    c.execute_batch("CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT);")?;
+    if c.query_row("SELECT v FROM meta WHERE k='sistem'", [], |r| r.get::<_, String>(0)).ok().as_deref() == Some(sig.as_str()) {
+        return Ok(());
+    }
+    c.execute_batch("BEGIN IMMEDIATE")?;
+    let r = (|| -> rusqlite::Result<()> {
+        c.execute("DELETE FROM kb WHERE src LIKE 'sistem:%'", [])?;
+        for (t, b, src) in &docs {
+            c.execute("INSERT INTO kb(title,body,src) VALUES(?1,?2,?3)", (t, b.chars().take(900).collect::<String>(), src))?;
+        }
+        c.execute("INSERT OR REPLACE INTO meta VALUES('sistem',?1)", [&sig])?;
+        Ok(())
+    })();
+    c.execute_batch(if r.is_ok() { "COMMIT" } else { "ROLLBACK" })?;
+    r
 }
 
 fn seed(c: &Connection) -> rusqlite::Result<()> {
+    let _ = sinkron_sistem(c);
     // pengetahuan dasar selalu diselaraskan (Bos bisa menambah di otak/pengetahuan_dasar.json)
     let _ = sinkron_dasar(c);
     let count = |src: &str| c.query_row("SELECT COUNT(*) FROM kb WHERE src=?1", [src], |r| r.get::<_, i64>(0));
@@ -60,7 +110,24 @@ pub(crate) fn open() -> rusqlite::Result<Connection> {
     let c = Connection::open(config::otak_dir().join("pengetahuan.db"))?;
     c.busy_timeout(std::time::Duration::from_secs(10))?;
     c.execute_batch("CREATE VIRTUAL TABLE IF NOT EXISTS kb USING fts5(title, body, src UNINDEXED, tokenize='unicode61');")?;
-    seed(&c)?;
+    // Penyelarasan data dasar/sistem: satu thread sekaligus, paling sering tiap 30 detik (membuka basis data dipanggil sangat sering).
+    {
+        static TERAKHIR: std::sync::Mutex<Option<std::time::Instant>> = std::sync::Mutex::new(None);
+        let mut t = TERAKHIR.lock().unwrap_or_else(|e| e.into_inner());
+        if t.is_none_or(|x| x.elapsed().as_secs() > 30) {
+            // kalah berebut kunci dengan koneksi lain: coba lagi beberapa kali sebelum menyerah
+            let mut r = seed(&c);
+            for _ in 0..8 {
+                if r.is_ok() {
+                    break;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(250));
+                r = seed(&c);
+            }
+            r?;
+            *t = Some(std::time::Instant::now());
+        }
+    }
     // Sekali per proses: buang duplikat lama (akibat penanaman ganda sebelumnya).
     CLEAN.call_once(|| {
         let _ = c.execute_batch(
