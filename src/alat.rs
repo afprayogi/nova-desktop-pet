@@ -56,7 +56,9 @@ pub fn assess(c: &Call) -> Risk {
         "pelajari" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "pelajari" | "kurikulum" => Risk::Safe,
         "kirim" => Risk::Confirm("mengirim email ke alamat Bos sendiri".into()),
-        "otak" | "grafik" => Risk::Safe,
+        "otak" | "grafik" | "bantuan" | "dns" | "diagnosa" | "validasi" | "pomodoro" => Risk::Safe,
+        "hash" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Confirm("path tampak sensitif".into()),
+        "hash" => Risk::Safe,
         "cariisi" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Confirm("path tampak sensitif".into()),
         "cariisi" | "github" | "tunggu" => Risk::Safe,
         "kompres" if SENSITIVE.iter().any(|x| arg.contains(x)) => Risk::Block("path sensitif tidak dikompres".into()),
@@ -272,6 +274,71 @@ pub async fn run(c: &Call, http: &reqwest::Client) -> String {
             tokio::task::spawn_blocking(move || crate::alatbaru::kompres(&a)).await.unwrap_or_default()
         }
         "grafik" => tokio::task::spawn_blocking(crate::grafik::hari_ini).await.unwrap_or_default(),
+        "bantuan" => {
+            // bantuan alat: cocokkan kata di argumen dengan nama/alias alat di katalog (alat.json), lalu tampilkan sintaks dan contohnya
+            let l = arg.to_lowercase();
+            let kat = crate::data::lapis("alat.json", crate::registry::BAWAAN);
+            let hit = kat["alat"].as_array().and_then(|a| a.iter().find(|t| {
+                let n = t["nama"].as_str().unwrap_or("");
+                !n.is_empty() && l.split(|c: char| !c.is_alphanumeric() && c != '/').any(|w| w == n || t["alias"].as_array().is_some_and(|al| al.iter().any(|x| x.as_str() == Some(w))))
+            }));
+            match hit {
+                Some(t) => {
+                    let contoh: Vec<&str> = t["contoh"].as_array().into_iter().flatten().filter_map(|x| x["perintah"].as_str()).take(3).collect();
+                    format!("🛠 {} {}: {}
+Cara memicu: {}
+Contoh: {}
+Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or(""), t["deskripsi"].as_str().unwrap_or(""), t["pemicu_bahasa_alami"].as_array().into_iter().flatten().filter_map(|x| x.as_str()).take(3).collect::<Vec<_>>().join("; "), contoh.join("; "), t["perilaku"]["tingkat_risiko"].as_str().unwrap_or("-"), if t["perilaku"]["butuh_persetujuan"].as_bool() == Some(true) { " (butuh persetujuan Bos)" } else { "" })
+                }
+                None => crate::cli::find(arg),
+            }
+        }
+        "diagnosa" => crate::internet::laporan(http).await,
+        "pomodoro" => crate::widget::aksi(&serde_json::json!({"aksi": "fokus_mulai", "menit": arg.split_whitespace().find_map(|w| w.parse::<u32>().ok()).unwrap_or(25).clamp(5, 120)})),
+        "dns" => {
+            let host = arg.trim().trim_start_matches("https://").trim_start_matches("http://").split('/').next().unwrap_or("").to_string();
+            tokio::task::spawn_blocking(move || {
+                use std::net::ToSocketAddrs;
+                if host.is_empty() || host.len() > 253 || !host.chars().all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-') {
+                    return "Sebut nama domain yang valid, mis. dns example.com".to_string();
+                }
+                match (host.as_str(), 80).to_socket_addrs() {
+                    Ok(a) => format!("{host} → {}", a.map(|x| x.ip().to_string()).collect::<std::collections::BTreeSet<_>>().into_iter().collect::<Vec<_>>().join(", ")),
+                    Err(e) => format!("DNS gagal untuk {host}: {e}"),
+                }
+            })
+            .await
+            .unwrap_or_default()
+        }
+        "validasi" => {
+            let a = arg.trim().trim_matches('"').to_string();
+            tokio::task::spawn_blocking(move || {
+                let teks = if std::path::Path::new(&a).is_file() { std::fs::read_to_string(&a).unwrap_or_default() } else { a.clone() };
+                match serde_json::from_str::<serde_json::Value>(&teks) {
+                    Ok(_) => "JSON valid ✔".to_string(),
+                    Err(e) => format!("JSON tidak valid: {e}"),
+                }
+            })
+            .await
+            .unwrap_or_default()
+        }
+        "hash" => {
+            let a = arg.trim().trim_matches('"').to_string();
+            tokio::task::spawn_blocking(move || {
+                use sha2::{Digest, Sha256};
+                let (nama, bytes) = if std::path::Path::new(&a).is_file() {
+                    match std::fs::metadata(&a) {
+                        Ok(m) if m.len() > 500_000_000 => return "Berkas terlalu besar (>500 MB).".to_string(),
+                        _ => (a.clone(), std::fs::read(&a).unwrap_or_default()),
+                    }
+                } else {
+                    ("teks".to_string(), a.clone().into_bytes())
+                };
+                format!("SHA-256 ({nama}): {}", Sha256::digest(&bytes).iter().map(|b| format!("{b:02x}")).collect::<String>())
+            })
+            .await
+            .unwrap_or_default()
+        }
         "otak" => tokio::task::spawn_blocking(crate::otak::teks).await.unwrap_or_default(),
         "paket" if arg.contains("tangkap") => crate::paket::tangkap(15).await,
         "paket" => crate::paket::teks_monitor(&crate::paket::monitor().await),

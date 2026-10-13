@@ -44,7 +44,12 @@ fn isi() -> Arc<Isi> {
                     if n.is_empty() || !n.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_') {
                         return None;
                     }
-                    let r = match crate::alat::assess(&crate::alat::Call { tool: n.clone(), arg: "x".into() }) {
+                    let probe = crate::alat::assess(&crate::alat::Call { tool: n.clone(), arg: "x".into() });
+                    // alat yang ada di katalog tetapi belum diimplementasikan tidak ditawarkan ke model
+                    if matches!(&probe, crate::alat::Risk::Block(r) if r.starts_with("alat tidak dikenal")) {
+                        return None;
+                    }
+                    let r = match probe {
                         crate::alat::Risk::Safe => "aman",
                         crate::alat::Risk::Confirm(_) => "butuh persetujuan",
                         crate::alat::Risk::Block(_) => "bergantung argumen", // probe "x" ditolak validasi argumen, bukan alatnya
