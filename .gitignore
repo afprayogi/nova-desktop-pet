@@ -9,3 +9,7 @@ otak/*.db-wal
 otak/*.db-shm
 api.token
 .env
+
+# data pribadi: riwayat obrolan & catatan tidak boleh ikut ke git
+otak/memori.db
+otak/*.bawaan.json

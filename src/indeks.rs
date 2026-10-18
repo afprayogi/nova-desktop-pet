@@ -344,7 +344,7 @@ pub fn reveal(n: usize) -> String {
 
 /// Ekstensi yang aman dibuka langsung dengan aplikasi bawaannya (dokumen, gambar, media, desain). Yang bisa dieksekusi
 /// (exe, bat, ps1, msi, ...) tidak pernah dibuka otomatis.
-const SAFE_OPEN: &[&str] = &["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "md", "csv", "rtf", "odt", "png", "jpg", "jpeg", "gif", "bmp", "webp", "svg", "drawio", "dwg", "dxf", "mp3", "wav", "flac", "m4a", "mp4", "mkv", "avi", "mov", "json", "xml", "log", "html", "ini", "yaml", "yml", "toml", "rs", "py", "js", "ts", "c", "cpp", "h", "cs", "java", "sql", "ino", "plc"];
+pub(crate) const SAFE_OPEN: &[&str] = &["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "md", "csv", "rtf", "odt", "png", "jpg", "jpeg", "gif", "bmp", "webp", "svg", "drawio", "dwg", "dxf", "mp3", "wav", "flac", "m4a", "mp4", "mkv", "avi", "mov", "json", "xml", "log", "html", "ini", "yaml", "yml", "toml", "rs", "py", "js", "ts", "c", "cpp", "h", "cs", "java", "sql", "ino", "plc"];
 
 /// Buka berkas hasil ke-n LANGSUNG dengan aplikasi bawaannya (hanya ekstensi aman); selain itu tunjukkan foldernya.
 pub fn open_file(n: usize) -> String {

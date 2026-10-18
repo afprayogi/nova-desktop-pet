@@ -108,6 +108,11 @@ pub fn load() -> Config {
         .and_then(|s| serde_json::from_str(&s).ok())
         .unwrap_or_default();
     if c.api_key.is_empty() {
+        if let Some(k) = std::fs::read_to_string(key_path()).ok().and_then(|e| crate::secure::unprotect(e.trim())) {
+            c.api_key = k;
+        }
+    }
+    if c.api_key.is_empty() {
         if let Ok(k) = std::env::var("OMNIROUTE_API_KEY") {
             c.api_key = k;
         }
@@ -115,8 +120,21 @@ pub fn load() -> Config {
     c
 }
 
+/// Key disimpan terenkripsi DPAPI di berkas terpisah; config.json tidak lagi memuat key (jika enkripsi gagal, key tetap di JSON).
+fn key_path() -> PathBuf {
+    data_dir().join("omni.key")
+}
+
 pub fn save(c: &Config) {
-    if let Ok(s) = serde_json::to_string_pretty(c) {
+    let mut out = c.clone();
+    if !c.api_key.is_empty() {
+        if let Some(enc) = crate::secure::protect(&c.api_key) {
+            if std::fs::write(key_path(), enc).is_ok() {
+                out.api_key.clear();
+            }
+        }
+    }
+    if let Ok(s) = serde_json::to_string_pretty(&out) {
         let _ = std::fs::write(path(), s);
     }
 }

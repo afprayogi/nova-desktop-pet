@@ -73,8 +73,8 @@ pub async fn halaman(http: &reqwest::Client, url: &str) -> String {
     if !url.starts_with("http") {
         return "Beri URL lengkap, mis. ringkas halaman https://contoh.com/artikel".into();
     }
-    let body = match http.get(url).timeout(std::time::Duration::from_secs(15)).header("user-agent", "Mozilla/5.0 NOVA").send().await {
-        Ok(r) => r.text().await.unwrap_or_default(),
+    let body = match crate::alat::ambil_publik(url).await {
+        Ok(t) => t,
         Err(e) => return format!("Gagal membuka halaman: {e}"),
     };
     let title = body.split("<title>").nth(1).and_then(|t| t.split("</title>").next()).unwrap_or("").trim().to_string();

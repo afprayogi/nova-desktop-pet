@@ -31,8 +31,8 @@ const SENSITIVE: &[&str] = &[".ssh", "id_rsa", ".aws", ".env", "passwd", "shadow
 
 /// Perintah shell yang hanya membaca (tanpa pengalihan/penyambungan perintah) tidak perlu persetujuan.
 fn shell_readonly(a: &str) -> bool {
-    if a.chars().any(|c| ">&;`
-".contains(c)) || a.contains("$(") {
+    // Daftar putih: | || < > & ^ % ( ) ; ` $ dan baris baru bisa menyambung/menyisipkan perintah lain di cmd.exe.
+    if !a.chars().all(|c| c.is_alphanumeric() || " ._:\\/=-\"*?,+@".contains(c)) {
         return false;
     }
     let a = a.trim();
@@ -40,7 +40,31 @@ fn shell_readonly(a: &str) -> bool {
     if ["dir", "ls", "type", "cat", "echo", "whoami", "hostname", "ipconfig", "ping", "tasklist", "systeminfo", "where", "ver", "date", "tree", "findstr", "get-childitem", "get-content", "get-process", "get-date", "netstat", "nslookup", "tracert"].contains(&first) {
         return true;
     }
-    first == "git" && ["status", "log", "diff", "branch", "show", "remote", "--version"].contains(&a.split_whitespace().nth(1).unwrap_or(""))
+    if first != "git" {
+        return false;
+    }
+    // git hanya membaca: `branch -D`, `remote add`, `--output=file`, `--ext-diff` mengubah/menulis sesuatu.
+    let mut it = a.split_whitespace().skip(1);
+    match it.next() {
+        Some("--version") | Some("status") => true,
+        Some("branch") => it.all(|x| matches!(x, "--list" | "-a" | "-r" | "-v" | "-vv")),
+        Some("remote") => it.all(|x| x == "-v"),
+        Some("log") | Some("diff") | Some("show") => !a.contains("--output") && !a.contains("--ext-diff") && !a.contains("--textconv"),
+        _ => false,
+    }
+}
+
+/// Path yang akan dibuka berpotensi dieksekusi (exe/bat/lnk/vbs/js/msi...) atau bertipe tak dikenal.
+fn buka_berisiko(arg: &str) -> bool {
+    let a = arg.trim();
+    if !a.contains(['/', '\\', ':', '.']) {
+        return false; // nama aplikasi: dicari di menu Start/PATH
+    }
+    let p = std::path::Path::new(a);
+    match p.extension().and_then(|e| e.to_str()) {
+        Some(e) => !crate::indeks::SAFE_OPEN.contains(&e.to_lowercase().as_str()),
+        None => !p.is_dir(),
+    }
 }
 
 pub fn assess(c: &Call) -> Risk {
@@ -93,7 +117,11 @@ pub fn assess(c: &Call) -> Risk {
             if c.arg.chars().any(|ch| if url { "&|<>^\"'\n ".contains(ch) } else { "&|<>^\"%'\n".contains(ch) }) {
                 Risk::Block("target open memuat karakter terlarang".into())
             } else {
-                Risk::Safe // membuka tidak mengubah data; karakter berbahaya sudah diblokir di atas
+                if !url && buka_berisiko(&c.arg) {
+                    Risk::Confirm("membuka berkas yang bisa dieksekusi atau bertipe tak dikenal".into())
+                } else {
+                    Risk::Safe
+                }
             }
         }
         t => Risk::Block(format!("alat tidak dikenal: {t}")),
@@ -112,6 +140,70 @@ fn tampil_url(u: &str) -> String {
         }
         None => host.to_string(),
     }
+}
+
+fn publik(ip: &std::net::IpAddr) -> bool {
+    use std::net::IpAddr;
+    match ip {
+        IpAddr::V4(v) => {
+            let o = v.octets();
+            !(v.is_loopback() || v.is_private() || v.is_link_local() || v.is_unspecified() || v.is_broadcast() || (o[0] == 100 && (64..128).contains(&o[1])))
+        }
+        IpAddr::V6(v) => {
+            let s = v.segments();
+            !(v.is_loopback() || v.is_unspecified() || (s[0] & 0xfe00) == 0xfc00 || (s[0] & 0xffc0) == 0xfe80 || v.to_ipv4_mapped().is_some_and(|x| !publik(&IpAddr::V4(x))))
+        }
+    }
+}
+
+/// Alat web hanya untuk internet publik: tolak localhost, jaringan privat, dan link-local (API NOVA sendiri, router, metadata).
+// shortcut: DNS dicek sebelum permintaan; DNS rebinding antar-pemeriksaan tidak ditangani. Naikkan bila NOVA dipasang di server.
+pub async fn url_publik(url: &str) -> Result<(), String> {
+    use std::net::IpAddr;
+    let u = reqwest::Url::parse(url.trim()).map_err(|_| "URL tidak valid".to_string())?;
+    if !matches!(u.scheme(), "http" | "https") {
+        return Err("hanya URL http(s)".into());
+    }
+    let host = u.host_str().ok_or("URL tanpa host")?.trim_matches(['[', ']']).to_string();
+    let ips: Vec<IpAddr> = match host.parse::<IpAddr>() {
+        Ok(ip) => vec![ip],
+        Err(_) if host == "localhost" || host.ends_with(".localhost") => return Err("alamat lokal tidak diizinkan".into()),
+        Err(_) => tokio::net::lookup_host((host.as_str(), u.port_or_known_default().unwrap_or(80))).await.map_err(|e| format!("DNS gagal: {e}"))?.map(|a| a.ip()).collect(),
+    };
+    if ips.is_empty() || ips.iter().any(|ip| !publik(ip)) {
+        return Err("alamat lokal/privat tidak diizinkan untuk alat web".into());
+    }
+    Ok(())
+}
+
+/// GET dengan redirect manual (tiap lompatan dicek publik) dan isi dibatasi 1 MB agar RAM laptop aman.
+pub async fn ambil_publik(url: &str) -> Result<String, String> {
+    const MAKS: usize = 1_048_576;
+    let http = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::none())
+        .timeout(Duration::from_secs(15))
+        .user_agent("Mozilla/5.0 NOVA")
+        .build()
+        .map_err(|e| e.to_string())?;
+    let mut cur = url.trim().to_string();
+    for _ in 0..5 {
+        url_publik(&cur).await?;
+        let mut r = http.get(&cur).send().await.map_err(|e| e.to_string())?;
+        if r.status().is_redirection() {
+            let loc = r.headers().get("location").and_then(|v| v.to_str().ok()).ok_or("redirect tanpa tujuan")?;
+            cur = reqwest::Url::parse(&cur).and_then(|b| b.join(loc)).map_err(|e| e.to_string())?.to_string();
+            continue;
+        }
+        let mut buf: Vec<u8> = Vec::new();
+        while let Some(ch) = r.chunk().await.map_err(|e| e.to_string())? {
+            buf.extend_from_slice(&ch);
+            if buf.len() >= MAKS {
+                break;
+            }
+        }
+        return Ok(String::from_utf8_lossy(&buf).into_owned());
+    }
+    Err("terlalu banyak redirect".into())
 }
 
 fn cut(s: &str, n: usize) -> String {
@@ -453,11 +545,8 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
             Ok(b) => String::from_utf8_lossy(&b[..b.len().min(20_000)]).to_string(),
             Err(e) => format!("gagal: {e}"),
         },
-        "fetch" => match http.get(arg).send().await {
-            Ok(r) => match r.text().await {
-                Ok(t) => strip_tags(&t),
-                Err(e) => format!("gagal: {e}"),
-            },
+        "fetch" => match ambil_publik(arg).await {
+            Ok(t) => strip_tags(&t),
             Err(e) => format!("gagal: {e}"),
         },
         "shell" => sh(arg).await,
@@ -905,6 +994,19 @@ mod tests {
         assert!(matches!(assess(&c("shell", "type C:/u/.ssh/id_rsa")), Risk::Confirm(_)));
         assert!(matches!(assess(&c("shell", "dir > a.txt")), Risk::Confirm(_)));
         assert!(matches!(assess(&c("shell", "rm -rf /")), Risk::Block(_)));
+        assert!(matches!(assess(&c("shell", "echo x | powershell -")), Risk::Confirm(_)));
+        assert!(matches!(assess(&c("shell", "dir nonexist || del a.txt")), Risk::Confirm(_)));
+        assert!(matches!(assess(&c("shell", "git branch -D kerja")), Risk::Confirm(_)));
+        assert!(matches!(assess(&c("shell", "git diff --output=x.txt")), Risk::Confirm(_)));
+        assert!(matches!(assess(&c("shell", "git status")), Risk::Safe));
+        assert!(matches!(assess(&c("shell", "dir \"C:\\Program Files\"")), Risk::Safe));
+        assert!(matches!(assess(&c("open", "C:/Users/me/Downloads/setup.exe")), Risk::Confirm(_)));
+        assert!(matches!(assess(&c("open", "C:/Users/me/Documents/laporan.pdf")), Risk::Safe));
+        assert!(matches!(assess(&c("open", "calc")), Risk::Safe));
+        for ip in ["127.0.0.1", "10.0.0.5", "192.168.1.1", "172.20.0.1", "169.254.169.254", "::1", "fd00::1", "0.0.0.0"] {
+            assert!(!publik(&ip.parse().unwrap()), "{ip}");
+        }
+        assert!(publik(&"8.8.8.8".parse().unwrap()));
         assert!(matches!(assess(&c("read", "C:/u/.ssh/id_rsa")), Risk::Confirm(_)));
         assert!(matches!(assess(&c("open", "a&calc")), Risk::Block(_)));
         assert!(matches!(assess(&c("xx", "")), Risk::Block(_)));
@@ -930,5 +1032,13 @@ Cuaca hari ini cerah sekali di kota bandung dan sekitarnya. Ownership di Rust me
     fn json_extraction() {
         assert!(parse_json("ok {\"a\":1} bye").is_some());
         assert!(parse_json("tanpa json").is_none());
+    }
+
+    #[tokio::test]
+    async fn alat_web_menolak_alamat_lokal() {
+        for u in ["http://127.0.0.1:47831/ui", "http://localhost/ui", "http://[::1]/", "http://192.168.1.1/", "http://169.254.169.254/latest", "file:///C:/x"] {
+            assert!(url_publik(u).await.is_err(), "{u}");
+        }
+        assert!(url_publik("http://8.8.8.8/").await.is_ok());
     }
 }

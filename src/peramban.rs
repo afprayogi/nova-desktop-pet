@@ -24,6 +24,9 @@ pub async fn baca(url: &str) -> String {
     if !(url.starts_with("http://") || url.starts_with("https://")) || url.contains(['"', ' ']) {
         return "Beri URL http(s) yang valid, mis. 'baca dengan chrome https://example.com'.".into();
     }
+    if let Err(e) = crate::alat::url_publik(url).await {
+        return format!("Tidak dibuka: {e}.");
+    }
     let Some(exe) = chrome() else { return "Chrome/Edge tidak ditemukan.".into() };
     let prof = std::env::temp_dir().join("nova-chrome");
     let mut cmd = tokio::process::Command::new(exe);

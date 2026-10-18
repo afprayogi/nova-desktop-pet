@@ -100,6 +100,7 @@ pub fn lint_text(ext: &str, text: &str) -> Vec<Issue> {
     match ext {
         "py" => {
             let def = Regex::new(r"^\s*(?:async\s+)?(?:def|class)\s+([A-Za-z_]\w*)").unwrap();
+            let mutdef = Regex::new(r"def\s+\w+\(.*=\s*(\[\]|\{\})").unwrap();
             for (i, l) in lines.iter().enumerate() {
                 if let Some(c) = def.captures(l) {
                     let name = &c[1];
@@ -122,7 +123,7 @@ pub fn lint_text(ext: &str, text: &str) -> Vec<Issue> {
                 if t == "except:" || t.starts_with("except:") {
                     v.push(issue(i + 1, "'except:' kosong menelan semua error; sebut tipe exception-nya"));
                 }
-                if Regex::new(r"def\s+\w+\(.*=\s*(\[\]|\{\})").unwrap().is_match(l) {
+                if mutdef.is_match(l) {
                     v.push(issue(i + 1, "argumen default mutable ([] atau {}) dibagi antar pemanggilan"));
                 }
             }

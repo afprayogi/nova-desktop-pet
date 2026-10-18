@@ -197,9 +197,6 @@ fn ui_age() -> f32 {
 }
 
 async fn pet(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<PetDto>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
     if headers.contains_key("x-nova-ui") {
         if let Ok(mut g) = LAST_UI.lock() {
             *g = Some(Instant::now());
@@ -264,10 +261,7 @@ async fn pet(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<Pe
 }
 
 /// Soal tes BEC hari ini (hanya bila memang waktunya).
-async fn bec_test(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<crate::bec::TestSet>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn bec_test() -> Result<Json<crate::bec::TestSet>, StatusCode> {
     if crate::bec::due() { Ok(Json(crate::bec::build_test())) } else { Err(StatusCode::NOT_FOUND) }
 }
 
@@ -277,18 +271,12 @@ struct AdReport {
 }
 
 /// Laporan iklan dari ekstensi browser.
-async fn post_ad(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Json<AdReport>) -> StatusCode {
-    if !authorized(&headers, &s) {
-        return StatusCode::UNAUTHORIZED;
-    }
+async fn post_ad(Json(r): Json<AdReport>) -> StatusCode {
     crate::adblock::report_external(&r.host.chars().take(120).collect::<String>());
     StatusCode::OK
 }
 
-async fn post_cmd(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(c): Json<Cmd>) -> StatusCode {
-    if !authorized(&headers, &s) {
-        return StatusCode::UNAUTHORIZED;
-    }
+async fn post_cmd(State(s): State<Arc<Shared>>, Json(c): Json<Cmd>) -> StatusCode {
     let _ = s.cmd.send(c);
     StatusCode::OK
 }
@@ -319,10 +307,7 @@ struct OmniReq {
 }
 
 /// Bedah satu kalimat TANPA menjalankannya: tiap tahap pemahaman NOVA dan siapa yang akhirnya memutuskan. `?llm=1` menambah rencana Llama lokal.
-async fn bedah_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn bedah_get(axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
     let t = q.get("q").cloned().unwrap_or_default();
     if t.trim().is_empty() {
         return Ok(Json(serde_json::json!({"galat": "kalimat kosong"})));
@@ -368,18 +353,12 @@ async fn bedah_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extra
     Ok(Json(json!({"norm": norm, "ajar": ajar, "aturan": dasar, "semantik": sem, "semantik_jelas": sem_jelas, "ml": ml, "cadangan": cad, "llm": llm, "keputusan": keputusan})))
 }
 
-async fn ajar_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn ajar_get() -> Result<Json<serde_json::Value>, StatusCode> {
     Ok(Json(serde_json::json!({"aturan": crate::ajar::daftar(), "alat": crate::gemini::tool_names()})))
 }
 
 /// Ajarkan aturan baru `{pola, alat, arg}` atau hapus `{hapus: indeks}`.
-async fn ajar_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn ajar_post(Json(r): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
     if let Some(i) = r["hapus"].as_u64() {
         return Ok(Json(serde_json::json!({"ok": crate::ajar::hapus(i as usize)})));
     }
@@ -391,40 +370,25 @@ async fn ajar_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Js
 }
 
 /// Daftar alat berskema (bentuk MCP `tools/list`).
-async fn putusan_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn putusan_get() -> Result<Json<serde_json::Value>, StatusCode> {
     Ok(Json(serde_json::to_value(crate::putusan::daftar()).unwrap_or_default()))
 }
 
 /// `{i, aksi: setuju|tolak|hapus}` atas putusan tersimpan.
-async fn putusan_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn putusan_post(Json(r): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
     let ok = crate::putusan::aksi(r["i"].as_u64().unwrap_or(u64::MAX) as usize, r["aksi"].as_str().unwrap_or(""));
     Ok(Json(serde_json::json!({"ok": ok})))
 }
 
-async fn alat_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn alat_get() -> Result<Json<serde_json::Value>, StatusCode> {
     Ok(Json(crate::registry::mcp()))
 }
 
-async fn graf_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn graf_get() -> Result<Json<serde_json::Value>, StatusCode> {
     Ok(Json(tokio::task::spawn_blocking(|| crate::graf::json(350)).await.unwrap_or_default()))
 }
 
-async fn otak_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn otak_get(axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
     if q.contains_key("belajar") {
         let _ = tokio::task::spawn_blocking(|| crate::otak::harian(true)).await;
     }
@@ -434,10 +398,7 @@ async fn otak_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extrac
 }
 
 /// Monitor koneksi (tanpa admin). `?tangkap=1` menangkap paket ±15 dtk (Windows meminta UAC).
-async fn paket_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn paket_get(axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
     if q.contains_key("tangkap") {
         return Ok(Json(serde_json::json!({"tangkap": crate::paket::tangkap(15).await})));
     }
@@ -445,10 +406,7 @@ async fn paket_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extra
 }
 
 /// Diagnosa jalur internet untuk dasbor. `?baru=1` memeriksa ulang (±15 dtk); tanpa itu mengembalikan hasil terakhir bila ada.
-async fn internet_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn internet_get(axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Result<Json<serde_json::Value>, StatusCode> {
     let r = match crate::internet::terakhir() {
         Some(r) if !q.contains_key("baru") => r,
         _ => crate::internet::periksa(&crate::research::client(10)).await,
@@ -456,18 +414,12 @@ async fn internet_get(State(s): State<Arc<Shared>>, headers: HeaderMap, axum::ex
     Ok(Json(serde_json::to_value(r).unwrap_or_default()))
 }
 
-async fn omni_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn omni_get() -> Result<Json<serde_json::Value>, StatusCode> {
     Ok(Json(crate::omniroute::status()))
 }
 
 /// Simpan URL/key OmniRoute lalu pindai & uji model otomatis. Key tidak pernah masuk riwayat obrolan.
-async fn omni_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Json<OmniReq>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) || !local_host(&headers) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn omni_post(Json(r): Json<OmniReq>) -> Result<Json<serde_json::Value>, StatusCode> {
     if r.hapus {
         crate::omniroute::clear();
         return Ok(Json(serde_json::json!({"ok": true, "pesan": "OmniRoute dihapus."})));
@@ -482,10 +434,7 @@ async fn omni_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(r): Js
     }
 }
 
-async fn widget_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn widget_get(State(s): State<Arc<Shared>>) -> Result<Json<serde_json::Value>, StatusCode> {
     let (cpu, ram_u, ram_t, disk_u, disk_t) = {
         let h = s.snap.lock().unwrap_or_else(|e| e.into_inner()).health.clone().unwrap_or_default();
         (h.cpu, h.ram_used_mb, h.ram_total_mb.max(1), h.disk_used_gb, h.disk_total_gb.max(1))
@@ -495,18 +444,12 @@ async fn widget_get(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<
     Ok(Json(v))
 }
 
-async fn widget_post(State(s): State<Arc<Shared>>, headers: HeaderMap, Json(a): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) || !local_host(&headers) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+async fn widget_post(Json(a): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, StatusCode> {
     let pesan = tokio::task::spawn_blocking(move || crate::widget::aksi(&a)).await.unwrap_or_default();
     Ok(Json(serde_json::json!({"pesan": pesan})))
 }
 
 async fn stats(State(s): State<Arc<Shared>>, headers: HeaderMap) -> Result<Json<serde_json::Value>, StatusCode> {
-    if !authorized(&headers, &s) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
     if headers.contains_key("x-nova-ui") {
         if let Ok(mut g) = LAST_UI.lock() {
             *g = Some(Instant::now());
@@ -559,6 +502,14 @@ pub fn token_path() -> std::path::PathBuf {
     config::data_dir().join("api.token")
 }
 
+/// Satu pintu untuk semua /api/*: token + Host lokal. Handler baru otomatis terlindungi.
+async fn jaga(State(s): State<Arc<Shared>>, req: axum::extract::Request, next: axum::middleware::Next) -> Response {
+    if req.uri().path().starts_with("/api/") && !(authorized(req.headers(), &s) && local_host(req.headers())) {
+        return StatusCode::UNAUTHORIZED.into_response();
+    }
+    next.run(req).await
+}
+
 pub async fn serve(cfg: Config, port: u16) -> anyhow::Result<()> {
     // Token dipertahankan antar-restart agar ekstensi browser yang sudah terpasang tetap berlaku.
     let token: String = match std::fs::read_to_string(token_path()) {
@@ -580,7 +531,7 @@ pub async fn serve(cfg: Config, port: u16) -> anyhow::Result<()> {
             s2.snap.lock().unwrap_or_else(|e| e.into_inner()).apply(&e);
         }
     });
-    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/alat", get(alat_get)).route("/api/putusan", get(putusan_get).post(putusan_post)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).with_state(shared);
+    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/alat", get(alat_get)).route("/api/putusan", get(putusan_get).post(putusan_post)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).layer(axum::middleware::from_fn_with_state(shared.clone(), jaga)).with_state(shared);
     let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
     axum::serve(listener, app).await?;
     Ok(())
