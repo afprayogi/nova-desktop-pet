@@ -25,8 +25,9 @@ async fn get(http: &reqwest::Client, url: &str) -> Result<Value, String> {
 /// Kota dari kalimat ("cuaca di bandung besok" → bandung); tanpa kota: kota jadwal sholat bila ada, jika tidak Jakarta.
 fn kota_dari(text: &str) -> String {
     let l = text.to_lowercase();
-    let after = l.split(" di ").nth(1).or_else(|| l.strip_prefix("cuaca ")).unwrap_or("");
-    let c: Vec<&str> = after.split_whitespace().filter(|w| !["hari", "ini", "besok", "sekarang", "nanti", "lusa", "bagaimana", "gimana", "apa", "kah", "saat", "kota", "ya", "dong", "?"].contains(w)).collect();
+    // Tanpa " di " atau awalan "cuaca " (mis. alat dipanggil perencana/jadwal dengan arg "Jakarta"): seluruh teks dianggap kota.
+    let after = l.split(" di ").nth(1).or_else(|| l.strip_prefix("cuaca ")).unwrap_or(l.as_str());
+    let c: Vec<&str> = after.split_whitespace().filter(|w| !["hari", "ini", "besok", "sekarang", "nanti", "lusa", "bagaimana", "gimana", "apa", "kah", "saat", "kota", "ya", "dong", "?", "cuaca", "hujan", "panas", "dingin", "cerah", "mendung", "prakiraan", "ramalan", "suhu", "akan", "apakah", "pagi", "siang", "sore", "malam"].contains(w)).collect();
     if !c.is_empty() {
         return c.join(" ");
     }
@@ -158,6 +159,14 @@ pub async fn terjemah(http: &reqwest::Client, text: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn kota_dari_arg_polos_dan_kalimat() {
+        assert_eq!(super::kota_dari("Jakarta"), "jakarta");
+        assert_eq!(super::kota_dari("cuaca di bandung besok"), "bandung");
+        assert_eq!(super::kota_dari("cuaca medan"), "medan");
+        assert_eq!(super::kota_dari("apakah hujan hari ini"), super::kota_dari(""));
+    }
+
     use super::*;
     #[test]
     fn city_and_currency_parsing() {
