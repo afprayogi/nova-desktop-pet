@@ -13,3 +13,8 @@ api.token
 # data pribadi: riwayat obrolan & catatan tidak boleh ikut ke git
 otak/memori.db
 otak/*.bawaan.json
+
+# rilis
+dist/
+kunci-rahasia/
+*.b64

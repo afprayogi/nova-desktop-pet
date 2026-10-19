@@ -132,7 +132,8 @@
    "ngobrol",
    "resume",
    "selera",
-   "keahlian"
+   "keahlian",
+   "pembaruan"
   ],
   "berkas": [
    "cari",
@@ -6047,6 +6048,36 @@
     "buat keahlian baru",
     "pelajari cara mengompres folder",
     "daftar keahlian"
+   ]
+  },
+  {
+   "id": "alat.pembaruan",
+   "nama": "pembaruan",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "versi | cek | pasang | tunda",
+   "deskripsi": "memeriksa dan memasang pembaruan NOVA dari GitHub (diverifikasi tanda tangan digital dan SHA-256)",
+   "ringkas": "cek dan pasang pembaruan NOVA",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/pembaruan"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "pembaruan cek",
+     "catatan": "periksa versi terbaru"
+    },
+    {
+     "perintah": "pembaruan versi",
+     "catatan": "versi terpasang"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "cek pembaruan",
+    "versi nova berapa",
+    "perbarui nova"
    ]
   }
  ],

@@ -320,6 +320,18 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["resume kita", "resume tentang aku", "rangkuman tentang aku", "ringkasan tentang aku", "kamu tahu apa tentang aku", "kamu tau apa tentang aku", "kamu menganggap aku", "kamu memandang aku", "kamu melihat aku", "kamu memikirkan aku", "kamu mikirin aku", "aku ini bagi kamu"].iter().any(|k| l.contains(k)) || l.trim() == "resume" {
         return mk("resume", String::new());
     }
+    if ["perbarui sekarang", "perbarui nova", "update nova", "update sekarang"].iter().any(|k| l.trim() == *k) {
+        return mk("pembaruan", "pasang".into());
+    }
+    if l.trim() == "tunda pembaruan" {
+        return mk("pembaruan", "tunda".into());
+    }
+    if ["cek pembaruan", "cek update", "ada pembaruan", "ada update", "periksa pembaruan"].iter().any(|k| l.contains(k)) {
+        return mk("pembaruan", "cek".into());
+    }
+    if ["versi nova", "nova versi berapa", "versi berapa nova", "versi aplikasi"].iter().any(|k| l.contains(k)) {
+        return mk("pembaruan", "versi".into());
+    }
     if l.trim() == "buat keahlian ini" {
         return mk("keahlian", "buat_calon".into());
     }

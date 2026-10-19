@@ -1,0 +1,76 @@
+name: release
+# Dipicu saat tag versi didorong:  git tag v0.3.1 && git push --tags
+# Hasil di halaman Releases: NOVA-Setup-<versi>.exe, latest.json (bertanda tangan Ed25519), dan nova.exe portabel.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rilis:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Versi di Cargo.toml harus sama dengan tag
+        shell: bash
+        run: |
+          V=$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
+          echo "VERSI=$V" >> "$GITHUB_ENV"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ "v$V" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} tidak sama dengan versi Cargo.toml v$V"; exit 1
+          fi
+
+      - name: Tes
+        run: cargo test
+
+      - name: Bangun rilis
+        run: cargo build --release
+
+      - name: Pasang Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Bangun pemasang
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:VERSI" installer\nova.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup gagal" }
+
+      - name: Catatan rilis dari riwayat commit
+        shell: bash
+        run: |
+          PREV=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
+          if [ -n "$PREV" ]; then RANGE="$PREV..HEAD"; else RANGE="-n 20"; fi
+          git log $RANGE --pretty='- %s' > catatan.md
+          cat catatan.md
+
+      - name: Manifest pembaruan bertanda tangan
+        shell: pwsh
+        env:
+          NOVA_SIGNING_KEY: ${{ secrets.NOVA_SIGNING_KEY }}
+        run: |
+          if (-not $env:NOVA_SIGNING_KEY) { throw "Secret NOVA_SIGNING_KEY belum diisi (lihat docs/RILIS.md)" }
+          $url = "https://github.com/${{ github.repository }}/releases/download/v$env:VERSI/NOVA-Setup-$env:VERSI.exe"
+          # nova.exe berjenis GUI: PowerShell tidak menunggunya kecuali lewat Start-Process -Wait.
+          $p = Start-Process -FilePath .\target\release\nova.exe -ArgumentList @("--rilis", "dist\NOVA-Setup-$env:VERSI.exe", $url, "catatan.md") -Wait -PassThru -NoNewWindow
+          if ($p.ExitCode -ne 0 -or -not (Test-Path dist\latest.json)) { throw "pembuatan latest.json gagal (kode $($p.ExitCode))" }
+          Copy-Item target\release\nova.exe dist\nova-portabel.exe
+
+      # Opsional: tanda tangan kode Authenticode agar SmartScreen tidak mengeluh. Lihat docs/RILIS.md bagian "Tanda tangan kode".
+
+      - name: Terbitkan
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/NOVA-Setup-*.exe
+            dist/latest.json
+            dist/nova-portabel.exe
+          body_path: catatan.md

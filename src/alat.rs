@@ -480,6 +480,7 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "berita" => crate::berita::headlines(http, arg, false).await.0,
         "kepribadian" => crate::bandit::report(),
         "keahlian" => crate::keahlian::jalankan(http, arg).await,
+        "pembaruan" => crate::pembaruan::jalankan(http, arg).await,
         "resume" => tokio::task::spawn_blocking(crate::kita::resume).await.unwrap_or_else(|_| "gagal menyusun resume".into()),
         "selera" => tokio::task::spawn_blocking(crate::kita::selera).await.unwrap_or_else(|_| "gagal membaca selera".into()),
         "kurikulum" => {

@@ -529,6 +529,7 @@ fn tick(tx: &Tx, c: &Connection, s: &Schedule) {
 pub async fn run(tx: Tx) {
     let Ok(c) = db() else { return };
     crate::musik::jaga_loop();
+    tokio::spawn(crate::pembaruan::cek_berkala(tx.clone()));
     tokio::spawn(async {
         // Folder otak/info: berkas baru/berubah masuk otak, tiap menit.
         loop {

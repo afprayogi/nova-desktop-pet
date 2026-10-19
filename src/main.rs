@@ -52,6 +52,7 @@ mod keahlian;
 mod koneksi;
 mod kita;
 mod notify;
+mod pembaruan;
 mod progres;
 mod pencarian;
 mod outlook;
@@ -135,6 +136,36 @@ pub(crate) fn engine_peran_bawaan() -> &'static str {
 
 fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
+    // Rilis memakai subsistem GUI (tanpa konsol); sambungkan ke konsol pemanggil agar keluaran alat pengembang terlihat.
+    #[cfg(windows)]
+    if ["--versi", "--buat-kunci", "--rilis", "--autostart"].iter().any(|f| args.iter().any(|a| a == f)) {
+        unsafe {
+            windows_sys::Win32::System::Console::AttachConsole(windows_sys::Win32::System::Console::ATTACH_PARENT_PROCESS);
+        }
+    }
+    // Alat pengembang & info (tidak membuka jendela): lihat docs/RILIS.md
+    if args.iter().any(|a| a == "--versi") {
+        println!("NOVA {}", pembaruan::VERSI);
+        return Ok(());
+    }
+    if let Some(i) = args.iter().position(|a| a == "--buat-kunci") {
+        match pembaruan::buat_kunci(std::path::Path::new(args.get(i + 1).map(|s| s.as_str()).unwrap_or("kunci-rahasia"))) {
+            Ok(m) => println!("{m}"),
+            Err(e) => eprintln!("gagal: {e}"),
+        }
+        return Ok(());
+    }
+    if let Some(i) = args.iter().position(|a| a == "--rilis") {
+        let g = |n: usize| args.get(i + n).map(|s| s.as_str()).unwrap_or("");
+        match pembaruan::rilis(std::path::Path::new(g(1)), g(2), g(3)) {
+            Ok(m) => println!("{m}"),
+            Err(e) => {
+                eprintln!("gagal: {e}");
+                std::process::exit(1);
+            }
+        }
+        return Ok(());
+    }
     // Pembantu admin penangkap paket (dijalankan lewat UAC oleh paket::tangkap): `nova.exe --paket <detik> <berkas.json>`.
     if let Some(i) = args.iter().position(|a| a == "--paket") {
         paket::pembantu(args.get(i + 1).and_then(|d| d.parse().ok()).unwrap_or(15), args.get(i + 2).map(|s| s.as_str()).unwrap_or("cap.json"));
