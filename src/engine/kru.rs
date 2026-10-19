@@ -1,8 +1,9 @@
 //! Kru (pola CrewAI): manajer memecah tujuan menjadi tugas berurutan; tiap tugas dikerjakan satu peran (peneliti, pelaksana,
 //! penulis) lewat loop ReAct terbatas (pikir → alat → amati), dan hasilnya menjadi konteks tugas berikutnya. Semua alat tetap
 //! melewati `alat::assess`: yang aman dijalankan, yang butuh persetujuan TIDAK dijalankan kru (dilaporkan ke Bos), yang berbahaya diblokir.
-use super::*;
+#[cfg(test)]
 use serde_json::json;
+use super::*;
 
 pub const PERAN_BAWAAN: &str = include_str!("../../data/peran.json");
 

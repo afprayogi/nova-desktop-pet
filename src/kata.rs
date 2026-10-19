@@ -79,6 +79,7 @@ pub fn aksi(kalimat: &str) -> Vec<String> {
     out
 }
 
+#[cfg(test)]
 pub fn punya_aksi(kalimat: &str, a: &str) -> bool {
     aksi(kalimat).iter().any(|x| x.as_str() == a)
 }

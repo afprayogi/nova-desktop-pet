@@ -139,7 +139,13 @@ fn main() -> anyhow::Result<()> {
         if !single_instance(r"Local\NOVA_PET") {
             return Ok(());
         }
-        return pet::run(port());
+        if let Err(e) = pet::run(port()) {
+            // Komputer tanpa OpenGL yang memadai: pakai antarmuka web lokal di browser.
+            eprintln!("jendela peliharaan gagal ({e}); membuka antarmuka web");
+            #[cfg(windows)]
+            let _ = std::process::Command::new("cmd").args(["/C", "start", "", &format!("http://127.0.0.1:{}/ui", port())]).spawn();
+        }
+        return Ok(());
     }
     #[cfg(windows)]
     {

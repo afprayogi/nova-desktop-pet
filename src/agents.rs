@@ -11,7 +11,6 @@ pub enum Animal {
     Volt,
     Sentry,
     Memo,
-    Boss,
 }
 
 #[derive(Clone, Copy)]
@@ -23,19 +22,9 @@ pub enum Frame {
 }
 
 impl Animal {
-    pub fn key(&self) -> &'static str {
-        match self {
-            Animal::Nova => "nova",
-            Animal::Volt => "volt",
-            Animal::Sentry => "sentry",
-            Animal::Memo => "memo",
-            Animal::Boss => "boss",
-        }
-    }
-
     pub fn idx(&self) -> usize {
         match self {
-            Animal::Nova | Animal::Boss => 0,
+            Animal::Nova => 0,
             Animal::Volt => 1,
             Animal::Sentry => 2,
             Animal::Memo => 3,
@@ -47,10 +36,7 @@ impl Animal {
     }
 
     pub fn rgb(&self) -> (u8, u8, u8) {
-        match self {
-            Animal::Boss => (255, 214, 90),
-            a => PERSONAS[a.idx()].rgb,
-        }
+        PERSONAS[self.idx()].rgb
     }
 
     pub fn sprite(&self) -> Vec<String> {
@@ -60,7 +46,6 @@ impl Animal {
     /// Sprite 16x16: rangka sama, aksesori kepala (2 baris atas) membedakan tiap agen.
     pub fn frame(&self, f: Frame) -> Vec<String> {
         let base: &[&str; 16] = match (self, f) {
-            (Animal::Boss, _) => &BOSS,
             (_, Frame::Idle) => &NOVA_IDLE,
             (_, Frame::WalkA) => &NOVA_WALK_A,
             (_, Frame::WalkB) => &NOVA_WALK_B,
@@ -171,24 +156,6 @@ pub const NOVA_SLEEP: [&str; 16] = [
     "....kbbkkbbk....",
     "....kkkkkkkk....",
 ];
-const BOSS: [&str; 16] = [
-    "................",
-    "..o...o..o...o..",
-    "..oo.ooo.oo.oo..",
-    "..ooooooooooo...",
-    "...aaaaaaaaaa...",
-    "..aaaaaaaaaaaa..",
-    "..aakeaaaaekaa..",
-    "..aaaaaaaaaaaa..",
-    "..aaakkkkkkaaa..",
-    "...aaaaaaaaaa...",
-    "....aaaaaaaa....",
-    "...kkaaaaaakk...",
-    "..kaaaaaaaaaak..",
-    "..kaaaaaaaaaak..",
-    "..kaaaaaaaaaak..",
-    "................",
-];
 
 pub struct Persona {
     pub name: &'static str,
@@ -209,7 +176,7 @@ mod tests {
     use super::*;
     #[test]
     fn sprites_are_16x16() {
-        for s in [&NOVA_IDLE, &NOVA_WALK_A, &NOVA_WALK_B, &NOVA_SLEEP, &BOSS] {
+        for s in [&NOVA_IDLE, &NOVA_WALK_A, &NOVA_WALK_B, &NOVA_SLEEP] {
             assert!(s.iter().all(|r| r.len() == 16));
         }
     }

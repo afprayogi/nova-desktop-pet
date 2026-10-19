@@ -1,6 +1,7 @@
 //! NOVA yang penasaran: bertanya kepada Bos (keadaan, oksigen, pekerjaan, dll.) secara berantai, lalu menyimpan jawaban Bos sebagai
 //! pengetahuan (`bos:<topik>`) dan graf. Daftar topik dan pertanyaan ada di `otak/penasaran.json` (bisa ditambah). Dipicu "tanya aku",
 //! `/penasaran [topik]`, atau sesekali sendiri saat Bos aktif. Jawaban dikenali sebagai jawaban hanya bila bukan perintah.
+#[cfg(test)]
 use serde_json::Value;
 use std::sync::Mutex;
 use std::time::Instant;
