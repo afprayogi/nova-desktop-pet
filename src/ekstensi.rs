@@ -35,6 +35,11 @@ const YOUTUBE: &str = r#"// NOVA (YouTube): lewati iklan otomatis. Tombol 'Lewat
     if (btn) (btn.closest('button') || btn).click();
     const close = document.querySelector('.ytp-ad-overlay-close-button');
     if (close) close.click();
+    // Matikan "putar otomatis berikutnya" agar video tidak bersambung terus-menerus; batalkan hitung mundur video berikutnya.
+    const an = document.querySelector('.ytp-autonav-toggle-button[aria-checked="true"]');
+    if (an) an.click();
+    const batal = document.querySelector('.ytp-autonav-endscreen-upnext-cancel-button');
+    if (batal) batal.click();
     const player = document.querySelector('.html5-video-player');
     const v = document.querySelector('video.html5-main-video') || document.querySelector('video');
     if (player && v && player.classList.contains('ad-showing')) {

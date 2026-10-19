@@ -142,17 +142,17 @@ fn pilihan() -> Option<(String, Option<String>)> {
     Some((top, prev))
 }
 
-fn auto_off_file() -> PathBuf {
-    crate::config::data_dir().join("musik_auto_off")
+fn auto_on_file() -> PathBuf {
+    crate::config::data_dir().join("musik_auto_on")
 }
 
 pub fn set_auto(on: bool) -> String {
     if on {
-        let _ = std::fs::remove_file(auto_off_file());
-        "Putar musik otomatis: AKTIF (sekali sehari saat Bos mulai aktif, sesuai riwayat YouTube terbanyak lewat NOVA).".into()
+        let _ = std::fs::write(auto_on_file(), "");
+        "Putar musik otomatis: AKTIF (sengaja kamu nyalakan; maksimal sekali sehari saat Bos mulai aktif).".into()
     } else {
-        let _ = std::fs::write(auto_off_file(), "");
-        "Putar musik otomatis: MATI.".into()
+        let _ = std::fs::remove_file(auto_on_file());
+        "Putar musik otomatis: MATI (bawaan).".into()
     }
 }
 
@@ -217,7 +217,7 @@ pub fn putar(q: &str) {
 
 /// Saat Bos mulai aktif (sekali per hari): putar lagu terbanyak di YouTube dan tawarkan lagu sebelumnya.
 pub fn auto(tx: &Tx) {
-    if auto_off_file().exists() || player_running() {
+    if !auto_on_file().exists() || player_running() {
         return;
     }
     let Some((top, prev)) = pilihan() else { return };
@@ -257,8 +257,13 @@ foreach($s in $mg.GetSessions()){ $id=$s.SourceAppUserModelId; $st=$s.GetPlaybac
  if($args[0] -eq 'lanjut' -and $id -match 'chrome|msedge|firefox|brave|opera' -and "$st" -ne 'Playing'){ [void](Aw ($s.TryPlayAsync()) ([bool])) }
  "$id|$st" }"#;
 
-fn jaga_off_file() -> PathBuf {
-    crate::config::data_dir().join("musik_jaga_off")
+fn jaga_on_file() -> PathBuf {
+    crate::config::data_dir().join("musik_jaga_on")
+}
+
+fn selesai_jaga() {
+    let _ = std::fs::remove_file(jaga_on_file());
+    let _ = std::fs::remove_file(aktif_file());
 }
 
 fn aktif_file() -> PathBuf {
@@ -271,11 +276,11 @@ fn now_s() -> u64 {
 
 pub fn set_jaga(on: bool) -> String {
     if on {
-        let _ = std::fs::remove_file(jaga_off_file());
-        "Penjaga musik: AKTIF. Bila musik YouTube yang kuputar terjeda >20 dtk, kulanjutkan; bila tab musiknya hilang, kuputar ulang (maks 1x/30 menit, hanya 6 jam setelah NOVA memutar musik).".into()
+        let _ = std::fs::write(jaga_on_file(), "");
+        "Penjaga musik: AKTIF (sengaja kamu nyalakan). Bila musik yang kuputar terjeda tak sengaja kulanjutkan sekali; bila kamu menjeda lagi atau menutup tabnya, aku berhenti menjaga dan TIDAK memutar ulang.".into()
     } else {
-        let _ = std::fs::write(jaga_off_file(), "");
-        "Penjaga musik: MATI.".into()
+        selesai_jaga();
+        "Penjaga musik: MATI (bawaan). Video tidak akan dilanjutkan atau diputar ulang oleh NOVA.".into()
     }
 }
 
@@ -305,7 +310,8 @@ pub fn jaga_loop() {
         loop {
             std::thread::sleep(std::time::Duration::from_secs(20));
             let mulai: u64 = std::fs::read_to_string(aktif_file()).ok().and_then(|t| t.trim().parse().ok()).unwrap_or(0);
-            if jaga_off_file().exists() || now_s().saturating_sub(mulai) > 6 * 3600 {
+            // Opt-in: tanpa `/musik jaga` penjaga tidak berbuat apa-apa (dulu aktif otomatis dan memutar ulang video terus-menerus).
+            if !jaga_on_file().exists() || now_s().saturating_sub(mulai) > 6 * 3600 {
                 (jeda, hilang) = (0, 0);
                 continue;
             }
@@ -321,15 +327,19 @@ pub fn jaga_loop() {
                 (jeda, hilang) = (0, 0);
             }
             if jeda >= 2 {
-                let _ = smtc("lanjut");
-                jeda = 0;
-            }
-            if hilang >= 2 && now_s().saturating_sub(putar_ulang) > 1800 {
-                if let Some((top, _)) = pilihan() {
-                    putar(&top);
+                if now_s().saturating_sub(putar_ulang) < 180 {
+                    // dijeda lagi tak lama setelah kulanjutkan = Bos sengaja menjeda: berhenti menjaga.
+                    selesai_jaga();
+                } else {
+                    let _ = smtc("lanjut");
                     putar_ulang = now_s();
                 }
-                hilang = 0;
+                jeda = 0;
+            }
+            if hilang >= 2 {
+                // Tab/jendela musik ditutup = keputusan Bos. Jangan dibuka lagi; berhenti menjaga.
+                selesai_jaga();
+                (jeda, hilang) = (0, 0);
             }
         }
     });
