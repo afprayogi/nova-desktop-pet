@@ -480,6 +480,10 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "berita" => crate::berita::headlines(http, arg, false).await.0,
         "kepribadian" => crate::bandit::report(),
         "keahlian" => crate::keahlian::jalankan(http, arg).await,
+        "kerja" => {
+            let a = arg.to_string();
+            tokio::task::spawn_blocking(move || crate::kerja::jalankan(&a)).await.unwrap_or_else(|_| "gagal menyusun rekap".into())
+        }
         "pembaruan" => crate::pembaruan::jalankan(http, arg).await,
         "resume" => tokio::task::spawn_blocking(crate::kita::resume).await.unwrap_or_else(|_| "gagal menyusun resume".into()),
         "selera" => tokio::task::spawn_blocking(crate::kita::selera).await.unwrap_or_else(|_| "gagal membaca selera".into()),
@@ -751,6 +755,12 @@ pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     for p in ["buat keahlian", "buatkan keahlian", "tambah keahlian", "buat skill", "pelajari cara", "ajari dirimu", "kembangkan dirimu"] {
         if kecil.starts_with(p) && kecil.len() > p.len() + 3 {
             return Some(vec![Call { tool: "keahlian".into(), arg: format!("buat {}", goal.trim()[p.len()..].trim()) }]);
+        }
+    }
+    // Frasa pembantu kerja didahulukan dari makro lama ("rekap hari ini" dulu memicu agenda+tidur+kesehatan).
+    for (frasa, arg) in [("mode senyap on", "senyap on"), ("mode senyap off", "senyap off"), ("nova diam", "senyap on"), ("diam dulu nova", "senyap on"), ("tampilkan nova", "senyap off"), ("nova muncul lagi", "senyap off"), ("rekap hari ini", "rekap"), ("rekap kerja", "rekap"), ("rekap harian", "rekap"), ("mulai hari kerja", "mulai"), ("mulai kerja lengkap", "mulai"), ("akhiri kerja", "akhir"), ("selesai kerja", "akhir")] {
+        if kecil == frasa {
+            return Some(vec![Call { tool: "kerja".into(), arg: arg.into() }]);
         }
     }
     if let Some(m) = crate::aturan::makro(goal) {

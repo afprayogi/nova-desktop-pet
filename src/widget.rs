@@ -59,7 +59,12 @@ fn tdb() -> Option<rusqlite::Connection> {
     Some(c)
 }
 
-fn todo_list() -> Vec<Value> {
+/// (menit fokus hari ini, total sesi) untuk rekap kerja.
+pub fn fokus_hari_ini() -> (u32, u32) {
+    with(|d| (d.fokus_menit.get(&hari()).copied().unwrap_or(0), d.fokus_sesi))
+}
+
+pub(crate) fn todo_list() -> Vec<Value> {
     let Some(c) = tdb() else { return vec![] };
     // daftar harian: yang belum selesai (dari hari sebelumnya ikut terbawa) + yang selesai hari ini
     let Ok(mut st) = c.prepare("SELECT id, teks, selesai FROM todo WHERE selesai=0 OR hari=?1 ORDER BY selesai, id") else { return vec![] };

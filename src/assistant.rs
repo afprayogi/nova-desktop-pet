@@ -614,6 +614,7 @@ pub async fn run(tx: Tx) {
             crate::adegan::play_soft(&tx, vec![(agent, text)], 1, 30);
         }
         if n % 2 == 0 {
+            crate::kerja::penjaga(&tx);
             tick(&tx, &c, &s);
             tx.send(Event::Assist(Box::new(state(&c))));
         }

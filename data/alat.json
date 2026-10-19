@@ -133,7 +133,8 @@
    "resume",
    "selera",
    "keahlian",
-   "pembaruan"
+   "pembaruan",
+   "kerja"
   ],
   "berkas": [
    "cari",
@@ -6078,6 +6079,37 @@
     "cek pembaruan",
     "versi nova berapa",
     "perbarui nova"
+   ]
+  },
+  {
+   "id": "alat.kerja",
+   "nama": "kerja",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "mulai | akhir | rekap | minggu | istirahat | fokus | tunda | penjaga on|off",
+   "deskripsi": "pembantu kerja: rekap harian/mingguan, mulai/akhiri kerja, istirahat, penjaga fokus jam kerja",
+   "ringkas": "rekap dan rutinitas kerja",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/kerja",
+    "/rekap"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "kerja rekap",
+     "catatan": "rekap kerja hari ini"
+    },
+    {
+     "perintah": "kerja mulai",
+     "catatan": "tugas, agenda, buka proyek, fokus 25 menit"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "rekap hari ini",
+    "mulai kerja",
+    "akhiri kerja"
    ]
   }
  ],

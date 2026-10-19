@@ -320,6 +320,33 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["resume kita", "resume tentang aku", "rangkuman tentang aku", "ringkasan tentang aku", "kamu tahu apa tentang aku", "kamu tau apa tentang aku", "kamu menganggap aku", "kamu memandang aku", "kamu melihat aku", "kamu memikirkan aku", "kamu mikirin aku", "aku ini bagi kamu"].iter().any(|k| l.contains(k)) || l.trim() == "resume" {
         return mk("resume", String::new());
     }
+    if ["ayo kerja", "mulai hari kerja", "mulai kerja lengkap"].iter().any(|k| l.trim() == *k) {
+        return mk("kerja", "mulai".into());
+    }
+    if ["akhiri kerja", "selesai kerja", "tutup hari kerja", "akhir kerja"].iter().any(|k| l.trim() == *k) {
+        return mk("kerja", "akhir".into());
+    }
+    if ["rekap minggu ini", "rekap mingguan", "rekap seminggu"].iter().any(|k| l.contains(k)) {
+        return mk("kerja", "minggu".into());
+    }
+    if ["rekap hari ini", "rekap kerja", "rekap harian", "laporan kerja hari ini"].iter().any(|k| l.contains(k)) {
+        return mk("kerja", "rekap".into());
+    }
+    if ["istirahat sebentar", "waktunya istirahat", "aku mau istirahat"].iter().any(|k| l.contains(k)) {
+        return mk("kerja", "istirahat".into());
+    }
+    if l.trim() == "mulai fokus 25 menit" {
+        return mk("kerja", "fokus".into());
+    }
+    if l.trim() == "tunda fokus 10 menit" {
+        return mk("kerja", "tunda".into());
+    }
+    if ["penjaga fokus aktifkan", "aktifkan penjaga fokus", "penjaga fokus on"].iter().any(|k| l.trim() == *k) {
+        return mk("kerja", "penjaga on".into());
+    }
+    if ["penjaga fokus matikan", "matikan penjaga fokus", "penjaga fokus off"].iter().any(|k| l.trim() == *k) {
+        return mk("kerja", "penjaga off".into());
+    }
     if ["perbarui sekarang", "perbarui nova", "update nova", "update sekarang"].iter().any(|k| l.trim() == *k) {
         return mk("pembaruan", "pasang".into());
     }
