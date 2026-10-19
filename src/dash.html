@@ -41,6 +41,25 @@ canvas{width:100%;display:block}
 table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:4px 10px 4px 0;border-bottom:1px solid var(--line);font-weight:400}th{color:var(--mut)}
 @media (max-width:760px){body{grid-template-columns:1fr}nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:8px}.logo,.upd,nav .back{display:none}#gwrap{grid-template-columns:1fr}#gside{border-left:0;border-top:1px solid var(--line)}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+/* NOVA v3 (selaras dengan antarmuka utama) */
+:root{color-scheme:light dark;--bg:#f6f7f9;--bg2:#eceff4;--line:#d5dae3;--line2:#79849a;--text:#1b1f27;--mut:#4b5565;--amber:#1a5fd0;--blue:#1a5fd0;--soft:#e3ecfb;--ok:#1b6e3f;--warn:#835400;--bad:#b42318;--sel:#5b3fc4}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--bg2:#1a1e26;--line:#2e3543;--line2:#7f8aa0;--text:#e8ebf1;--mut:#a7b0c0;--amber:#7db0ff;--blue:#7db0ff;--soft:#1d2b45;--ok:#62d493;--warn:#f2bb4e;--bad:#ff8f85;--sel:#b9a4ff}}
+body{font:15px/1.55 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
+.logo,h2,.num,nav a b{font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif}
+h2{font-size:24px;font-weight:700}
+h3{font-size:16px}
+nav{background:var(--bg2)}
+nav a{min-height:40px;align-items:center;margin:2px 8px;padding:8px 12px;border-left:0;border-radius:8px}
+nav a:hover{background:var(--line)}
+nav a.on{background:var(--soft);color:var(--amber)}nav a.on b{color:var(--amber)}
+nav .back{margin:auto 8px 0;border-radius:8px;min-height:40px;display:flex;align-items:center}
+button,input{min-height:40px;border-radius:8px;border-color:var(--line2)}
+button{padding:8px 16px;background:var(--bg2)}button:hover{border-color:var(--amber);background:var(--soft)}
+.flag{border-radius:8px;border:1px solid var(--line);border-left-width:4px}
+.row{padding:8px 0}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (max-width:760px){body{grid-template-columns:1fr}nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;gap:4px;padding:8px}nav a{margin:0}.upd,.logo{display:none}main{padding:16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>

@@ -5,151 +5,191 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NOVA</title>
 <style>
-:root{--bg:#15171c;--panel:#1b1e25;--panel2:#22262e;--line:#2b303a;--text:#d6dae2;--mut:#8a92a0;--acc:#8ab4f8;--me:#27324a;--ok:#86d4a8;--warn:#e8c47c;--bad:#ea9a9a;--r:14px;--sh:0 10px 30px #0006}
-@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#f5f4f1;--panel:#fffefc;--panel2:#efede8;--line:#e3e0d9;--text:#2a2d33;--mut:#7a7f89;--acc:#3b6fd4;--me:#e4ebfa;--ok:#2f8f5b;--warn:#a87a1c;--bad:#c25555;--sh:0 10px 30px #0001}}
-:root[data-theme=light]{--bg:#f5f4f1;--panel:#fffefc;--panel2:#efede8;--line:#e3e0d9;--text:#2a2d33;--mut:#7a7f89;--acc:#3b6fd4;--me:#e4ebfa;--ok:#2f8f5b;--warn:#a87a1c;--bad:#c25555;--sh:0 10px 30px #0001}
+/* NOVA v3 — token semantik; kontras terukur: teks >= 4.5:1, batas kontrol/fokus >= 3:1 (WCAG 2.2). Skala jarak 4/8/12/16/24/32. */
+:root{color-scheme:light dark;
+ --bg:#f6f7f9;--surface:#ffffff;--surface-2:#eceff4;--text:#1b1f27;--muted:#4b5565;--border:#d5dae3;--border-strong:#79849a;
+ --accent:#1a5fd0;--on-accent:#ffffff;--accent-soft:#e3ecfb;--success:#1b6e3f;--warning:#835400;--danger:#b42318;--focus:#1a5fd0;
+ --r:12px;--r-sm:8px;--shadow:0 1px 2px #0001,0 4px 16px #0000000d;--rail:264px}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+ --bg:#12151b;--surface:#1a1e26;--surface-2:#232834;--text:#e8ebf1;--muted:#a7b0c0;--border:#2e3543;--border-strong:#7f8aa0;
+ --accent:#7db0ff;--on-accent:#0a1a36;--accent-soft:#1d2b45;--success:#62d493;--warning:#f2bb4e;--danger:#ff8f85;--focus:#7db0ff;--shadow:0 1px 2px #0006,0 4px 16px #0004}}
+:root[data-theme=dark]{
+ --bg:#12151b;--surface:#1a1e26;--surface-2:#232834;--text:#e8ebf1;--muted:#a7b0c0;--border:#2e3543;--border-strong:#7f8aa0;
+ --accent:#7db0ff;--on-accent:#0a1a36;--accent-soft:#1d2b45;--success:#62d493;--warning:#f2bb4e;--danger:#ff8f85;--focus:#7db0ff;--shadow:0 1px 2px #0006,0 4px 16px #0004}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--text);font:15px/1.6 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-track{background:transparent}
-header{position:relative;display:flex;align-items:center;gap:16px;padding:8px 18px;background:var(--bg);border-bottom:1px solid var(--line);z-index:6}
-.logo{width:30px;height:30px;flex:none;border-radius:8px}
-.title{font-weight:600;letter-spacing:.2px;line-height:1.2}.sub{font-size:12px;color:var(--mut)}
-.ti{min-width:0;white-space:nowrap}
-nav{display:flex;align-items:center;gap:2px;flex:1;min-width:0}
-.sp{flex:1}
-.btn,.m>button{background:none;border:0;color:var(--mut);padding:7px 12px;border-radius:9px;font:inherit;font-size:14px;cursor:pointer;transition:background .15s,color .15s}
-.btn:hover,.m>button:hover,.m.open>button{background:var(--panel2);color:var(--text)}
-.m{position:static}
-.dd{display:none;position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:var(--sh)}
-.dd.mega{left:12px;right:12px;top:calc(100% + 6px);gap:6px;max-height:72vh;overflow:auto;padding:12px}
-.m.open .dd.mega{display:flex;flex-wrap:wrap}
-.mega .col{flex:1 1 210px;min-width:190px}
-.mega h5{margin:4px 10px 8px;font-size:11px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--mut)}
-.dd button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;color:var(--text);padding:7px 10px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer}
-.dd button:hover{background:var(--panel2)}.dd button span{width:20px;text-align:center;opacity:.85}
-nav .find{background:var(--panel);border:1px solid var(--line);color:var(--mut);margin-left:6px}
-nav kbd{font:11px Consolas,monospace;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:8px}
-#bn{position:relative}
-.badge{background:var(--acc);color:var(--bg);border-radius:99px;padding:0 7px;font-size:11px;font-weight:700;margin-left:4px}
-main{flex:1;display:flex;min-height:0}
-#chat{flex:1;overflow-y:auto;padding:28px max(18px,calc((100% - 760px)/2)) 12px;scroll-behavior:smooth}
-.row{display:flex;gap:12px;margin:18px 0;animation:in .22s ease-out}
+body{background:var(--bg);color:var(--text);font:16px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;display:flex;overflow:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,h5{margin:0;line-height:1.3}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--r-sm)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+button{font:inherit;color:inherit;cursor:pointer}
+kbd{font:12px Consolas,monospace;color:var(--muted);border:1px solid var(--border-strong);border-radius:4px;padding:0 6px;margin-left:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* rel navigasi */
+#rail{width:var(--rail);flex:none;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+.brand{display:flex;align-items:center;gap:12px;padding:16px}
+.logo{width:36px;height:36px;flex:none;border-radius:10px}
+.brand .t{font-weight:700;font-size:18px;letter-spacing:.02em}.brand .s{font-size:14px;color:var(--muted);line-height:1.3}
+#nav{flex:1;min-height:0;overflow-y:auto;padding:4px 12px 12px;display:flex;flex-direction:column;gap:4px}
+.nv,.sub-nv,.grp>summary{display:flex;align-items:center;gap:12px;width:100%;min-height:40px;padding:8px 12px;border:0;border-radius:var(--r-sm);background:none;text-align:left;font-size:15px;color:var(--text)}
+.nv:hover,.sub-nv:hover,.grp>summary:hover{background:var(--surface-2)}
+.nv[aria-current=page]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.ic{width:20px;text-align:center;flex:none}
+.grp{margin-top:4px}.grp>summary{cursor:pointer;list-style:none;font-weight:600;color:var(--muted)}
+.grp>summary::-webkit-details-marker{display:none}.grp>summary::after{content:"›";margin-left:auto;transition:transform .15s}.grp[open]>summary::after{transform:rotate(90deg)}
+.grp h5{margin:12px 12px 4px;font-size:13px;font-weight:600;color:var(--muted)}
+.sub-nv{min-height:36px;font-size:14px;padding-left:20px}
+.railft{border-top:1px solid var(--border);padding:12px;display:flex;align-items:center;gap:8px}
+.seg{display:flex;border:1px solid var(--border-strong);border-radius:var(--r-sm);overflow:hidden;flex:1}
+.seg button{flex:1;min-height:36px;border:0;background:none;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent);font-weight:600}
+.seg button+button{border-left:1px solid var(--border-strong)}
+.bell{position:relative;min-width:40px;min-height:40px;border:1px solid var(--border-strong);border-radius:var(--r-sm);background:none}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:99px;padding:0 6px;font-size:12px;font-weight:700;line-height:18px}
+#top{display:none}
+
+/* panggung */
+#stage{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+main{flex:1;display:flex;min-height:0;position:relative}
+#chat{flex:1;overflow-y:auto;padding:24px max(16px,calc((100% - 760px)/2)) 8px;scroll-behavior:smooth}
+.row{display:flex;gap:12px;margin:16px 0;animation:in .2s ease-out}
 @keyframes in{from{opacity:0;transform:translateY(4px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .row.me{justify-content:flex-end}
-.av{width:30px;height:30px;flex:none;border-radius:8px;margin-top:2px}
-.bub{max-width:min(680px,88%);padding:2px 0;border-radius:var(--r);word-wrap:anywhere;white-space:pre-wrap}
-.row:not(.me) .bub{background:none}
-.me .bub{background:var(--me);padding:9px 15px;border-bottom-right-radius:5px}
-.who{font-size:12px;font-weight:600;color:var(--mut);margin-bottom:2px}
-.sys{color:var(--mut);font-size:13px;text-align:center;margin:14px 0;white-space:pre-wrap}
-.bub a,.sys a{color:var(--acc);text-decoration:none;border-bottom:1px solid #8884}
-.card{margin:16px 0;padding:14px 16px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
-.card.bad{border-color:#ea9a9a66}.card h4{margin:0 0 6px;font-size:14px}
-.card code{display:block;background:var(--panel2);padding:7px 10px;border-radius:8px;margin:8px 0;max-height:90px;overflow:auto;white-space:pre-wrap;font:12px Consolas,monospace}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{background:none;border:1px solid var(--line);color:var(--text);border-radius:99px;padding:5px 14px;cursor:pointer;font:inherit;font-size:13.5px;transition:border-color .15s,background .15s}
-.chip:hover{border-color:var(--acc);background:var(--panel2)}
-.chip.p{background:var(--acc);color:var(--bg);border-color:transparent;font-weight:600}.chip.d{color:var(--bad);border-color:#ea9a9a55}
-footer{padding:6px max(18px,calc((100% - 760px)/2)) 20px;background:var(--bg)}
-.box{display:flex;gap:8px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:7px 8px 7px 18px;box-shadow:var(--sh);transition:border-color .15s}
-.box:focus-within{border-color:#8ab4f866}
-textarea{height:38px;min-height:38px;flex:1;background:none;border:0;outline:0;resize:none;color:var(--text);font:inherit;max-height:140px;padding:7px 0}
-textarea::placeholder{color:var(--mut)}
-.send{background:var(--acc);color:var(--bg);border:0;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:15px;flex:none}
+.av{width:32px;height:32px;flex:none;border-radius:8px;margin-top:2px}
+.bub{max-width:min(680px,92%);word-wrap:anywhere;white-space:pre-wrap;line-height:1.6}
+.row:not(.me) .bub{background:var(--surface);border:1px solid var(--border);border-radius:4px var(--r) var(--r) var(--r);padding:10px 16px}
+.me .bub{background:var(--accent-soft);border:1px solid transparent;border-radius:var(--r) var(--r) 4px var(--r);padding:10px 16px}
+.who{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:2px}
+.sys{color:var(--muted);font-size:14px;margin:12px 0;white-space:pre-wrap;border-left:3px solid var(--border-strong);padding:2px 0 2px 12px;max-width:72ch}
+.bub a,.sys a{color:var(--accent)}
+.card{margin:16px 0;padding:16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);max-width:72ch}
+.card.bad{border-color:var(--danger);border-width:2px}.card h4{font-size:16px;margin-bottom:8px}
+.card code{display:block;background:var(--surface-2);padding:8px 12px;border-radius:var(--r-sm);margin:8px 0;max-height:96px;overflow:auto;white-space:pre-wrap;font:13px Consolas,monospace}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip,.btn{min-height:40px;padding:8px 16px;border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--surface);font-size:15px;transition:background .12s}
+.chip:hover,.btn:hover{background:var(--surface-2)}
+.chip.p,.btn.p{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}.chip.p:hover,.btn.p:hover{filter:brightness(1.08)}
+.chip.d,.btn.d{color:var(--danger);border-color:var(--danger)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+footer{padding:8px max(16px,calc((100% - 760px)/2)) 20px;background:var(--bg)}
+.box{display:flex;gap:8px;align-items:flex-end;background:var(--surface);border:1px solid var(--border-strong);border-radius:16px;padding:8px 8px 8px 16px;box-shadow:var(--shadow)}
+.box:focus-within{border-color:var(--focus);outline:2px solid var(--focus);outline-offset:0}
+textarea{height:40px;min-height:40px;flex:1;background:none;border:0;outline:0;resize:none;color:var(--text);font:inherit;max-height:140px;padding:8px 0}
+textarea::placeholder{color:var(--muted)}
+.send{min-height:40px;min-width:88px;border:0;border-radius:var(--r-sm);background:var(--accent);color:var(--on-accent);font-weight:600;padding:0 16px}
 .send:hover{filter:brightness(1.08)}
-.sug{position:absolute;bottom:70px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;display:none;min-width:260px;box-shadow:var(--sh)}
-.sug div{padding:6px 10px;border-radius:8px;cursor:pointer}.sug div:hover,.sug .on{background:var(--panel2)}
-#side,#wd{width:0;overflow:hidden;background:var(--panel);border-left:1px solid var(--line);transition:width .2s}
-#side.open{width:300px;padding:16px;overflow:auto}#wd.open{width:320px;padding:14px;overflow:auto}
-.n{font-size:13px;color:var(--mut);border-bottom:1px solid var(--line);padding:9px 0}
-.dots span{display:inline-block;width:6px;height:6px;margin:0 2px;background:var(--mut);border-radius:50%;animation:b 1.1s infinite}
+.sug{position:absolute;bottom:72px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r);padding:4px;display:none;min-width:260px;box-shadow:var(--shadow)}
+.sug div{padding:8px 12px;border-radius:var(--r-sm);cursor:pointer}.sug div:hover,.sug .on{background:var(--surface-2)}
+#side,#wd{width:0;overflow:hidden;background:var(--surface);border-left:1px solid var(--border);transition:width .2s}
+#side.open{width:320px;padding:16px;overflow:auto}#wd.open{width:340px;padding:16px;overflow:auto}
+.n{font-size:14px;color:var(--muted);border-bottom:1px solid var(--border);padding:8px 0}
+.dots span{display:inline-block;width:8px;height:8px;margin:0 2px;background:var(--muted);border-radius:50%;animation:b 1.1s infinite}
 .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
 @keyframes b{50%{transform:translateY(-4px);opacity:.4}}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:8px 18px;display:none;max-width:420px;box-shadow:var(--sh);font-size:14px;z-index:40}
-canvas.ch{display:block;width:100%;max-width:480px;height:auto;border-radius:12px;margin:10px 0;background:var(--panel)}
-#term{position:fixed;right:16px;bottom:96px;width:min(440px,92vw);background:#0d1117;border:1px solid #243028;border-radius:12px;box-shadow:var(--sh);z-index:8}
-#term .th2{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;color:#8fd6a8;font:12px Consolas,monospace;border-bottom:1px solid #243028}
-#term button{background:none;border:0;color:#8fd6a8;cursor:pointer;font-size:16px}
-#term pre{margin:0;padding:10px 12px;max-height:200px;overflow:auto;color:#a9e2bc;font:12px/1.5 Consolas,monospace;white-space:pre-wrap}
-#omni,#pal{position:fixed;inset:0;background:#0007;display:none;z-index:30;backdrop-filter:blur(3px)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--text);color:var(--bg);border-radius:var(--r-sm);padding:10px 16px;display:none;max-width:420px;box-shadow:var(--shadow);font-size:15px;z-index:40}
+canvas.ch{display:block;width:100%;max-width:480px;height:auto;border-radius:var(--r);margin:12px 0;background:var(--surface-2)}
+#term{position:fixed;right:16px;bottom:96px;width:min(440px,92vw);background:#0d1117;border:1px solid #2b3a30;border-radius:var(--r);box-shadow:var(--shadow);z-index:8}
+#term .th2{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;color:#9fe0b6;font:13px Consolas,monospace;border-bottom:1px solid #2b3a30}
+#term button{background:none;border:0;color:#9fe0b6;font-size:18px;min-width:32px;min-height:32px}
+#term pre{margin:0;padding:12px;max-height:200px;overflow:auto;color:#b6ecc8;font:13px/1.5 Consolas,monospace;white-space:pre-wrap}
+#omni,#pal{position:fixed;inset:0;background:#0008;display:none;z-index:30;backdrop-filter:blur(3px)}
 #omni.open{display:flex;align-items:center;justify-content:center}
-#omni .box2{width:min(540px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--sh)}
-#omni input{width:100%;margin:4px 0 14px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
-#omni .mdl{font-size:13px;color:var(--mut);max-height:150px;overflow:auto}
-#pal.open{display:flex;align-items:flex-start;justify-content:center;padding-top:13vh}
-#pal .bx{width:min(540px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh)}
-#pq{width:100%;padding:15px 20px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--text);font:inherit;font-size:16px;outline:0}
-.pi{display:flex;gap:12px;align-items:center;padding:9px 20px;cursor:pointer;font-size:14.5px}.pi small{margin-left:auto;color:var(--mut)}.pi.on,.pi:hover{background:var(--panel2)}
-.wc{background:var(--panel2);border-radius:14px;padding:14px;margin-bottom:10px}
-.wc h4{margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--mut)}
-.vb{display:flex;align-items:center;gap:10px;font-size:12.5px;margin:6px 0}.vb span{width:54px;color:var(--mut)}
-.vb i{flex:1;height:6px;background:var(--line);border-radius:9px;overflow:hidden}.vb i b{display:block;height:100%;border-radius:9px;opacity:.9}
-.td{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px}.td.dn span{text-decoration:line-through;color:var(--mut)}.td span{flex:1}.td button{background:none;border:0;color:var(--mut);cursor:pointer;font-size:16px}
-.td input{accent-color:var(--acc)}
-.wi{width:100%;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:14px}
-.big2{font:600 32px Consolas,monospace;text-align:center;margin:6px 0;letter-spacing:1px}
-.row2{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.th{display:block;max-width:100%;width:320px;border-radius:12px;margin:8px 0 2px}
-@media (max-width:820px){header{flex-wrap:wrap;gap:8px}nav{order:3;flex-basis:100%;overflow-x:auto}#wd.open,#side.open{position:fixed;right:0;top:0;bottom:0;z-index:20;box-shadow:var(--sh)}}
+#omni .box2{width:min(560px,94vw);background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow)}
+#omni label{display:block;margin:12px 0 4px;font-size:14px;font-weight:600}
+#omni input,.fi{width:100%;min-height:40px;padding:8px 12px;border-radius:var(--r-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font:inherit}
+#omni .mdl{font-size:14px;color:var(--muted);max-height:150px;overflow:auto}
+#pal.open{display:flex;align-items:flex-start;justify-content:center;padding-top:12vh}
+#pal .bx{width:min(560px,94vw);background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+#pq{width:100%;padding:16px 20px;border:0;border-bottom:1px solid var(--border);background:none;color:var(--text);font:inherit;font-size:16px;outline:0}
+.pi{display:flex;gap:12px;align-items:center;padding:10px 20px;cursor:pointer;font-size:15px}.pi small{margin-left:auto;color:var(--muted)}.pi.on,.pi:hover{background:var(--surface-2)}
+.wc{background:var(--surface-2);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.wc h4{margin:0 0 12px;font-size:14px;font-weight:600;color:var(--muted)}
+.vb{display:flex;align-items:center;gap:12px;font-size:14px;margin:8px 0}.vb span{width:56px;color:var(--muted)}
+.vb i{flex:1;height:8px;background:var(--border);border-radius:9px;overflow:hidden}.vb i b{display:block;height:100%;border-radius:9px}
+.td{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:15px}.td.dn span{text-decoration:line-through;color:var(--muted)}.td span{flex:1}.td button{background:none;border:0;color:var(--muted);font-size:18px;min-width:32px;min-height:32px}
+.td input{accent-color:var(--accent);width:20px;height:20px}
+.wi{width:100%;min-height:40px;padding:8px 12px;border-radius:var(--r-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font:inherit}
+.big2{font:600 32px Consolas,monospace;text-align:center;margin:8px 0}
+.row2{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.sub{font-size:14px;color:var(--muted)}
+.th{display:block;max-width:100%;width:320px;border-radius:var(--r);margin:8px 0 4px}
 
-/* ===== Tampilan v2: buku catatan bengkel — transkrip, bukan gelembung ===== */
-:root{--bg:#161a22;--panel:#1b212c;--panel2:#10131a;--line:#273040;--text:#d8dce6;--mut:#8791a5;--acc:#e8a33d;--blue:#6ea6dc;--me:#10131a;--ok:#5fb98a;--warn:#e0b04a;--bad:#e0605a;--r:3px;--sh:none}
-@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#eef0f4;--panel:#f7f8fb;--panel2:#e2e6ee;--line:#cfd5e0;--text:#222834;--mut:#5f6a7e;--acc:#b36a00;--blue:#2c6aa8;--me:#e2e6ee;--ok:#2d8a5a;--warn:#9a7000;--bad:#b73a35}}
-:root[data-theme=light]{--bg:#eef0f4;--panel:#f7f8fb;--panel2:#e2e6ee;--line:#cfd5e0;--text:#222834;--mut:#5f6a7e;--acc:#b36a00;--blue:#2c6aa8;--me:#e2e6ee;--ok:#2d8a5a;--warn:#9a7000;--bad:#b73a35}
-.title,.who,.mega h5{font-family:Bahnschrift,"Segoe UI",sans-serif}
-.title{font-size:17px;letter-spacing:.06em}
-.logo{border-radius:3px}
-.btn,.m>button,nav .find{white-space:nowrap}
-.btn,.m>button,.dd button,.dd,.chip,.sug,.sug div,#omni .box2,#pal .bx,.wc,.card,canvas.ch,#term{border-radius:3px}
-.mega h5{text-transform:none;letter-spacing:0;font-size:12px;font-weight:600}
-.wc h4{text-transform:none;letter-spacing:0;font-size:12px;font-family:Bahnschrift,"Segoe UI",sans-serif}
-#chat{padding:26px max(18px,calc((100% - 780px)/2)) 12px 0}
-.row{margin:14px 0;animation:none;padding-left:calc(max(18px,(100% - 780px)/2) + 92px);position:relative}
-.row.me,.row:not(.me){justify-content:flex-start}
-.av{display:none}
-.bub{max-width:72ch;padding:0;position:relative;line-height:1.62}
-.who{position:absolute;left:-86px;top:1px;width:70px;text-align:right;font-size:13px;font-weight:600;margin:0;color:var(--mut)!important}
-.row:not(.me) .who{color:var(--blue)!important}
-.me .bub{background:none;padding:0 0 0 12px;border-left:2px solid var(--acc);border-radius:0}
-.me .who{left:-98px;color:var(--acc)!important}
-.sys{text-align:left;font:12.5px/1.55 Consolas,"Cascadia Mono",monospace;margin:6px 0 6px calc(max(18px,(100% - 780px)/2) + 92px);padding:2px 0 2px 10px;border-left:2px solid var(--line);max-width:80ch}
-.card{margin:14px 0 14px calc(max(18px,(100% - 780px)/2) + 92px);max-width:72ch;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc)}
-.card.bad{border-color:var(--bad);border-left-color:var(--bad)}
-.card code{background:var(--panel2);border-radius:2px}
-.chip{border-radius:3px;padding:5px 12px;font-size:13.5px}
-.chip:hover{border-color:var(--acc);background:none}
-.chip.p{background:var(--acc);color:#14161c}.chip.d{color:var(--bad);border-color:var(--bad)}
-footer{padding:0 0 0 0;background:var(--bg);border-top:1px solid var(--line)}
-.box{max-width:780px;margin:0 auto;border:0;border-radius:0;background:none;padding:10px 14px 12px 92px;box-shadow:none;position:relative;align-items:center}
-.box::before{content:"›";position:absolute;left:70px;top:50%;transform:translateY(-52%);font:600 24px Bahnschrift,"Segoe UI",sans-serif;color:var(--acc)}
-.box:focus-within{border-color:transparent}
-.box:focus-within textarea{box-shadow:0 2px 0 var(--acc)}
-textarea{padding:7px 2px}
-.send{background:none;border:1px solid var(--line);color:var(--text);border-radius:3px;width:auto;height:34px;padding:0 14px;font-size:0}
-.send::after{content:"Kirim";font:14px "Segoe UI Variable Text","Segoe UI",sans-serif}
-.send:hover{border-color:var(--acc);filter:none}
-.dots span{border-radius:0;width:5px;height:5px;background:var(--acc)}
-#toast{border-radius:3px}
-@media (max-width:760px){.row,.sys,.card{padding-left:12px;margin-left:12px}.sys{margin-left:12px}.who{position:static;display:block;width:auto;text-align:left;margin-bottom:2px}.me .who{left:auto}#chat{padding-left:0}.box{padding:8px 12px}.box::before{display:none}}
+/* halaman Akun & koneksi */
+#kon{position:absolute;inset:0;background:var(--bg);overflow-y:auto;padding:24px max(16px,calc((100% - 820px)/2)) 48px;z-index:5}
+#kon[hidden]{display:none}
+#kon h2{font-size:24px;margin-bottom:8px}#kon .lead{color:var(--muted);max-width:60ch;margin:0 0 24px}
+.kc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.kc>header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.kc h3{font-size:18px}.kc p{margin:0 0 12px;color:var(--muted);max-width:62ch}
+.badge2{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;padding:2px 10px;border-radius:99px;border:1px solid currentColor}
+.badge2.ok{color:var(--success)}.badge2.no{color:var(--muted)}.badge2.warn{color:var(--warning)}
+.fld{margin:12px 0;max-width:460px}.fld label{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.fld .hint{font-size:14px;color:var(--muted);margin-top:4px}
+.pw{display:flex;gap:8px}.pw .fi{flex:1}
+.msg{margin-top:12px;padding:10px 12px;border-radius:var(--r-sm);font-size:15px;border:1px solid;display:none}
+.msg.ok{display:block;color:var(--success);border-color:var(--success)}.msg.err{display:block;color:var(--danger);border-color:var(--danger)}
+.acc{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--border)}.acc span{flex:1;min-width:160px;word-break:break-all}
+details.how{margin:8px 0}details.how summary{cursor:pointer;color:var(--accent);min-height:32px;display:flex;align-items:center}
+details.how ol{margin:8px 0 0 20px;padding:0;color:var(--muted);line-height:1.6}
+.sw{display:flex;align-items:center;gap:16px;padding:12px 0;border-top:1px solid var(--border)}.sw:first-of-type{border-top:0}
+.sw .tx{flex:1}.sw .tx b{display:block;font-weight:600}.sw .tx span{font-size:14px;color:var(--muted)}
+.tg{width:52px;height:32px;flex:none;border-radius:99px;border:2px solid var(--border-strong);background:var(--surface-2);position:relative;padding:0}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--muted);transition:transform .15s}
+.tg[aria-checked=true]{background:var(--accent);border-color:var(--accent)}.tg[aria-checked=true]::after{transform:translateX(20px);background:var(--on-accent)}
+.steps{list-style:none;margin:12px 0 0;padding:0}.steps li{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--border)}.steps li span.t{flex:1}
+.stat{width:24px;text-align:center;font-weight:700}.stat.ok{color:var(--success)}.stat.no{color:var(--muted)}
+
+/* kemajuan pekerjaan bergaya robot: bar bersegmen + persen + langkah + waktu */
+#prog{padding:0 max(16px,calc((100% - 760px)/2))}
+.pg{margin:0 0 8px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+.pg .pt{display:flex;justify-content:space-between;gap:12px;font-size:15px}.pg .pt span{font:600 14px Consolas,"Cascadia Mono",monospace;color:var(--accent)}
+.pg .tr{height:12px;margin:8px 0;border-radius:3px;background:repeating-linear-gradient(90deg,var(--border) 0 10px,transparent 10px 13px)}
+.pg .tr i{display:block;height:100%;transition:width .4s;background:repeating-linear-gradient(90deg,var(--accent) 0 10px,transparent 10px 13px)}
+.pg.done .tr i{background:repeating-linear-gradient(90deg,var(--success) 0 10px,transparent 10px 13px)}.pg.done .pt span{color:var(--success)}
+.pg.bad .tr i{background:repeating-linear-gradient(90deg,var(--danger) 0 10px,transparent 10px 13px)}.pg.bad .pt span{color:var(--danger)}
+.pg .pl{font-size:14px;color:var(--muted)}
+@media (max-width:840px){
+ body{flex-direction:column}#top{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+ #rail{position:fixed;left:0;top:0;bottom:0;z-index:20;transform:translateX(-100%);transition:transform .2s;box-shadow:var(--shadow);width:min(300px,86vw)}
+ body.railopen #rail{transform:none}#scrim{display:none;position:fixed;inset:0;background:#0007;z-index:15}body.railopen #scrim{display:block}
+ #wd.open,#side.open{position:fixed;right:0;top:0;bottom:0;z-index:20;box-shadow:var(--shadow)}
+}
+@media (forced-colors:active){.tg,.chip,.btn,.fi,.box{border:1px solid ButtonText}}
 </style>
 </head>
 <body>
-<header>
-  <svg class="logo" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" rx="3" fill="#232a3a"/><rect x="3" y="4" width="10" height="8" fill="#8ab4f8"/><rect x="5" y="6" width="2" height="2" fill="#15171c"/><rect x="9" y="6" width="2" height="2" fill="#15171c"/><rect x="7" y="2" width="2" height="2" fill="#e8c47c"/><rect x="6" y="10" width="4" height="1" fill="#15171c"/></svg>
-  <div class="ti"><div class="title">NOVA</div><div class="sub" id="status">menghubungkan…</div></div>
-  <nav id="nav"></nav>
-  <button class="btn" id="bn" title="Notifikasi">🔔 <span class="badge" id="nb" style="display:none"></span></button>
-</header>
-<main><div id="chat"></div><aside id="wd"></aside><aside id="side"><b>Notifikasi</b><div id="nl"></div></aside></main>
-<div id="toast"></div>
-<div id="pal"><div class="bx"><input id="pq" placeholder="Cari fitur… (mis. cuaca, catat, harga, pencapaian)" autocomplete="off"><div id="pl"></div></div></div>
-<div id="term" hidden><div class="th2"><span>Terminal NOVA</span><button id="tx" title="Tutup">×</button></div><pre id="tp"></pre></div>
+<div id="scrim"></div>
+<aside id="rail" aria-label="Navigasi utama">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 16 16" shape-rendering="crispEdges" role="img" aria-label="Logo NOVA"><rect width="16" height="16" rx="3" fill="#232a3a"/><rect x="3" y="4" width="10" height="8" fill="#8ab4f8"/><rect x="5" y="6" width="2" height="2" fill="#15171c"/><rect x="9" y="6" width="2" height="2" fill="#15171c"/><rect x="7" y="2" width="2" height="2" fill="#e8c47c"/><rect x="6" y="10" width="4" height="1" fill="#15171c"/></svg>
+    <div><div class="t">NOVA</div><div class="s" id="status" role="status">menghubungkan…</div></div>
+  </div>
+  <nav id="nav" aria-label="Menu"></nav>
+  <div class="railft">
+    <div class="seg" role="group" aria-label="Tema tampilan"><button data-t="auto" aria-pressed="true">Sistem</button><button data-t="light" aria-pressed="false">Terang</button><button data-t="dark" aria-pressed="false">Gelap</button></div>
+    <button class="bell" id="bn" title="Notifikasi" aria-label="Notifikasi">🔔<span class="badge" id="nb" style="display:none"></span></button>
+  </div>
+</aside>
+<div id="stage">
+  <div id="top"><button class="btn" id="burger" aria-label="Buka menu navigasi">☰ Menu</button><b>NOVA</b></div>
+  <main>
+    <div id="chat" role="log" aria-live="polite" aria-label="Percakapan"></div>
+    <section id="kon" hidden aria-label="Akun dan koneksi"></section>
+    <aside id="wd" aria-label="Widget"></aside>
+    <aside id="side" aria-label="Notifikasi"><b>Notifikasi</b><div id="nl"></div></aside>
+  </main>
+  <div id="prog" aria-live="polite"></div>
+  <footer>
+    <div style="position:relative"><div class="sug" id="sug"></div></div>
+    <div class="box"><label class="sr" for="in">Pesan untuk NOVA</label><span class="sr" id="hint">Ketik / untuk perintah, tekan Ctrl K untuk mencari fitur</span><textarea id="in" rows="1" placeholder="Tulis pesan…" aria-describedby="hint"></textarea><button class="send" id="go">Kirim</button></div>
+  </footer>
+</div>
+<div id="toast" role="status"></div>
+<div id="pal" role="dialog" aria-label="Cari fitur"><div class="bx"><input id="pq" placeholder="Cari fitur… (mis. cuaca, catat, harga)" autocomplete="off" aria-label="Cari fitur"><div id="pl"></div></div></div>
+<div id="term" hidden><div class="th2"><span>Terminal NOVA</span><button id="tx" title="Tutup" aria-label="Tutup terminal">×</button></div><pre id="tp"></pre></div>
 <div id="omni"><div class="box2"><h3 style="margin:0 0 4px">🛰 OmniRoute</h3><div class="sub" style="margin-bottom:12px">Gateway model kompatibel OpenAI (OmniRoute, LiteLLM, OpenRouter, dll.). NOVA memindai model, mengujinya, lalu memilih yang terbaik otomatis.</div><label class="sub">URL dasar (mis. https://host/v1)</label><input id="ou" placeholder="https://..."><label class="sub">API key</label><input id="ok" type="password" placeholder="(kosongkan untuk mempertahankan yang tersimpan)"><div class="chips"><button class="chip p" id="osv">Simpan &amp; pindai model</button><button class="chip" id="ocl">Tutup</button><button class="chip d" id="odl">Hapus</button></div><div id="ores" class="mdl" style="margin-top:12px"></div></div></div>
-<footer>
-  <div style="position:relative"><div class="sug" id="sug"></div></div>
-  <div class="box"><textarea id="in" rows="1" placeholder="Ketik pesan…  ( / untuk perintah, Ctrl K untuk cari fitur )"></textarea><button class="send" id="go" title="Kirim">➤</button></div>
-</footer>
 <script>
 const TOKEN="__TOKEN__";
 const COL=["#5aa9ff","#fbbf24","#f87171","#34d399"], NAME=["NOVA","VOLT","SENTRY","MEMO"];
@@ -192,20 +232,24 @@ function say(t){if(!t.trim())return;send({Chat:t.trim()});inp.value="";grow();hi
 function grow(){inp.style.height="38px";if(inp.value)inp.style.height=Math.min(Math.max(inp.scrollHeight,38),140)+"px"}
 function run(cmd,fill,tab,modal){if(modal){openOmni();document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"));return}if(tab){location.href=cmd+(IS_APP?"?app=1":"");document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"));return}if(fill){inp.value=cmd;inp.focus();grow()}else say(cmd);document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"))}
 // menu: 3 kelompok besar (panel lebar berkolom) + Dasbor + Widget + pencarian fitur (Ctrl+K)
-const GROUPS={"Alat":["Aksi","Berkas","Tim","Perkakas","Belajar"],"Sahabat":["Sahabat","Gamifikasi","Karakter"],"Pengaturan":["Pengaturan","Gemini","Persona","Memori","Bantuan"]};
+const GROUPS={"Alat":["Kerja","Aksi","Berkas","Tim","Perkakas","Belajar"],"Sahabat":["Sahabat","Gamifikasi","Karakter"],"Pengaturan":["Pengaturan","Gemini","Persona","Memori","Bantuan"]};
 function applyTheme(t){if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}
 function cycleTheme(){let t="auto";try{t=localStorage.getItem("nova-tema")||"auto"}catch(e){}const n={auto:"dark",dark:"light",light:"auto"}[t]||"auto";try{localStorage.setItem("nova-tema",n)}catch(e){}applyTheme(n);toast("Tema: "+({auto:"otomatis",dark:"gelap",light:"terang"}[n]))}
 try{applyTheme(localStorage.getItem("nova-tema")||"auto")}catch(e){}
 function closeMenus(){document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"))}
+let view="chat";
+const openG=new Set();
 function buildNav(){const nav=$("#nav");nav.innerHTML="";
- for(const [g,secs] of Object.entries(GROUPS)){const m=document.createElement("div");m.className="m";
-  m.innerHTML=`<button>${g} ▾</button><div class="dd mega">${secs.filter(k=>MENUS[k]).map(k=>`<div class="col"><h5>${k}</h5>${MENUS[k].map((x,i)=>`<button data-k="${k}" data-i="${i}"><span>${x[0]}</span>${x[1]}</button>`).join("")}</div>`).join("")}</div>`;
-  m.firstChild.onclick=e=>{e.stopPropagation();const o=m.classList.contains("open");closeMenus();if(!o)m.classList.add("open")};
-  m.querySelectorAll(".dd button").forEach(b=>b.onclick=()=>{const x=MENUS[b.dataset.k][b.dataset.i];run(x[2],x[3]==="fill",x[3]==="tab",x[3]==="modal")});nav.appendChild(m)}
- const mk=(t,id,f)=>{const b=document.createElement("button");b.className="btn";b.textContent=t;if(id)b.id=id;b.onclick=f;nav.appendChild(b)};
- mk("Dasbor",null,()=>run("/dash",false,true,false));mk("Widget","bw",toggleWidget);
- const sp=document.createElement("div");sp.className="sp";nav.appendChild(sp);mk("◐","bt",cycleTheme);$("#bt").title="Tema: otomatis / gelap / terang";
- const sb=document.createElement("button");sb.className="btn find";sb.innerHTML='🔍 Cari fitur <kbd>Ctrl K</kbd>';sb.onclick=openPal;nav.appendChild(sb)}
+ const item=(id,ico,label,fn,extra)=>{const b=document.createElement("button");b.className="nv";b.id=id;b.innerHTML=`<span class="ic" aria-hidden="true">${ico}</span><span>${label}</span>${extra||""}`;b.onclick=fn;nav.appendChild(b);return b};
+ item("nv-chat","💬","Obrolan",()=>showView("chat"));
+ item("nv-kon","🔗","Akun dan koneksi",()=>showView("kon"));
+ item("nv-dash","📊","Dasbor",()=>run("/dash",false,true,false));
+ item("bw","🧩","Widget",toggleWidget);
+ item("nv-find","🔍","Cari fitur",openPal,"<kbd>Ctrl K</kbd>");
+ for(const [g,secs] of Object.entries(GROUPS)){const d=document.createElement("details");d.className="grp";d.open=openG.has(g);d.ontoggle=()=>{d.open?openG.add(g):openG.delete(g)};
+  d.innerHTML=`<summary>${g}</summary>${secs.filter(k=>MENUS[k]).map(k=>`<h5>${k}</h5>${MENUS[k].map((x,i)=>`<button class="sub-nv" data-k="${k}" data-i="${i}"><span class="ic" aria-hidden="true">${x[0]}</span>${x[1]}</button>`).join("")}`).join("")}`;
+  d.querySelectorAll(".sub-nv").forEach(b=>b.onclick=()=>{const x=MENUS[b.dataset.k][b.dataset.i];showView("chat");run(x[2],x[3]==="fill",x[3]==="tab",x[3]==="modal")});nav.appendChild(d)}
+ const cur=$("#nv-"+view);if(cur)cur.setAttribute("aria-current","page")}
 document.addEventListener("click",closeMenus);
 // palet perintah: semua fitur tetap bisa dicari
 function allItems(){const out=[];for(const [k,items] of Object.entries(MENUS))items.forEach(x=>out.push({k,x}));return out}
@@ -232,14 +276,14 @@ $("#bn").onclick=()=>{$("#side").classList.toggle("open");seenN=notes;$("#nb").s
 // render
 function bangunKarakter(d){const l=d.karakter_daftar||[];const key=l.join(",")+"|"+d.karakter;if(bangunKarakter.k===key)return;bangunKarakter.k=key;
  MENUS["Karakter"]=[["🤖","Robot NOVA (bawaan)"+(d.karakter?"":" ✓"),"/karakter nova"],...l.map(n=>["🎭",n.charAt(0).toUpperCase()+n.slice(1)+(d.karakter===n?" ✓":""),"/karakter "+n])];buildNav()}
-function render(d){bangunKarakter(d);
+function render(d){bangunKarakter(d);renderProg(d.progress||[]);
  state=d;$("#status").textContent=(d.thinking?"berpikir…":d.status||"siap")+(d.mode?" · "+d.mode:"");
  const atEnd=chat.scrollHeight-chat.scrollTop-chat.clientHeight<420;
  const last=d.chat.length?d.chat[d.chat.length-1].seq:0, key=last+"|"+(d.approval?1:0)+"|"+(d.ask?d.ask.question:"")+"|"+d.thinking;
  if(render.k!==key){render.k=key;let h="";
-  if(!d.chat.length)h+=`<div class="sys">Halo Bos! Ketik bebas, atau mulai cepat:</div><div class="chips" style="justify-content:center">${["cek wifi","cuaca","harga bitcoin","bisa tidur 8 jam malam ini","catatan","/buddy"].map(q=>`<button class="chip" data-q="${q}">${q.replace("/buddy","sahabat")}</button>`).join("")}</div><div class="sys">Semua fitur ada di menu atas atau tekan <b>Ctrl K</b> untuk mencari.</div>`;
+  if(!d.chat.length)h+=`<div class="sys">Halo Bos! Ketik bebas, atau mulai cepat:</div><div class="chips" style="justify-content:center">${["cek wifi","cuaca","harga bitcoin","bisa tidur 8 jam malam ini","catatan","/buddy"].map(q=>`<button class="chip" data-q="${q}">${q.replace("/buddy","sahabat")}</button>`).join("")}</div><div class="sys">Semua fitur ada di menu kiri, atau tekan <b>Ctrl K</b> untuk mencari. Hubungkan email di <b>Akun dan koneksi</b>.</div>`;
   for(const l of d.chat){
-   if(l.who===-1)h+=`<div class="row me"><div class="bub"><div class="who">Kamu</div>${fmt(l.text)}</div></div>`;
+   if(l.who===-1)h+=`<div class="row me"><div class="bub"><div class="who">Anda</div>${fmt(l.text)}</div></div>`;
    else if(l.who===-2)h+=`<div class="sys">${fmt(l.text)}</div>`;
    else{const i=l.who%4;h+=`<div class="row">${av(i)}<div class="bub"><div class="who" style="color:${COL[i]}">${NAME[i]}</div>${fmt(l.text)}</div></div>`}}
   if(d.thinking)h+=`<div class="row">${av(0)}<div class="bub"><span class="dots"><span></span><span></span><span></span></span></div></div>`;
@@ -281,6 +325,96 @@ async function loadWidget(){let d;try{d=await (await fetch("/api/widget",{header
  <div class="wc"><h4>🎵 Musik</h4><div class="sub" style="margin-bottom:6px">${d.musik?esc(d.musik):"Spotify tidak terdeteksi (tombol media tetap bekerja untuk pemutar lain)"}</div>
   <div class="row2"><button class="chip" onclick="wact({aksi:'musik',tombol:'prev'})">⏮</button><button class="chip p" onclick="wact({aksi:'musik',tombol:'play'})">⏯</button><button class="chip" onclick="wact({aksi:'musik',tombol:'next'})">⏭</button></div></div>`;
  const wi=$("#wti");if(wi){wi.addEventListener("keydown",e=>{if(e.key==="Enter"&&wi.value.trim()){wact({aksi:"todo_tambah",teks:wi.value.trim()});wi.value=""}});if(act){wi.focus();wi.setSelectionRange(keep.length,keep.length)}}}
+// ---------- kemajuan pekerjaan ----------
+function renderProg(list){const el=$("#prog");if(!list.length){if(el.innerHTML)el.innerHTML="";return}
+ el.innerHTML=list.map(j=>`<div class="pg ${j.gagal?"bad":j.selesai?"done":""}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${j.pct}" aria-label="${esc(j.judul)}"><div class="pt"><b>${esc(j.judul)}</b><span>${j.gagal?"✖ gagal":j.selesai?"✔ selesai":j.pct+"%"} · ${j.detik} dtk</span></div><div class="tr" aria-hidden="true"><i style="width:${j.pct}%"></i></div><div class="pl">${esc(j.label)}</div></div>`).join("")}
+// ---------- tema, navigasi, halaman akun & koneksi ----------
+function showView(v){view=v;$("#kon").hidden=v!=="kon";document.querySelector("footer").hidden=v!=="chat";
+ document.querySelectorAll("#nav .nv[id^=nv-]").forEach(b=>b.removeAttribute("aria-current"));const c=$("#nv-"+v);if(c)c.setAttribute("aria-current","page");
+ document.body.classList.remove("railopen");if(v==="kon")loadKon();else inp.focus()}
+function setTheme(t){try{localStorage.setItem("nova-tema",t)}catch(e){}applyTheme(t);markTheme()}
+function markTheme(){let t="auto";try{t=localStorage.getItem("nova-tema")||"auto"}catch(e){}document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===t))}
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>setTheme(b.dataset.t));markTheme();
+$("#burger").onclick=()=>document.body.classList.toggle("railopen");$("#scrim").onclick=()=>document.body.classList.remove("railopen");
+
+const KM={};let KS=null;
+async function kapi(o){try{const r=await fetch("/api/koneksi",{method:"POST",headers:{"x-nova-token":TOKEN,"content-type":"application/json"},body:JSON.stringify(o)});return await r.json()}catch(e){return{ok:false,pesan:"Tidak bisa menghubungi NOVA. Pastikan aplikasi masih berjalan, lalu coba lagi."}}}
+async function loadKon(){try{KS=await (await fetch("/api/koneksi",{headers:{"x-nova-token":TOKEN}})).json()}catch(e){$("#kon").innerHTML='<h2>Akun dan koneksi</h2><div class="msg err" role="alert">Tidak bisa memuat status koneksi. Buka halaman ini lagi dalam beberapa detik.</div>';return}renderKon()}
+const kmsg=id=>KM[id]?`<div class="msg ${KM[id].ok?"ok":"err"}" role="${KM[id].ok?"status":"alert"}">${KM[id].ok?"✔ ":"Galat: "}${esc(KM[id].pesan)}</div>`:"";
+const badge=(ok,yes,no)=>ok?`<span class="badge2 ok">✔ ${yes}</span>`:`<span class="badge2 no">○ ${no}</span>`;
+function fld(id,label,o){o=o||{};const pw=o.type==="password";
+ return `<div class="fld"><label for="${id}">${label}</label><div class="${pw?"pw":""}"><input class="fi" id="${id}" type="${o.type||"text"}" ${o.ph?`placeholder="${o.ph}"`:""} autocomplete="${pw?"new-password":o.ac||"off"}" spellcheck="false" autocapitalize="none">${pw?`<button type="button" class="btn" data-show="${id}" aria-pressed="false" aria-label="Tampilkan ${label.toLowerCase()}">Tampilkan</button>`:""}</div>${o.hint?`<div class="hint">${o.hint}</div>`:""}</div>`}
+function sw(k,judul,ket,on){return `<div class="sw"><div class="tx"><b>${judul}</b><span>${ket}</span></div><button class="tg" role="switch" aria-checked="${on}" aria-label="${judul}" data-tg="${k}"></button></div>`}
+const accRows=(arr,hapus,uji)=>arr.map(a=>`<div class="acc"><span>${esc(a.label||a)}${a.host?` <small class="sub">(${esc(a.host)})</small>`:""}</span>${uji?`<button class="btn" data-a="imap-uji" data-l="${esc(a.label)}">Uji koneksi</button>`:""}<button class="btn d" data-a="${hapus}" data-l="${esc(a.label||a)}">Putuskan</button></div>`).join("");
+function renderKon(){const s=KS,g=s.google,o=s.outlook,emailOk=g.akun.length+o.akun.length+s.imap.length>0;
+ const steps=[[emailOk,"Hubungkan satu email agar NOVA bisa meringkas dan memberi tahu surat baru","k-google"],[s.gemini.key,"Pasang kunci Gemini untuk jawaban yang lebih pintar (opsional)","k-ai"],[s.brave.key,"Pasang kunci pencarian web agar hasil pencarian lebih baik (opsional)","k-web"],[s.riwayat||s.layar,"Atur privasi: izinkan NOVA mengenali selera dan konteks (opsional)","k-priv"]];
+ const done=steps.filter(x=>x[0]).length;
+ $("#kon").innerHTML=`<h2>Akun dan koneksi</h2><p class="lead">Hubungkan email dan layanan agar NOVA bisa membantu. Kunci dan sandi disimpan terenkripsi di laptop ini dan hanya dikirim ke layanan yang bersangkutan. Anda bisa memutuskan atau menghapusnya kapan saja.</p>
+ <div class="kc"><header><h3>Langkah awal</h3><span class="badge2 ${done?"ok":"no"}">${done} dari ${steps.length} selesai</span></header><ul class="steps">${steps.map(x=>`<li><span class="stat ${x[0]?"ok":"no"}" aria-hidden="true">${x[0]?"✔":"○"}</span><span class="t">${x[1]}${x[0]?' <span class="sr">(selesai)</span>':""}</span>${x[0]?"":`<button class="btn" data-go="${x[2]}">Atur</button>`}</li>`).join("")}</ul></div>
+
+ <div class="kc" id="k-google"><header><h3>Gmail (akun Google)</h3>${badge(g.akun.length,"Terhubung","Belum terhubung")}</header>
+  <p>NOVA membaca pengirim dan subjek surat yang belum dibaca serta agenda kalender. NOVA tidak mengirim surat dari akun ini.</p>
+  ${accRows(g.akun,"google-hapus",false)}
+  ${g.siap?`<div class="chips"><button class="btn p" data-a="google-masuk">Lanjutkan dengan Google</button></div>`:`<details class="how" open><summary>Langkah menyiapkan akses Google</summary><ol><li>Buka console.cloud.google.com dan buat proyek baru.</li><li>Aktifkan "Gmail API" dan "Google Calendar API".</li><li>Di "OAuth consent screen" pilih External (mode Testing), lalu tambahkan email Anda sebagai test user.</li><li>Buat "OAuth client ID" dengan jenis Desktop app.</li><li>Salin Client ID dan Client secret ke kolom di bawah.</li></ol></details>
+  ${fld("g-id","Client ID Google",{hint:"Berakhiran .apps.googleusercontent.com"})}${fld("g-sec","Client secret",{type:"password"})}<div class="chips"><button class="btn p" data-a="google-siapkan">Simpan kredensial</button></div>`}
+  ${kmsg("google")}</div>
+
+ <div class="kc" id="k-outlook"><header><h3>Outlook dan Microsoft 365</h3>${badge(o.akun.length,"Terhubung","Belum terhubung")}</header>
+  <p>NOVA membaca pengirim dan subjek surat belum dibaca serta agenda. Hanya akses baca.</p>
+  ${accRows(o.akun,"outlook-hapus",false)}
+  ${o.siap?`<div class="chips"><button class="btn p" data-a="outlook-masuk">Lanjutkan dengan Microsoft</button></div>`:`<details class="how" open><summary>Langkah menyiapkan akses Microsoft</summary><ol><li>Buka portal.azure.com, pilih Microsoft Entra ID, lalu App registrations dan New registration.</li><li>Pilih "Accounts in any organizational directory and personal Microsoft accounts".</li><li>Redirect URI: jenis Mobile and desktop applications, isi http://localhost.</li><li>Di API permissions tambahkan Microsoft Graph (Delegated): Mail.Read, Calendars.Read, User.Read, offline_access.</li><li>Salin "Application (client) ID" ke kolom di bawah.</li></ol></details>
+  ${fld("o-id","Application (client) ID")}<div class="chips"><button class="btn p" data-a="outlook-siapkan">Simpan ID aplikasi</button></div>`}
+  ${kmsg("outlook")}</div>
+
+ <div class="kc" id="k-imap"><header><h3>Email lain (Yahoo, iCloud, domain sendiri)</h3>${badge(s.imap.length,s.imap.length+" akun","Belum terhubung")}</header>
+  <p>Memakai sandi aplikasi, yaitu kode khusus yang dibuat di pengaturan keamanan akun email. Jangan pakai sandi utama. Gmail dan Outlook memakai tombol masuk di atas.</p>
+  ${accRows(s.imap,"imap-hapus",true)}
+  ${fld("i-user","Alamat email",{type:"email",ac:"email",hint:"Contoh: nama@yahoo.com"})}${fld("i-host","Server IMAP (boleh dikosongkan)",{hint:"Kosongkan agar NOVA menebak dari alamat email."})}${fld("i-pass","Sandi aplikasi",{type:"password"})}
+  <div class="chips"><button class="btn p" data-a="imap-simpan">Simpan dan uji</button></div>${kmsg("imap")}</div>
+
+ <div class="kc" id="k-smtp"><header><h3>Kirim ringkasan ke email sendiri</h3>${badge(s.smtp,s.smtp?esc(s.smtp.user):"","Belum diatur")}</header>
+  <p>Dipakai untuk mengirim ringkasan ke alamat Anda sendiri, selalu setelah Anda menyetujuinya. Tidak mengirim ke alamat lain.</p>
+  ${fld("s-user","Alamat email",{type:"email",ac:"email"})}${fld("s-host","Server SMTP (boleh dikosongkan)")}${fld("s-pass","Sandi aplikasi",{type:"password"})}
+  <div class="chips"><button class="btn p" data-a="smtp-simpan">Simpan</button></div>${kmsg("smtp")}</div>
+
+ <div class="kc" id="k-ai"><header><h3>Kecerdasan tambahan</h3>${badge(s.gemini.key,s.gemini.aktif?"Gemini aktif":"Gemini tersimpan","Belum dipasang")}</header>
+  <p>Tanpa kunci pun NOVA tetap bekerja dengan aturan lokal. Kunci Gemini membuat jawaban bebas lebih pintar; teks yang dikirim ke Google hanya perintah Anda, bukan isi berkas, layar, atau email.</p>
+  ${fld("a-key","Kunci API Gemini",{type:"password",hint:'Buat gratis di <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.'})}
+  <div class="chips"><button class="btn p" data-a="gemini-simpan">Simpan kunci</button><button class="btn" data-a="gemini-tes">Uji di obrolan</button><button class="btn" data-a="omni">Atur OmniRoute…</button></div>${kmsg("gemini")}</div>
+
+ <div class="kc" id="k-web"><header><h3>Pencarian web</h3>${badge(s.brave.key,"Brave Search aktif","Memakai Wikipedia")}</header>
+  <p>Tanpa kunci, NOVA mencari lewat Wikipedia sehingga hasil terbatas. Kunci Brave Search (ada paket gratis) membuka pencarian web penuh dengan SafeSearch ketat.</p>
+  ${fld("b-key","Kunci API Brave Search",{type:"password",hint:'Daftar di <a href="https://brave.com/search/api/" target="_blank" rel="noopener">brave.com/search/api</a>.'})}
+  <div class="chips"><button class="btn p" data-a="brave-simpan">Simpan kunci</button></div>${kmsg("brave")}</div>
+
+ <div class="kc" id="k-priv"><header><h3>Privasi dan perilaku NOVA</h3></header>
+  ${sw("riwayat","Baca riwayat browser","Judul dan jumlah kunjungan 7 hari terakhir dibaca untuk mengenali selera (mis. tontonan YouTube). Isi halaman tidak dibaca dan tidak disimpan.",s.riwayat)}
+  ${sw("layar","Kesadaran layar","Membaca teks di layar secara lokal tiap beberapa menit untuk memahami konteks. Hanya kata kunci di memori, tidak disimpan.",s.layar)}
+  <div class="sw"><div class="tx"><b>Seberapa sering NOVA bicara</b><span>Pesan penting (izin, baterai, tidur) selalu tampil.</span></div><div class="seg" role="group" aria-label="Tingkat bicara" style="flex:none;min-width:260px">${["Tenang","Normal","Ramai"].map((t,i)=>`<button data-c="${i}" aria-pressed="${s.cerewet===i}">${t}</button>`).join("")}</div></div>
+  <p style="margin:12px 0 0">Jam tidur terjadwal ${s.tidur.jam_tidur}, bangun ${s.tidur.jam_bangun}. Notifikasi biasa ditahan di jam tenang. ${kmsg("priv")}</p></div>`}
+document.addEventListener("click",async e=>{const t=e.target.closest("#kon button");if(!t)return;
+ if(t.dataset.go){document.getElementById(t.dataset.go).scrollIntoView({behavior:"smooth",block:"start"});return}
+ if(t.dataset.show){const i=document.getElementById(t.dataset.show),on=i.type==="password";i.type=on?"text":"password";t.textContent=on?"Sembunyikan":"Tampilkan";t.setAttribute("aria-pressed",on);return}
+ const v=id=>(document.getElementById(id)||{}).value||"";const a=t.dataset.a;
+ const act=async(id,o)=>{t.disabled=true;const r=await kapi(o);KM[id]=r;t.disabled=false;return r};
+ if(t.dataset.tg){const k=t.dataset.tg,r=await kapi({aksi:k,aktif:t.getAttribute("aria-checked")!=="true"});KM.priv=r;await loadKon();return}
+ if(t.dataset.c!==undefined){KM.priv=await kapi({aksi:"cerewet",nilai:+t.dataset.c});await loadKon();return}
+ if(a==="imap-simpan"){const r=await act("imap",{aksi:"imap_tambah",host:v("i-host"),user:v("i-user"),pass:v("i-pass")});if(r.ok){const u=await kapi({aksi:"imap_uji",label:v("i-user")});KM.imap={ok:u.ok,pesan:r.pesan+" "+u.pesan}}await loadKon()}
+ else if(a==="imap-uji"){KM.imap=await act("imap",{aksi:"imap_uji",label:t.dataset.l});await loadKon()}
+ else if(a==="smtp-simpan"){await act("smtp",{aksi:"smtp",host:v("s-host"),user:v("s-user"),pass:v("s-pass")});await loadKon()}
+ else if(a==="gemini-simpan"){await act("gemini",{aksi:"gemini_key",key:v("a-key")});await loadKon()}
+ else if(a==="gemini-tes"){showView("chat");say("/gemini tes")}
+ else if(a==="brave-simpan"){await act("brave",{aksi:"brave_key",key:v("b-key")});await loadKon()}
+ else if(a==="google-siapkan"){await act("google",{aksi:"google_siapkan",client_id:v("g-id"),client_secret:v("g-sec")});await loadKon()}
+ else if(a==="outlook-siapkan"){await act("outlook",{aksi:"outlook_siapkan",client_id:v("o-id")});await loadKon()}
+ else if(a==="google-masuk"){send({Chat:"/google"});KM.google={ok:true,pesan:"Jendela browser akan terbuka. Pilih akun Google Anda, setujui akses baca, lalu kembali ke sini."}}
+ else if(a==="outlook-masuk"){send({Chat:"/outlook"});KM.outlook={ok:true,pesan:"Jendela browser akan terbuka. Pilih akun Microsoft Anda, setujui akses baca, lalu kembali ke sini."}}
+ else if(a==="omni"){openOmni();return}
+ else if(["imap-hapus","google-hapus","outlook-hapus"].includes(a)){
+  if(t.dataset.sure!=="1"){t.dataset.sure="1";const old=t.textContent;t.textContent="Putuskan akun ini?";t.setAttribute("aria-live","assertive");setTimeout(()=>{t.dataset.sure="";t.textContent=old},5000);return}
+  const id=a.split("-")[0];const m={"imap-hapus":{aksi:"imap_hapus",label:t.dataset.l},"google-hapus":{aksi:"google_hapus",email:t.dataset.l},"outlook-hapus":{aksi:"outlook_hapus",email:t.dataset.l}}[a];
+  KM[id==="imap"?"imap":id]=await kapi(m);await loadKon();return}
+ if(view==="kon")renderKon()});
 poll();inp.focus();
 </script>
 </body>

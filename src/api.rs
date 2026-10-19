@@ -502,6 +502,19 @@ pub fn token_path() -> std::path::PathBuf {
     config::data_dir().join("api.token")
 }
 
+async fn koneksi_get() -> Json<serde_json::Value> {
+    Json(tokio::task::spawn_blocking(crate::koneksi::status).await.unwrap_or_default())
+}
+
+async fn koneksi_post(Json(v): Json<serde_json::Value>) -> Json<serde_json::Value> {
+    let (ok, pesan) = if v["aksi"].as_str().is_some_and(|a| a.ends_with("_uji")) {
+        crate::koneksi::uji(&v).await
+    } else {
+        tokio::task::spawn_blocking(move || crate::koneksi::terapkan(&v)).await.unwrap_or((false, "gagal".into()))
+    };
+    Json(serde_json::json!({"ok": ok, "pesan": pesan}))
+}
+
 /// Satu pintu untuk semua /api/*: token + Host lokal. Handler baru otomatis terlindungi.
 async fn jaga(State(s): State<Arc<Shared>>, req: axum::extract::Request, next: axum::middleware::Next) -> Response {
     if req.uri().path().starts_with("/api/") && !(authorized(req.headers(), &s) && local_host(req.headers())) {
@@ -531,7 +544,7 @@ pub async fn serve(cfg: Config, port: u16) -> anyhow::Result<()> {
             s2.snap.lock().unwrap_or_else(|e| e.into_inner()).apply(&e);
         }
     });
-    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/alat", get(alat_get)).route("/api/putusan", get(putusan_get).post(putusan_post)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).layer(axum::middleware::from_fn_with_state(shared.clone(), jaga)).with_state(shared);
+    let app = Router::new().route("/dash", get(dash)).route("/api/stats", get(stats)).route("/api/widget", get(widget_get).post(widget_post)).route("/api/omni", get(omni_get).post(omni_post)).route("/api/internet", get(internet_get)).route("/api/otak", get(otak_get)).route("/api/graf", get(graf_get)).route("/api/alat", get(alat_get)).route("/api/putusan", get(putusan_get).post(putusan_post)).route("/api/bedah", get(bedah_get)).route("/api/ajar", get(ajar_get).post(ajar_post)).route("/api/paket", get(paket_get)).route("/ui", get(ui)).route("/api/pet", get(pet)).route("/api/bec", get(bec_test)).route("/api/cmd", post(post_cmd)).route("/api/ad", post(post_ad)).route("/api/koneksi", get(koneksi_get).post(koneksi_post)).layer(axum::middleware::from_fn_with_state(shared.clone(), jaga)).with_state(shared);
     let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
     axum::serve(listener, app).await?;
     Ok(())
