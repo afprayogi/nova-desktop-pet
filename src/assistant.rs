@@ -208,7 +208,7 @@ fn nights(c: &Connection) -> Vec<(String, f32, String)> {
     let mut best: std::collections::BTreeMap<String, (i64, i64)> = Default::default();
     for w in mins.windows(2) {
         let gap = w[1] - w[0];
-        if gap >= 180 {
+        if (180..=840).contains(&gap) {// >14 jam = laptop mati, bukan tidur
             let end = Local.timestamp_opt(w[1] * 60, 0).single();
             let Some(end) = end else { continue };
             let k = end.format("%Y-%m-%d").to_string();

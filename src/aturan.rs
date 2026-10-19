@@ -317,6 +317,12 @@ fn rule_kode(s: &str) -> Option<Call> {
     if l.contains("kepribadian") || l.contains("preferensimu") {
         return mk("kepribadian", String::new());
     }
+    if ["resume kita", "resume tentang aku", "rangkuman tentang aku", "ringkasan tentang aku", "kamu tahu apa tentang aku", "kamu tau apa tentang aku", "kamu menganggap aku", "kamu memandang aku", "kamu melihat aku", "kamu memikirkan aku", "kamu mikirin aku", "aku ini bagi kamu"].iter().any(|k| l.contains(k)) || l.trim() == "resume" {
+        return mk("resume", String::new());
+    }
+    if ["selera aku", "seleraku", "kesukaanku", "kesukaan aku", "apa yang aku suka", "apa yang kusuka", "analisis tontonan", "analisa tontonan", "aku suka apa"].iter().any(|k| l.contains(k)) || l.trim() == "selera" {
+        return mk("selera", String::new());
+    }
     // Perintah bahasa sehari-hari: tutup aplikasi menganggur / rapikan / cari file / meme
     if (l.contains("aplikasi") || l.contains("program") || l.contains("app")) && ["tidak dipakai", "tidak digunakan", "gak dipakai", "nggak dipakai", "nganggur", "tak terpakai", "tidak terpakai", "gak kepake", "ga kepake"].iter().any(|k| l.contains(k)) && ["matikan", "tutup", "bersihkan", "stop"].iter().any(|k| l.contains(k)) || l.contains("bebaskan memori") || l.contains("bebaskan ram") {
         return mk("apps", String::new());

@@ -49,6 +49,7 @@ mod ml;
 mod monitor;
 mod musik;
 mod koneksi;
+mod kita;
 mod notify;
 mod progres;
 mod pencarian;

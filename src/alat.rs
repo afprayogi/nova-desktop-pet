@@ -479,6 +479,8 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "meme" => crate::meme::meme(arg, arg.len() + chrono::Timelike::second(&chrono::Local::now()) as usize),
         "berita" => crate::berita::headlines(http, arg, false).await.0,
         "kepribadian" => crate::bandit::report(),
+        "resume" => tokio::task::spawn_blocking(crate::kita::resume).await.unwrap_or_else(|_| "gagal menyusun resume".into()),
+        "selera" => tokio::task::spawn_blocking(crate::kita::selera).await.unwrap_or_else(|_| "gagal membaca selera".into()),
         "kurikulum" => {
             let a = arg.to_string();
             tokio::task::spawn_blocking(move || crate::kurikulum::run(&a)).await.unwrap_or_else(|_| "gagal membuat kurikulum".into())

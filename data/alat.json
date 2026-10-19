@@ -129,7 +129,9 @@
   "kognisi": [
    "kepribadian",
    "ingatan",
-   "ngobrol"
+   "ngobrol",
+   "resume",
+   "selera"
   ],
   "berkas": [
    "cari",
@@ -5962,6 +5964,58 @@
    "uji": [
     "pomodoro => berhasil",
     "pomodoro xx => galat ditangani dengan pesan jelas"
+   ]
+  },
+  {
+   "id": "alat.resume",
+   "nama": "resume",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "ringkasan apa yang kutahu tentang Bos, selera, dan hubungan kita",
+   "ringkas": "ringkasan apa yang kutahu tentang Bos, selera, dan hubungan kita",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/resume"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "resume",
+     "catatan": "pemakaian dasar"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "resume kita",
+    "kamu tahu apa tentang aku",
+    "bagaimana kamu memandang aku"
+   ]
+  },
+  {
+   "id": "alat.selera",
+   "nama": "selera",
+   "versi": "2.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "selera Bos dari tontonan YouTube, lagu, dan topik berita",
+   "ringkas": "selera Bos dari tontonan YouTube, lagu, dan topik berita",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/selera"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "selera",
+     "catatan": "pemakaian dasar"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "apa seleraku",
+    "analisis tontonan",
+    "apa yang aku suka"
    ]
   }
  ],
