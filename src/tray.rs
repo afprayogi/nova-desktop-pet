@@ -11,18 +11,13 @@ use tray_icon::{Icon, TrayIconBuilder};
 const RUN_KEY: &str = r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run";
 
 pub fn autostart_enabled() -> bool {
-    Command::new("reg").args(["query", RUN_KEY, "/v", "NOVA"]).output().map(|o| o.status.success()).unwrap_or(false)
+    crate::penjadwal::autostart_aktif() || Command::new("reg").args(["query", RUN_KEY, "/v", "NOVA"]).output().map(|o| o.status.success()).unwrap_or(false)
 }
 
 /// Hanya mengubah entri HKCU\...\Run milik aplikasi ini (tanpa admin), atas permintaan pengguna.
 pub fn set_autostart(on: bool) -> bool {
-    let exe = std::env::current_exe().map(|p| p.display().to_string()).unwrap_or_default();
-    let out = if on {
-        Command::new("reg").args(["add", RUN_KEY, "/v", "NOVA", "/t", "REG_SZ", "/d", &format!("\"{exe}\""), "/f"]).output()
-    } else {
-        Command::new("reg").args(["delete", RUN_KEY, "/v", "NOVA", "/f"]).output()
-    };
-    out.map(|o| o.status.success()).unwrap_or(false)
+    // Lewat Task Scheduler (mulai ulang otomatis bila mati); entri Run lama dibersihkan agar tidak ganda.
+    crate::penjadwal::autostart_set(on)
 }
 
 /// Jalankan desktop pet (proses terpisah, tanpa jendela konsol).
@@ -85,19 +80,39 @@ pub fn run(port: u16) -> anyhow::Result<()> {
     let menu = Menu::new();
     let open = MenuItem::new("Buka obrolan", true, None);
     let petm = CheckMenuItem::new("Peliharaan desktop", true, true, None);
+    let senyap = CheckMenuItem::new("Mode senyap (sembunyikan peliharaan & pop-up)", true, crate::gerbang::senyap(), None);
     crate::layar::load_flag();
     let ocr = CheckMenuItem::new("Kesadaran layar (OCR berkala)", true, crate::layar::enabled(), None);
     let auto = CheckMenuItem::new("Mulai otomatis saat login", true, autostart_enabled(), None);
     let quit = MenuItem::new("Keluar", true, None);
-    menu.append_items(&[&open, &petm, &ocr, &auto, &PredefinedMenuItem::separator(), &quit])?;
+    menu.append_items(&[&open, &petm, &senyap, &ocr, &auto, &PredefinedMenuItem::separator(), &quit])?;
     let tray = TrayIconBuilder::new().with_menu(Box::new(menu)).with_tooltip("NOVA - berjalan di latar").with_icon(icon()).build()?;
-    crate::notify::toast("NOVA aktif", "Aku ada di system tray dan di layar. Klik aku untuk mengobrol.");
-    let mut pets = spawn_pet(port);
+    let mut senyap_kini = crate::gerbang::senyap();
+    if !senyap_kini {
+        crate::notify::toast("NOVA aktif", "Aku ada di system tray dan di layar. Klik aku untuk mengobrol.");
+    }
+    let mut pets = if senyap_kini { vec![] } else { spawn_pet(port) };
+    if senyap_kini {
+        petm.set_checked(false);
+    }
 
     let event_loop = EventLoopBuilder::new().build();
     event_loop.run(move |_e, _t, cf| {
         let _keep = (&rt, &tray);
         *cf = ControlFlow::WaitUntil(Instant::now() + Duration::from_millis(250));
+        // Mode senyap bisa diubah dari obrolan ("mode senyap on/off") maupun menu: ikuti berkasnya.
+        let s = crate::gerbang::senyap();
+        if s != senyap_kini {
+            senyap_kini = s;
+            senyap.set_checked(s);
+            if s {
+                kill_all(&mut pets);
+                petm.set_checked(false);
+            } else if pets.is_empty() {
+                pets = spawn_pet(port);
+                petm.set_checked(true);
+            }
+        }
         while let Ok(ev) = MenuEvent::receiver().try_recv() {
             if ev.id == open.id() {
                 api::OPEN_CHAT.fetch_add(1, Ordering::Relaxed);
@@ -110,6 +125,8 @@ pub fn run(port: u16) -> anyhow::Result<()> {
                 if !set_autostart(want) {
                     auto.set_checked(!want);
                 }
+            } else if ev.id == senyap.id() {
+                crate::gerbang::set_senyap(senyap.is_checked());
             } else if ev.id == petm.id() {
                 kill_all(&mut pets);
                 if petm.is_checked() {

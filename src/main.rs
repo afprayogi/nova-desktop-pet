@@ -54,6 +54,7 @@ mod koneksi;
 mod kita;
 mod notify;
 mod pembaruan;
+mod penjadwal;
 mod progres;
 mod pencarian;
 mod outlook;
@@ -137,6 +138,10 @@ pub(crate) fn engine_peran_bawaan() -> &'static str {
 
 fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
+    // Dijalankan Windows Task Scheduler: satu tugas terjadwal tanpa jendela, lalu keluar.
+    if let Some(i) = args.iter().position(|a| a == "--tugas") {
+        std::process::exit(penjadwal::tugas_cli(args.get(i + 1).and_then(|s| s.parse().ok()).unwrap_or(0)));
+    }
     // Rilis memakai subsistem GUI (tanpa konsol); sambungkan ke konsol pemanggil agar keluaran alat pengembang terlihat.
     #[cfg(windows)]
     if ["--versi", "--buat-kunci", "--rilis", "--autostart"].iter().any(|f| args.iter().any(|a| a == f)) {

@@ -615,6 +615,9 @@ pub async fn run(tx: Tx) {
         }
         if n % 2 == 0 {
             crate::kerja::penjaga(&tx);
+            for m in crate::penjadwal::hasil_baru() {
+                tx.notice(m);
+            }
             tick(&tx, &c, &s);
             tx.send(Event::Assist(Box::new(state(&c))));
         }

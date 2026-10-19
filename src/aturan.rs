@@ -359,6 +359,21 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["versi nova", "nova versi berapa", "versi berapa nova", "versi aplikasi"].iter().any(|k| l.contains(k)) {
         return mk("pembaruan", "versi".into());
     }
+    if ["daftar tugas terjadwal", "tugas terjadwal apa saja", "lihat tugas terjadwal"].iter().any(|k| l.contains(k)) {
+        return mk("jadwalkan", "daftar".into());
+    }
+    if let Some(r) = after(s, &l, &["hapus tugas terjadwal"]) {
+        return mk("jadwalkan", format!("hapus {r}"));
+    }
+    if let Some(r) = after(s, &l, &["jalankan tugas terjadwal"]) {
+        return mk("jadwalkan", format!("jalankan {r}"));
+    }
+    if ["nyalakan nova otomatis", "nova otomatis saat login", "aktifkan nyala otomatis"].iter().any(|k| l.trim() == *k) {
+        return mk("jadwalkan", "latar on".into());
+    }
+    if ["matikan nova otomatis", "matikan nyala otomatis"].iter().any(|k| l.trim() == *k) {
+        return mk("jadwalkan", "latar off".into());
+    }
     if l.trim() == "buat keahlian ini" {
         return mk("keahlian", "buat_calon".into());
     }

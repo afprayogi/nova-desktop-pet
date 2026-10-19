@@ -134,7 +134,9 @@
    "selera",
    "keahlian",
    "pembaruan",
-   "kerja"
+   "kerja",
+   "jadwalkan",
+   "pesan"
   ],
   "berkas": [
    "cari",
@@ -6110,6 +6112,60 @@
     "rekap hari ini",
     "mulai kerja",
     "akhiri kerja"
+   ]
+  },
+  {
+   "id": "alat.jadwalkan",
+   "nama": "jadwalkan",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <id> | jalankan <id> | latar on|off",
+   "deskripsi": "membuat tugas terjadwal di Windows Task Scheduler dari permintaan bahasa sehari-hari (dirancang model, diperiksa keamanan, butuh persetujuan Bos)",
+   "ringkas": "membuat tugas terjadwal di Windows Task Scheduler dari permintaan bahasa sehari-hari (dirancang model, diperiksa keamanan, butuh persetujuan Bos)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/jadwalkan"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "jadwalkan setiap hari jam 08:00 tampilkan cuaca Jakarta",
+     "catatan": "dirancang model lalu minta persetujuan"
+    },
+    {
+     "perintah": "jadwalkan daftar",
+     "catatan": "lihat tugas terjadwal"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "jadwalkan setiap hari jam 8",
+    "daftar tugas terjadwal",
+    "nyalakan nova otomatis"
+   ]
+  },
+  {
+   "id": "alat.pesan",
+   "nama": "pesan",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "<teks>",
+   "deskripsi": "menampilkan pop-up pengingat berisi teks (dipakai tugas terjadwal)",
+   "ringkas": "menampilkan pop-up pengingat berisi teks (dipakai tugas terjadwal)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/pesan"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "pesan waktunya rapat",
+     "catatan": "pop-up Windows"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "tampilkan pesan"
    ]
   }
  ],

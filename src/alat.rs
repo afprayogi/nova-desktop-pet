@@ -73,7 +73,9 @@ pub fn assess(c: &Call) -> Risk {
         return Risk::Block("akses komputer dikunci: server web terbuka tanpa KH_PASSWORD".into());
     }
     match c.tool.as_str() {
-        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" => Risk::Safe,
+        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" | "resume" | "selera" | "keahlian" | "kerja" | "jadwalkan" | "pesan" => Risk::Safe,
+        "pembaruan" if arg.trim() == "pasang" => Risk::Confirm("memasang pembaruan NOVA dari GitHub (diverifikasi tanda tangan); NOVA menutup diri sebentar".into()),
+        "pembaruan" => Risk::Safe,
         "kurikulum" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "graphify" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
         "graphify" => Risk::Safe,
@@ -480,6 +482,11 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "berita" => crate::berita::headlines(http, arg, false).await.0,
         "kepribadian" => crate::bandit::report(),
         "keahlian" => crate::keahlian::jalankan(http, arg).await,
+        "jadwalkan" => crate::penjadwal::jalankan(http, arg).await,
+        "pesan" => {
+            crate::notify::kirim("NOVA", arg);
+            format!("📣 {arg}")
+        }
         "kerja" => {
             let a = arg.to_string();
             tokio::task::spawn_blocking(move || crate::kerja::jalankan(&a)).await.unwrap_or_else(|_| "gagal menyusun rekap".into())
@@ -756,6 +763,21 @@ pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
         if kecil.starts_with(p) && kecil.len() > p.len() + 3 {
             return Some(vec![Call { tool: "keahlian".into(), arg: format!("buat {}", goal.trim()[p.len()..].trim()) }]);
         }
+    }
+    // Permintaan penjadwalan berisi uraian ("... lalu ..."): jangan dipecah per "lalu".
+    if kecil == "buat jadwal ini" {
+        return Some(vec![Call { tool: "jadwalkan".into(), arg: "simpan".into() }]);
+    }
+    if kecil == "batal jadwal ini" {
+        return Some(vec![Call { tool: "jadwalkan".into(), arg: "batal".into() }]);
+    }
+    for p in ["jadwalkan", "tolong jadwalkan", "buat jadwal", "buatkan jadwal", "otomatiskan"] {
+        if kecil.starts_with(p) && kecil.len() > p.len() + 3 {
+            return Some(vec![Call { tool: "jadwalkan".into(), arg: format!("buat {}", goal.trim()[p.len()..].trim()) }]);
+        }
+    }
+    if (kecil.starts_with("setiap ") || kecil.starts_with("tiap ")) && (kecil.contains(" jam ") || kecil.contains(" menit")) {
+        return Some(vec![Call { tool: "jadwalkan".into(), arg: format!("buat {}", goal.trim()) }]);
     }
     // Frasa pembantu kerja didahulukan dari makro lama ("rekap hari ini" dulu memicu agenda+tidur+kesehatan).
     for (frasa, arg) in [("mode senyap on", "senyap on"), ("mode senyap off", "senyap off"), ("nova diam", "senyap on"), ("diam dulu nova", "senyap on"), ("tampilkan nova", "senyap off"), ("nova muncul lagi", "senyap off"), ("rekap hari ini", "rekap"), ("rekap kerja", "rekap"), ("rekap harian", "rekap"), ("mulai hari kerja", "mulai"), ("mulai kerja lengkap", "mulai"), ("akhiri kerja", "akhir"), ("selesai kerja", "akhir")] {

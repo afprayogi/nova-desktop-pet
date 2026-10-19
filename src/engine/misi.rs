@@ -358,7 +358,7 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                     "rapikan" | "urungkan" => Some(0),
                     "apps" => Some(2),
                     "berita" => Some(3),
-                    "kepribadian" => Some(0),
+                    "kepribadian" | "keahlian" | "resume" | "selera" | "pembaruan" | "kerja" | "jadwalkan" | "pesan" => Some(0),
                     "tugas" => Some(3),
                     "web" | "wifi" | "port" | "bukafile" | "bukapath" | "winapp" | "waktu" | "cli" => Some(0),
                     "jadwal" => Some(3),
@@ -372,6 +372,9 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                 match speaker {
                     Some(i) => self.agent_say(i, &research::truncate(&r, 1400)),
                     None => self.tx.sys(format!("⚙ {} → {}", call.tool, research::truncate(&r, if r.contains("CHART ") { 3000 } else { 500 }))),
+                }
+                if call.tool == "jadwalkan" && crate::penjadwal::ada_draft() {
+                    self.tx.send(Event::Ask { question: "Buat jadwal ini di Windows Task Scheduler?".into(), options: vec!["buat jadwal ini".into(), "batal jadwal ini".into()] });
                 }
                 if call.tool == "keahlian" && crate::keahlian::ada_draft() {
                     self.tx.send(Event::Ask { question: "Simpan keahlian ini?".into(), options: vec!["simpan keahlian".into(), "batal keahlian".into()] });
