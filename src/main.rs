@@ -20,6 +20,7 @@ mod berita;
 mod assistant;
 mod cli;
 mod config;
+mod gerbang;
 mod emosi;
 mod ekstensi;
 mod gemini;

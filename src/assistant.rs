@@ -533,6 +533,7 @@ pub async fn run(tx: Tx) {
         // Folder otak/info: berkas baru/berubah masuk otak, tiap menit.
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+            crate::gerbang::tunggu_longgar().await;
             let _ = tokio::task::spawn_blocking(crate::info::sinkron).await;
         }
     });
@@ -541,6 +542,7 @@ pub async fn run(tx: Tx) {
         let http = crate::research::client(60);
         tokio::time::sleep(std::time::Duration::from_secs(120)).await;
         loop {
+            crate::gerbang::tunggu_longgar().await;
             if matches!(crate::vektor::isi(&http, 64).await, Some((_, 0))) {
                 break;
             }
@@ -552,6 +554,7 @@ pub async fn run(tx: Tx) {
         let http = crate::research::client(40);
         tokio::time::sleep(std::time::Duration::from_secs(180)).await;
         loop {
+            crate::gerbang::tunggu_longgar().await;
             if crate::wikipedia::isi_topik(&http, 5).await.starts_with("Semua topik") {
                 break;
             }
@@ -563,6 +566,7 @@ pub async fn run(tx: Tx) {
         let http = crate::research::client(30);
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(600)).await;
+            crate::gerbang::tunggu_longgar().await;
             if crate::terjemah::buku(&http, 20).await.starts_with("Semua buku") {
                 break;
             }
@@ -589,6 +593,7 @@ pub async fn run(tx: Tx) {
     crate::analitik::start(tx.clone());
     std::thread::spawn(crate::lokal::ensure_server);
     std::thread::spawn(|| {
+        crate::gerbang::tunggu_longgar_sync();
         crate::cadangan::run();
         crate::belajar::retrain();
     });
@@ -598,9 +603,11 @@ pub async fn run(tx: Tx) {
     let mut n = 0u64;
     std::thread::spawn(|| {
         std::thread::sleep(std::time::Duration::from_secs(40));
+        crate::gerbang::tunggu_longgar_sync();
         crate::indeks::ensure_fresh();
     });
     loop {
+        crate::gerbang::siram();
         sample(&c, &mut sys);
         if let Some((agent, text)) = crate::konteks::mode_hint() {
             crate::adegan::play_soft(&tx, vec![(agent, text)], 1, 30);

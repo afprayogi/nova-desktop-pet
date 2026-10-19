@@ -73,6 +73,8 @@ pub async fn run(tx: Tx) {
 
         let cpu = sys.global_cpu_usage();
         let (ram_used, ram_total) = (sys.used_memory() / 1_048_576, sys.total_memory() / 1_048_576);
+        crate::gerbang::CPU.store(cpu as u32, std::sync::atomic::Ordering::Relaxed);
+        crate::gerbang::RAM.store((ram_used * 100 / ram_total.max(1)) as u32, std::sync::atomic::Ordering::Relaxed);
         let (mut du, mut dt) = (0u64, 0u64);
         for d in disks.list() {
             dt += d.total_space() / 1_073_741_824;
