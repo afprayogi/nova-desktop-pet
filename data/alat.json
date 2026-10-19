@@ -131,7 +131,8 @@
    "ingatan",
    "ngobrol",
    "resume",
-   "selera"
+   "selera",
+   "keahlian"
   ],
   "berkas": [
    "cari",
@@ -6016,6 +6017,36 @@
     "apa seleraku",
     "analisis tontonan",
     "apa yang aku suka"
+   ]
+  },
+  {
+   "id": "alat.keahlian",
+   "nama": "keahlian",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <nama>",
+   "deskripsi": "membuat keahlian baru sendiri dari alat yang ada: meneliti di internet, merancang resep, diperiksa keamanan, disimpan setelah Bos setuju",
+   "ringkas": "buat keahlian baru dari alat yang ada (butuh persetujuan Bos)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/keahlian"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "keahlian buat kompres folder download jadi zip",
+     "catatan": "riset + rancang + minta persetujuan"
+    },
+    {
+     "perintah": "keahlian daftar",
+     "catatan": "lihat keahlian buatan sendiri"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "buat keahlian baru",
+    "pelajari cara mengompres folder",
+    "daftar keahlian"
    ]
   }
  ],

@@ -36,6 +36,15 @@ struct Appr {
 }
 
 #[derive(Deserialize, Clone, Default)]
+struct Prog {
+    judul: String,
+    label: String,
+    pct: u8,
+    selesai: bool,
+    gagal: bool,
+}
+
+#[derive(Deserialize, Clone, Default)]
 struct Poll {
     mood: String,
     status: String,
@@ -48,6 +57,8 @@ struct Poll {
     user_idle: u64,
     chat: Vec<ChatLine>,
     approval: Option<Appr>,
+    #[serde(default)]
+    progress: Vec<Prog>,
     thinking: bool,
     open_chat: u64,
     #[serde(default)]
@@ -1074,6 +1085,11 @@ impl eframe::App for Pet {
                             avatar(ui, self.who.idx(), 2.2);
                             ui.label(RichText::new("sedang berpikir…").italics().color(Color32::from_rgb(150, 190, 230)));
                         });
+                    }
+                    for j in srv.progress.iter().take(2) {
+                        let (teks, warna) = if j.gagal { (format!("{} · gagal", j.judul), Color32::from_rgb(255, 120, 120)) } else if j.selesai { (format!("{} · selesai", j.judul), Color32::from_rgb(110, 210, 150)) } else { (format!("{} · {}%", j.judul, j.pct), Color32::from_rgb(125, 176, 255)) };
+                        ui.add(egui::ProgressBar::new(j.pct as f32 / 100.0).fill(warna).text(teks));
+                        ui.label(RichText::new(&j.label).small().weak());
                     }
                 });
                 if let Some(a) = srv.approval.clone() {

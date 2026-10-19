@@ -479,6 +479,7 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "meme" => crate::meme::meme(arg, arg.len() + chrono::Timelike::second(&chrono::Local::now()) as usize),
         "berita" => crate::berita::headlines(http, arg, false).await.0,
         "kepribadian" => crate::bandit::report(),
+        "keahlian" => crate::keahlian::jalankan(http, arg).await,
         "resume" => tokio::task::spawn_blocking(crate::kita::resume).await.unwrap_or_else(|_| "gagal menyusun resume".into()),
         "selera" => tokio::task::spawn_blocking(crate::kita::selera).await.unwrap_or_else(|_| "gagal membaca selera".into()),
         "kurikulum" => {
@@ -744,6 +745,13 @@ pub fn summarize(text: &str, n: usize) -> String {
 /// Rencana tanpa model: kata kunci -> alat. None jika ada bagian yang tidak dipahami.
 pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     FROM_ML.store(false, Ordering::Relaxed);
+    // Permintaan membuat keahlian berisi uraian panjang ("... lalu ... lalu ..."): jangan dipecah per "lalu".
+    let kecil = goal.trim().to_lowercase();
+    for p in ["buat keahlian", "buatkan keahlian", "tambah keahlian", "buat skill", "pelajari cara", "ajari dirimu", "kembangkan dirimu"] {
+        if kecil.starts_with(p) && kecil.len() > p.len() + 3 {
+            return Some(vec![Call { tool: "keahlian".into(), arg: format!("buat {}", goal.trim()[p.len()..].trim()) }]);
+        }
+    }
     if let Some(m) = crate::aturan::makro(goal) {
         return Some(m);
     }

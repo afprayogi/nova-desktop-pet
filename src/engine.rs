@@ -237,6 +237,8 @@ pub struct Engine {
     recent_replies: Vec<String>,
     last_media_query: Option<String>,
     mission: Option<Mission>,
+    /// (id indikator kemajuan, jumlah langkah; 0 = tak tentu) untuk misi yang sedang berjalan.
+    job: Option<(u64, usize)>,
     ads: Option<tokio::task::JoinHandle<()>>,
     /// (konteks bandit, gaya, waktu, valensi) dari balasan emosi terakhir, untuk dinilai di pesan berikutnya.
     last_emo: Option<(String, String, Instant, f32)>,
@@ -284,6 +286,7 @@ pub async fn run(cfg: Config, tx: Tx, mut rx: UnboundedReceiver<Cmd>) {
         recent_replies: Vec::new(),
         last_media_query: None,
         mission: None,
+        job: None,
         ads: None,
         last_emo: None,
         llm_on: crate::llm::enabled(),
@@ -486,6 +489,9 @@ impl Engine {
             }
             Cmd::Stop => {
                 self.mission = None;
+                if let Some((j, _)) = self.job.take() {
+                    crate::progres::gagal(j, "dihentikan");
+                }
                 self.tx.send(Event::Approval(None));
                 self.tx.send(Event::Thinking(None));
                 self.running = false;

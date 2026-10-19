@@ -48,6 +48,7 @@ mod memory;
 mod ml;
 mod monitor;
 mod musik;
+mod keahlian;
 mod koneksi;
 mod kita;
 mod notify;

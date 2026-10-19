@@ -572,6 +572,9 @@ impl Engine {
             }
             "stop" => {
                 self.mission = None;
+                if let Some((j, _)) = self.job.take() {
+                    crate::progres::gagal(j, "dihentikan");
+                }
                 self.tx.send(Event::Approval(None));
                 self.tx.sys("Misi dihentikan.");
             }

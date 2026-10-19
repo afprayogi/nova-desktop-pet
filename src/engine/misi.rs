@@ -43,7 +43,7 @@ impl Engine {
             }
         }
         let tersimpan = if paksa { None } else { crate::putusan::cari(&goal) };
-        let mut offline = if paksa { None } else { tersimpan.clone().map(|c| vec![c]).or_else(|| alat::plan_offline(&goal)) };
+        let mut offline = if paksa { None } else { tersimpan.clone().map(|c| vec![c]).or_else(|| crate::keahlian::cocok(&goal)).or_else(|| alat::plan_offline(&goal)) };
         let mut g_failed = false;
         let only_tanya = offline.as_ref().is_some_and(|p| p.len() == 1 && p[0].tool == "tanya");
         let mut from_ml = tersimpan.is_none() && !paksa && alat::FROM_ML.load(std::sync::atomic::Ordering::Relaxed);
@@ -117,6 +117,7 @@ impl Engine {
                     let _ = self.mem.add_message("BOS", &goal);
                     let txt = research::truncate(&p.reply, 1500);
                     crate::teknik::simpan_jawaban("gemini", &goal, &p.reply);
+                    self.tawarkan_keahlian(&goal);
                     return self.agent_say(0, &if p.cached { format!("💾 {txt}") } else { txt });
                 }
                 Ok(_) => {}
@@ -181,6 +182,7 @@ impl Engine {
                 crate::ingat::episode("misi", &goal);
                 return self.llm_reply(goal).await;
             }
+            self.tawarkan_keahlian(&goal);
             // Tanpa model, pertanyaan bebas dijawab lewat pencarian hibrida (RAG) di memori lokal.
             offline = Some(vec![Call { tool: "tanya".into(), arg: goal.clone() }]);
         }
@@ -212,6 +214,10 @@ impl Engine {
             if queue.len() > 1 {
                 self.agent_say(0, &plan);
             }
+            let (judul, total) = (research::truncate(&goal, 40), queue.len());
+            if total > 1 {
+                self.job = Some((crate::progres::mulai(&judul, "menyiapkan langkah"), total));
+            }
             self.mission = Some(Mission { goal, plan, obs: Vec::new(), step: 0, bad: 0, pending: None, offline: true, queue });
             return;
         }
@@ -226,11 +232,23 @@ impl Engine {
             .await
             .unwrap_or_else(|| "Langsung kerjakan.".into());
         self.agent_say(0, &plan);
+        self.job = Some((crate::progres::mulai(&research::truncate(&goal, 40), "merencanakan"), 0));
         self.mission = Some(Mission { goal, plan, obs: Vec::new(), step: 0, bad: 0, pending: None, offline: false, queue: Vec::new() });
+    }
+
+    /// Permintaan aksi yang tak dikenali: tawarkan membuat keahlian baru (sekali per kalimat, tanpa memaksa).
+    fn tawarkan_keahlian(&self, goal: &str) {
+        if crate::keahlian::tampak_perintah(goal) && crate::assistant::once_key(&format!("kh-{}", research::truncate(&goal.to_lowercase(), 60))) {
+            crate::keahlian::set_calon(goal);
+            self.tx.send(Event::Ask { question: "Aku belum punya keahlian untuk itu. Mau kupelajari lewat internet dan kubuat keahlian barunya?".into(), options: vec!["buat keahlian ini".into(), "batal keahlian".into()] });
+        }
     }
 
     pub(super) async fn finish_mission(&mut self, note: &str) {
         let Some(m) = self.mission.take() else { return };
+        if let Some((j, _)) = self.job.take() {
+            crate::progres::selesai(j, note);
+        }
         self.tx.send(Event::Approval(None));
         if m.offline && m.obs.len() <= 1 {
             return; // satu langkah: jawabannya sudah tampil
@@ -258,6 +276,9 @@ impl Engine {
                 return self.finish_mission("Semua langkah selesai.").await;
             }
             let call = m.queue.remove(0);
+            if let Some((j, t)) = self.job {
+                crate::progres::langkah(j, t.saturating_sub(m.queue.len()).max(1), t, &call.tool);
+            }
             return self.exec_call(call).await;
         }
         if m.step >= MAX_STEPS {
@@ -284,6 +305,9 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
         };
         let Some(m) = self.mission.as_mut() else { return };
         m.step += 1;
+        if let Some((j, _)) = self.job {
+            crate::progres::set(j, (m.step * 100 / MAX_STEPS).min(95) as u8, &format!("langkah {} · berpikir", m.step));
+        }
         let Some(v) = alat::parse_json(&t) else {
             m.bad += 1;
             m.obs.push("(balasan bukan JSON; balas persis format JSON)".into());
@@ -348,6 +372,9 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                 match speaker {
                     Some(i) => self.agent_say(i, &research::truncate(&r, 1400)),
                     None => self.tx.sys(format!("⚙ {} → {}", call.tool, research::truncate(&r, if r.contains("CHART ") { 3000 } else { 500 }))),
+                }
+                if call.tool == "keahlian" && crate::keahlian::ada_draft() {
+                    self.tx.send(Event::Ask { question: "Simpan keahlian ini?".into(), options: vec!["simpan keahlian".into(), "batal keahlian".into()] });
                 }
                 if call.tool == "tanya" {
                     crate::adegan::on_answer(&self.tx, &call.arg, &r);

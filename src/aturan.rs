@@ -320,6 +320,24 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["resume kita", "resume tentang aku", "rangkuman tentang aku", "ringkasan tentang aku", "kamu tahu apa tentang aku", "kamu tau apa tentang aku", "kamu menganggap aku", "kamu memandang aku", "kamu melihat aku", "kamu memikirkan aku", "kamu mikirin aku", "aku ini bagi kamu"].iter().any(|k| l.contains(k)) || l.trim() == "resume" {
         return mk("resume", String::new());
     }
+    if l.trim() == "buat keahlian ini" {
+        return mk("keahlian", "buat_calon".into());
+    }
+    if l.trim() == "simpan keahlian" {
+        return mk("keahlian", "simpan".into());
+    }
+    if l.trim() == "batal keahlian" {
+        return mk("keahlian", "batal".into());
+    }
+    if ["daftar keahlian", "keahlian apa saja", "apa saja keahlianmu", "apa saja keahlian kamu"].iter().any(|k| l.contains(k)) {
+        return mk("keahlian", "daftar".into());
+    }
+    if let Some(r) = after(s, &l, &["hapus keahlian"]) {
+        return mk("keahlian", format!("hapus {r}"));
+    }
+    if let Some(r) = after(s, &l, &["buat keahlian", "buatkan keahlian", "tambah keahlian", "buat skill", "pelajari cara", "ajari dirimu", "kembangkan dirimu"]) {
+        return mk("keahlian", format!("buat {r}"));
+    }
     if ["selera aku", "seleraku", "kesukaanku", "kesukaan aku", "apa yang aku suka", "apa yang kusuka", "analisis tontonan", "analisa tontonan", "aku suka apa"].iter().any(|k| l.contains(k)) || l.trim() == "selera" {
         return mk("selera", String::new());
     }
