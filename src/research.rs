@@ -123,6 +123,14 @@ pub async fn search(http: &reqwest::Client, searx: &str, q: &str) -> Result<Vec<
         }
     }
 
+    if let Some(key) = crate::koneksi::brave_key() {
+        match brave(http, q, &key).await {
+            Ok(hits) if !hits.is_empty() => return Ok(hits),
+            Ok(_) => {}
+            Err(error) => errors.push(format!("Brave: {error}")),
+        }
+    }
+
     if !searx.trim().is_empty() {
         match searxng(http, searx, q).await {
             Ok(hits) if !hits.is_empty() => return Ok(hits),
@@ -131,19 +139,104 @@ pub async fn search(http: &reqwest::Client, searx: &str, q: &str) -> Result<Vec<
         }
     }
 
-    match ddg(http, q).await {
-        Ok(hits) if !hits.is_empty() => Ok(hits),
-        Ok(_) if errors.is_empty() => Ok(Vec::new()),
-        Ok(_) => anyhow::bail!(
-            "Semua penyedia pencarian gagal atau kosong: {}",
-            errors.join("; ")
-        ),
-        Err(error) if errors.is_empty() => Err(error),
-        Err(error) => anyhow::bail!(
-            "Semua penyedia pencarian gagal: {}; DuckDuckGo: {error}",
-            errors.join("; ")
-        ),
+    // DuckDuckGo diblokir di sebagian jaringan: beri waktu 8 detik, lalu jatuh ke Wikipedia (API resmi, tanpa key).
+    // Setelah gagal, DuckDuckGo dilewati 10 menit agar tiap pencarian tidak menunggu 8 detik lagi.
+    static DDG_GAGAL: std::sync::Mutex<Option<std::time::Instant>> = std::sync::Mutex::new(None);
+    let lewati = DDG_GAGAL.lock().ok().and_then(|g| *g).is_some_and(|t| t.elapsed() < std::time::Duration::from_secs(600));
+    if !lewati {
+        match tokio::time::timeout(std::time::Duration::from_secs(8), ddg(http, q)).await {
+            Ok(Ok(hits)) => {
+                let hits = bersih(hits);
+                if !hits.is_empty() {
+                    return Ok(hits);
+                }
+            }
+            Ok(Err(error)) => {
+                errors.push(format!("DuckDuckGo: {error}"));
+                if let Ok(mut g) = DDG_GAGAL.lock() {
+                    *g = Some(std::time::Instant::now());
+                }
+            }
+            Err(_) => {
+                errors.push("DuckDuckGo: waktu habis".into());
+                if let Ok(mut g) = DDG_GAGAL.lock() {
+                    *g = Some(std::time::Instant::now());
+                }
+            }
+        }
     }
+    for lang in ["id", "en"] {
+        match wikipedia(http, lang, q).await {
+            Ok(hits) if !hits.is_empty() => return Ok(hits),
+            Ok(_) => {}
+            Err(error) => errors.push(format!("Wikipedia {lang}: {error}")),
+        }
+    }
+    if errors.is_empty() {
+        Ok(Vec::new())
+    } else {
+        anyhow::bail!("Semua penyedia pencarian gagal: {}", errors.join("; "))
+    }
+}
+
+/// Buang hasil spam/dewasa/judi (mesin pencari publik kadang menyajikannya) sebelum dibaca atau ditampilkan.
+pub fn bersih(hits: Vec<Hit>) -> Vec<Hit> {
+    const BURUK: &[&str] = &["bokep", "porn", "xxx", "jav ", " jav", "sex", "ngentot", "hentai", "judi", "slot gacor", "togel", "casino", "bocil", "vcs", "telanjang"];
+    hits.into_iter()
+        .filter(|h| {
+            let t = format!("{} {} {}", h.title, h.url, h.snippet).to_lowercase();
+            !BURUK.iter().any(|b| t.contains(b))
+        })
+        .collect()
+}
+
+/// Brave Search API (key gratis di brave.com/search/api; isi env BRAVE_API_KEY): hasil web aman dengan SafeSearch ketat.
+async fn brave(http: &reqwest::Client, q: &str, key: &str) -> Result<Vec<Hit>> {
+    let v: serde_json::Value = http
+        .get("https://api.search.brave.com/res/v1/web/search")
+        .query(&[("q", q), ("count", "6"), ("safesearch", "strict"), ("country", "ID"), ("search_lang", "id")])
+        .header("X-Subscription-Token", key)
+        .header("Accept", "application/json")
+        .send()
+        .await?
+        .error_for_status()?
+        .json()
+        .await?;
+    Ok(bersih(
+        v["web"]["results"]
+            .as_array()
+            .map(|a| {
+                a.iter()
+                    .filter_map(|r| {
+                        Some(Hit { title: strip_tags(r["title"].as_str()?), url: r["url"].as_str()?.to_string(), snippet: strip_tags(r["description"].as_str().unwrap_or("")) })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default(),
+    ))
+}
+
+/// Wikipedia (API resmi): pencarian teks penuh, hasil berupa artikel dengan cuplikan.
+async fn wikipedia(http: &reqwest::Client, lang: &str, q: &str) -> Result<Vec<Hit>> {
+    let v: serde_json::Value = http
+        .get(format!("https://{lang}.wikipedia.org/w/api.php"))
+        .query(&[("action", "query"), ("list", "search"), ("srsearch", q), ("srlimit", "4"), ("format", "json")])
+        .send()
+        .await?
+        .error_for_status()?
+        .json()
+        .await?;
+    Ok(v["query"]["search"]
+        .as_array()
+        .map(|a| {
+            a.iter()
+                .filter_map(|r| {
+                    let t = r["title"].as_str()?;
+                    Some(Hit { title: format!("{t} - Wikipedia"), url: format!("https://{lang}.wikipedia.org/wiki/{}", urlencoding::encode(&t.replace(' ', "_"))), snippet: strip_tags(r["snippet"].as_str().unwrap_or("")) })
+                })
+                .collect()
+        })
+        .unwrap_or_default())
 }
 
 async fn google_cse(
@@ -318,6 +411,14 @@ fn parse_google_cse(data: &Value) -> Vec<Hit> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn bersih_membuang_spam_dewasa() {
+        let h = |t: &str| Hit { title: t.into(), url: "https://x.id".into(), snippet: String::new() };
+        let r = super::bersih(vec![h("Relay overload termal"), h("Koleksi bokep terbaru"), h("Slot gacor hari ini")]);
+        assert_eq!(r.len(), 1);
+    }
+
+
     use super::*;
 
     #[test]

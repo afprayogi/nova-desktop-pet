@@ -124,6 +124,12 @@ fn layanan(l: &str, fase: Fase) -> Option<String> {
     }
     let abaikan = teks(&cfg["abaikan"]);
     let w: Vec<&str> = l.split(|c: char| !c.is_alphanumeric()).filter(|x| !x.is_empty()).collect();
+    // "cari di internet/web X" tanpa menyebut situs tertentu: jawab di sini lewat alat `web` (dengan sumber), bukan buka Google di browser.
+    if ["cari di internet", "cari di web", "cari internet", "cari online", "cari tahu di internet", "cari tahu di web"].iter().any(|k| l.contains(k))
+        && !w.iter().any(|x| LAYANAN_UTAMA.contains(x))
+    {
+        return None;
+    }
     let has = |k: &str| w.contains(&k);
     let aksi = crate::kata::aksi(l);
     for e in cfg["layanan"].as_array()? {

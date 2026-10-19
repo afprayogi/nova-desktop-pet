@@ -363,7 +363,7 @@ fn norm(q: &str) -> Vec<String> {
 }
 
 /// Cari jawaban/rencana yang pernah disimpan: kunci identik, atau kalimat sangat mirip (Jaccard >= 0,8, minimal 3 kata).
-fn cache_get(kind: &str, q: &str, ttl_s: i64) -> Option<String> {
+pub(crate) fn cache_get(kind: &str, q: &str, ttl_s: i64) -> Option<String> {
     let w = norm(q);
     if w.len() < 3 {
         return None;
@@ -391,7 +391,7 @@ fn cache_get(kind: &str, q: &str, ttl_s: i64) -> Option<String> {
     None
 }
 
-fn cache_put(kind: &str, q: &str, val: &str) {
+pub(crate) fn cache_put(kind: &str, q: &str, val: &str) {
     let w = norm(q);
     if w.len() < 3 || val.trim().is_empty() {
         return;
@@ -503,6 +503,10 @@ pub async fn web(http: &reqwest::Client, q: &str) -> String {
             }
             Err(e) => {
                 gerr = Some(e.to_string());
+                // Kuota Google Search habis: cari sungguhan lewat DuckDuckGo/SearXNG sebelum menyerah ke ingatan model.
+                if let Some(t) = crate::pencarian::jawab(http, q).await {
+                    return t;
+                }
                 // Kuota pencarian Google (grounding) di tier gratis terbatas: jawab dari pengetahuan model, beri tahu Bos.
                 let sys2 = "Kamu NOVA, asisten yang hangat dan akrab (panggil \"Bos\"). Jawab dalam Bahasa Indonesia, ringkas (maksimal 4 kalimat), ramah. Kamu TIDAK punya akses internet saat ini: jawab dari pengetahuanmu dan katakan jelas bila datanya bisa sudah berubah (harga, berita, cuaca).";
                 if let Ok(t) = generate(http, sys2, q, false, false).await {
@@ -511,6 +515,9 @@ pub async fn web(http: &reqwest::Client, q: &str) -> String {
                 }
             }
         }
+    }
+    if let Some(t) = crate::pencarian::jawab(http, q).await {
+        return t;
     }
     let enc = urlencoding::encode(q).to_string();
     if let Ok(r) = http.get(format!("https://id.wikipedia.org/api/rest_v1/page/summary/{}", urlencoding::encode(&q.replace(' ', "_")))).timeout(Duration::from_secs(10)).send().await {
