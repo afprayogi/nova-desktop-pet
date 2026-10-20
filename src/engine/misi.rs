@@ -376,6 +376,9 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                 if call.tool == "jadwalkan" && crate::penjadwal::ada_draft() {
                     self.tx.send(Event::Ask { question: "Buat jadwal ini di Windows Task Scheduler?".into(), options: vec!["buat jadwal ini".into(), "batal jadwal ini".into()] });
                 }
+                if call.tool == "keahlian" && crate::keahlian::ada_impor() {
+                    self.tx.send(Event::Ask { question: "Impor keahlian ini?".into(), options: vec!["impor keahlian ini".into(), "batal impor keahlian".into()] });
+                }
                 if call.tool == "skrip" && crate::skrip::ada_draft() {
                     self.tx.send(Event::Ask { question: "Simpan skrip ini (kode sudah kamu lihat)?".into(), options: vec!["simpan skrip".into(), "batal skrip".into()] });
                 }

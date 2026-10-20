@@ -6030,7 +6030,7 @@
    "nama": "keahlian",
    "versi": "1.0.0",
    "status": "stabil",
-   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <nama>",
+   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <nama> | versi <nama> | kembali <nama> | uji <nama> | ekspor | impor <berkas.json>",
    "deskripsi": "membuat keahlian baru sendiri dari alat yang ada: meneliti di internet, merancang resep, diperiksa keamanan, disimpan setelah Bos setuju",
    "ringkas": "buat keahlian baru dari alat yang ada (butuh persetujuan Bos)",
    "kategori": "kognisi",
@@ -6052,7 +6052,10 @@
    "pemicu_bahasa_alami": [
     "buat keahlian baru",
     "pelajari cara mengompres folder",
-    "daftar keahlian"
+    "daftar keahlian",
+    "uji keahlian",
+    "kembalikan keahlian",
+    "ekspor keahlian"
    ]
   },
   {

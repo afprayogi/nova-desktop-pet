@@ -27,6 +27,33 @@ pub struct Keahlian {
 
 static DRAFT: Mutex<Option<Keahlian>> = Mutex::new(None);
 static CALON: Mutex<Option<String>> = Mutex::new(None);
+static IMPOR: Mutex<Vec<Keahlian>> = Mutex::new(Vec::new());
+const MAKS_VERSI: usize = 5;
+
+fn file_versi() -> std::path::PathBuf {
+    data_dir().join("keahlian_versi.json")
+}
+
+fn muat_versi() -> Vec<Keahlian> {
+    std::fs::read_to_string(file_versi()).ok().and_then(|t| serde_json::from_str(&t).ok()).unwrap_or_default()
+}
+
+/// Simpan salinan lama sebelum ditimpa/dihapus agar bisa dikembalikan; paling banyak MAKS_VERSI per nama.
+fn arsipkan(k: &Keahlian) {
+    let mut v = muat_versi();
+    v.push(k.clone());
+    let n = v.iter().filter(|x| x.nama == k.nama).count();
+    for _ in MAKS_VERSI..n {
+        if let Some(i) = v.iter().position(|x| x.nama == k.nama) {
+            v.remove(i);
+        }
+    }
+    let _ = std::fs::write(file_versi(), serde_json::to_string_pretty(&v).unwrap_or_default());
+}
+
+pub fn ada_impor() -> bool {
+    IMPOR.lock().map(|i| !i.is_empty()).unwrap_or(false)
+}
 
 fn file() -> std::path::PathBuf {
     data_dir().join("keahlian.json")
@@ -252,6 +279,9 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
             let d = DRAFT.lock().ok().and_then(|mut d| d.take());
             let Some(k) = d else { return "Tidak ada rancangan keahlian yang menunggu.".into() };
             let mut v = daftar();
+            if let Some(lama) = v.iter().find(|x| x.nama == k.nama) {
+                arsipkan(lama);
+            }
             v.retain(|x| x.nama != k.nama);
             let nama = k.nama.clone();
             let contoh = k.pemicu[0].clone();
@@ -267,8 +297,110 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
         "hapus" => {
             let mut v = daftar();
             let n = v.len();
+            if let Some(lama) = v.iter().find(|x| x.nama.eq_ignore_ascii_case(rest)) {
+                arsipkan(lama);
+            }
             v.retain(|x| !x.nama.eq_ignore_ascii_case(rest));
             if v.len() < n && tulis(&v) { format!("Keahlian '{rest}' dihapus.") } else { format!("Keahlian '{rest}' tidak ditemukan.") }
+        }
+        "versi" => {
+            let v: Vec<Keahlian> = muat_versi().into_iter().filter(|k| k.nama.eq_ignore_ascii_case(rest)).collect();
+            if v.is_empty() {
+                return format!("Tidak ada versi lama untuk '{rest}'.");
+            }
+            format!("🕘 Versi lama '{rest}' (terbaru di bawah; ketik 'kembalikan keahlian {rest}' untuk memulihkan yang terakhir):\n{}", v.iter().map(|k| format!("• {} — {} langkah, pemicu \"{}\"", chrono::DateTime::from_timestamp(k.dibuat, 0).map(|d| d.with_timezone(&chrono::Local).format("%d/%m %H:%M").to_string()).unwrap_or_default(), k.langkah.len(), k.pemicu[0])).collect::<Vec<_>>().join("\n"))
+        }
+        "kembali" => {
+            let mut arsip = muat_versi();
+            let Some(i) = arsip.iter().rposition(|k| k.nama.eq_ignore_ascii_case(rest)) else { return format!("Tidak ada versi lama untuk '{rest}'.") };
+            let lama = arsip.remove(i);
+            if let Err(e) = validasi(&serde_json::json!({"nama": lama.nama, "pemicu": lama.pemicu, "langkah": lama.langkah}), "") {
+                return format!("Versi lama tidak lolos pemeriksaan keamanan sekarang: {e}");
+            }
+            let mut v = daftar();
+            let sekarang = v.iter().position(|k| k.nama.eq_ignore_ascii_case(rest)).map(|p| v.remove(p));
+            let nama = lama.nama.clone();
+            v.push(lama);
+            if let Some(s) = sekarang {
+                arsip.push(s); // yang baru dibuang bisa dipulihkan lagi
+            }
+            let _ = std::fs::write(file_versi(), serde_json::to_string_pretty(&arsip).unwrap_or_default());
+            if tulis(&v) { format!("↩ Keahlian '{nama}' dikembalikan ke versi sebelumnya.") } else { "Gagal menyimpan.".into() }
+        }
+        "uji" => match daftar().into_iter().find(|k| k.nama.eq_ignore_ascii_case(rest)) {
+            None => format!("Keahlian '{rest}' tidak ditemukan."),
+            Some(k) => {
+                let baris: Vec<String> = k
+                    .langkah
+                    .iter()
+                    .enumerate()
+                    .map(|(i, l)| {
+                        let (r, ok) = match (crate::registry::ada(&l.alat), alat::assess(&Call { tool: l.alat.clone(), arg: l.arg.replace("{*}", "contoh") })) {
+                            (false, _) => ("ALAT TIDAK ADA LAGI", false),
+                            (_, Risk::Safe) => ("aman, jalan langsung", true),
+                            (_, Risk::Confirm(_)) => ("minta izinmu", true),
+                            (_, Risk::Block(_)) => ("DIBLOKIR", false),
+                        };
+                        format!("  {} {}. {} {} → {r}", if ok { "✔" } else { "✖" }, i + 1, l.alat, l.arg)
+                    })
+                    .collect();
+                format!("🧪 Uji kering '{}' (tidak ada yang dijalankan):\n{}\nContoh pemicu: \"{}\"", k.nama, baris.join("\n"), k.pemicu[0])
+            }
+        },
+        "ekspor" => {
+            let v = daftar();
+            if v.is_empty() {
+                return "Belum ada keahlian untuk diekspor.".into();
+            }
+            let p = data_dir().join("keahlian_ekspor.json");
+            match std::fs::write(&p, serde_json::to_string_pretty(&v).unwrap_or_default()) {
+                Ok(()) => format!("📤 {} keahlian diekspor ke {}. Salin berkas itu ke NOVA lain, lalu ketik: impor keahlian <lokasi berkas>.", v.len(), p.display()),
+                Err(e) => format!("Gagal mengekspor: {e}"),
+            }
+        }
+        "impor" => {
+            if rest == "ya" {
+                let masuk: Vec<Keahlian> = IMPOR.lock().map(|mut i| std::mem::take(&mut *i)).unwrap_or_default();
+                if masuk.is_empty() {
+                    return "Tidak ada impor yang menunggu.".into();
+                }
+                let mut v = daftar();
+                for k in &masuk {
+                    if let Some(lama) = v.iter().find(|x| x.nama == k.nama) {
+                        arsipkan(lama);
+                    }
+                    v.retain(|x| x.nama != k.nama);
+                }
+                let n = masuk.len();
+                v.extend(masuk);
+                return if tulis(&v) { format!("✅ {n} keahlian diimpor.") } else { "Gagal menyimpan.".into() };
+            }
+            if rest == "batal" {
+                if let Ok(mut i) = IMPOR.lock() {
+                    i.clear();
+                }
+                return "Impor keahlian dibatalkan.".into();
+            }
+            let p = std::path::Path::new(rest.trim_matches('"'));
+            if p.extension().and_then(|e| e.to_str()) != Some("json") || p.metadata().map(|m| m.len() > 200_000).unwrap_or(true) {
+                return "Sebutkan berkas .json hasil ekspor (maks 200 KB).".into();
+            }
+            let Some(arr) = std::fs::read_to_string(p).ok().and_then(|t| serde_json::from_str::<Vec<Value>>(&t).ok()) else { return "Berkas bukan daftar keahlian yang sah.".into() };
+            let (mut ok, mut tolak) = (vec![], vec![]);
+            for x in arr.iter().take(30) {
+                match validasi(x, &format!("impor dari {}", p.file_name().and_then(|n| n.to_str()).unwrap_or("berkas"))) {
+                    Ok(k) => ok.push(k),
+                    Err(e) => tolak.push(format!("{}: {e}", x["nama"].as_str().unwrap_or("?"))),
+                }
+            }
+            if ok.is_empty() {
+                return format!("Tidak ada keahlian yang lolos pemeriksaan. {}", tolak.join("; "));
+            }
+            let teks = ok.iter().map(|k| format!("• {} — pemicu \"{}\", {} langkah", k.nama, k.pemicu[0], k.langkah.len())).collect::<Vec<_>>().join("\n");
+            if let Ok(mut i) = IMPOR.lock() {
+                *i = ok;
+            }
+            format!("📥 Siap diimpor (sudah lolos pemeriksaan keamanan; langkah berisiko tetap minta izin tiap dipakai):\n{teks}{}", if tolak.is_empty() { String::new() } else { format!("\nDitolak: {}", tolak.join("; ")) })
         }
         _ => {
             let v = daftar();
@@ -311,5 +443,26 @@ mod tests {
         assert!(tampak_perintah("kompres folder download jadi zip"));
         assert!(!tampak_perintah("apa itu relay?"));
         assert!(!tampak_perintah("buat"));
+    }
+
+    #[test]
+    fn versi_lama_bisa_dikembalikan_dan_impor_divalidasi() {
+        let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+        let http = reqwest::Client::new();
+        let v1 = validasi(&json!({"nama": "Zip folder", "pemicu": ["zipkan folder *"], "langkah": [{"alat": "kompres", "arg": "{*}"}]}), "uji").unwrap();
+        let mut v2 = v1.clone();
+        v2.pemicu = vec!["bungkus folder *".into()];
+        assert!(tulis(&[v1.clone()]));
+        arsipkan(&v1);
+        assert!(tulis(&[v2]));
+        assert!(rt.block_on(jalankan(&http, "versi Zip folder")).contains("zipkan folder *"));
+        assert!(rt.block_on(jalankan(&http, "kembali Zip folder")).contains("dikembalikan"));
+        assert_eq!(daftar()[0].pemicu[0], "zipkan folder *");
+        // berkas impor berisi satu keahlian sah dan satu berbahaya: hanya yang sah masuk antrean
+        let p = data_dir().join("impor-uji.json");
+        std::fs::write(&p, r#"[{"nama":"Aman","pemicu":["tolong cek x *"],"langkah":[{"alat":"cuaca","arg":"{*}"}]},{"nama":"Bahaya","pemicu":["hapus semuanya *"],"langkah":[{"alat":"shell","arg":"rm -rf /"}]}]"#).unwrap();
+        let r = rt.block_on(jalankan(&http, &format!("impor {}", p.display())));
+        assert!(r.contains("Aman") && r.contains("Ditolak") && ada_impor(), "{r}");
+        assert!(rt.block_on(jalankan(&http, "impor ya")).contains("1 keahlian"));
     }
 }

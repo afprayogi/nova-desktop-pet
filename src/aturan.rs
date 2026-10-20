@@ -419,6 +419,27 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["templat jadwal", "jadwalkan templat", "contoh jadwal"].iter().any(|k| l.trim() == *k) {
         return mk("jadwalkan", "templat".into());
     }
+    if let Some(r) = after(s, &l, &["versi keahlian"]) {
+        return mk("keahlian", format!("versi {r}"));
+    }
+    if let Some(r) = after(s, &l, &["kembalikan keahlian"]) {
+        return mk("keahlian", format!("kembali {r}"));
+    }
+    if let Some(r) = after(s, &l, &["uji keahlian"]) {
+        return mk("keahlian", format!("uji {r}"));
+    }
+    if l.trim() == "ekspor keahlian" {
+        return mk("keahlian", "ekspor".into());
+    }
+    if l.trim() == "impor keahlian ini" {
+        return mk("keahlian", "impor ya".into());
+    }
+    if l.trim() == "batal impor keahlian" {
+        return mk("keahlian", "impor batal".into());
+    }
+    if let Some(r) = after(s, &l, &["impor keahlian"]) {
+        return mk("keahlian", format!("impor {r}"));
+    }
     if l.trim() == "buat keahlian ini" {
         return mk("keahlian", "buat_calon".into());
     }
