@@ -64,6 +64,7 @@ mod dokumen;
 mod kondisi;
 mod berbagi;
 mod mcpklien;
+mod wasm;
 mod penjadwal;
 mod skrip;
 mod progres;

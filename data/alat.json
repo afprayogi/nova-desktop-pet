@@ -145,7 +145,8 @@
    "privasi",
    "aturanberkas",
    "githubissue",
-   "mcp"
+   "mcp",
+   "plugin"
   ],
   "berkas": [
    "cari",
@@ -6449,6 +6450,36 @@
     "daftar server mcp",
     "alat mcp",
     "panggil mcp"
+   ]
+  },
+  {
+   "id": "alat.plugin",
+   "nama": "plugin",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "daftar | pasang <berkas.wasm> | jalankan <nama> <teks> | hapus <nama>",
+   "deskripsi": "plugin WebAssembly dalam sandbox (tanpa impor/akses sistem, bahan bakar dan memori dibatasi); memasang minta izin",
+   "ringkas": "plugin WebAssembly dalam sandbox (tanpa impor/akses sistem, bahan bakar dan memori dibatasi); memasang minta izin",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/plugin"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "daftar plugin",
+     "catatan": ""
+    },
+    {
+     "perintah": "jalankan plugin gema halo",
+     "catatan": ""
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "daftar plugin",
+    "pasang plugin",
+    "jalankan plugin"
    ]
   }
  ],

@@ -491,6 +491,18 @@ fn rule_kode(s: &str) -> Option<Call> {
     if let Some(r) = after(s, &l, &["hapus server mcp", "hapus mcp"]) {
         return mk("mcp", format!("hapus {r}"));
     }
+    if ["daftar plugin", "plugin apa saja"].iter().any(|k| l.contains(k)) {
+        return mk("plugin", "daftar".into());
+    }
+    if let Some(r) = after(s, &l, &["pasang plugin"]) {
+        return mk("plugin", format!("pasang {r}"));
+    }
+    if let Some(r) = after(s, &l, &["jalankan plugin"]) {
+        return mk("plugin", format!("jalankan {r}"));
+    }
+    if let Some(r) = after(s, &l, &["hapus plugin"]) {
+        return mk("plugin", format!("hapus {r}"));
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }
