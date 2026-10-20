@@ -245,7 +245,7 @@ pub fn autostart_set(on: bool) -> bool {
 // ---------- validasi & pratinjau ----------
 
 /// Alat yang tidak boleh jadi langkah otomatis (membuat otomasi lain, mengubah NOVA sendiri, atau mengirim keluar).
-pub const DILARANG: &[&str] = &["keahlian", "jadwalkan", "pemicu", "skrip", "pembaruan", "kirim", "urungkan"];
+pub const DILARANG: &[&str] = &["keahlian", "jadwalkan", "pemicu", "skrip", "mcp", "pembaruan", "kirim", "urungkan"];
 
 /// Periksa daftar langkah dari model: alat terdaftar dan tidak dilarang, argumen wajar, tidak diblokir keamanan.
 pub fn validasi_langkah(l: &Value, maks: usize) -> Result<Vec<Langkah>, String> {

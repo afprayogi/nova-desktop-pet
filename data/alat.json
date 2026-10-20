@@ -144,7 +144,8 @@
    "cerdas",
    "privasi",
    "aturanberkas",
-   "githubissue"
+   "githubissue",
+   "mcp"
   ],
   "berkas": [
    "cari",
@@ -6418,6 +6419,36 @@
    "pemicu_bahasa_alami": [
     "issue github",
     "daftar issue"
+   ]
+  },
+  {
+   "id": "alat.mcp",
+   "nama": "mcp",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "daftar | tambah <nama> <perintah> [args] | hapus <nama> | alat <nama> | panggil <nama> <alat> [argumen]",
+   "deskripsi": "klien MCP: memakai alat dari server MCP luar yang didaftarkan Bos (stdio); tambah/alat/panggil selalu minta izin, keluaran dianggap data tidak tepercaya",
+   "ringkas": "klien MCP: memakai alat dari server MCP luar yang didaftarkan Bos (stdio); tambah/alat/panggil selalu minta izin, keluaran dianggap data tidak tepercaya",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/mcp"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "daftar server mcp",
+     "catatan": ""
+    },
+    {
+     "perintah": "panggil mcp fs read_file C:/x.txt",
+     "catatan": "minta izin"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "daftar server mcp",
+    "alat mcp",
+    "panggil mcp"
    ]
   }
  ],

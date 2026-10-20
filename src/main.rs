@@ -63,6 +63,7 @@ mod audit;
 mod dokumen;
 mod kondisi;
 mod berbagi;
+mod mcpklien;
 mod penjadwal;
 mod skrip;
 mod progres;

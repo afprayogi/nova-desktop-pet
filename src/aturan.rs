@@ -476,6 +476,21 @@ fn rule_kode(s: &str) -> Option<Call> {
     if let Some(r) = after(s, &l, &["issue github", "issue di github", "daftar issue"]) {
         return mk("githubissue", r.to_string());
     }
+    if ["daftar server mcp", "server mcp apa saja", "daftar mcp"].iter().any(|k| l.contains(k)) {
+        return mk("mcp", "daftar".into());
+    }
+    if let Some(r) = after(s, &l, &["alat mcp", "alat dari mcp"]) {
+        return mk("mcp", format!("alat {r}"));
+    }
+    if let Some(r) = after(s, &l, &["panggil mcp", "pakai mcp"]) {
+        return mk("mcp", format!("panggil {r}"));
+    }
+    if let Some(r) = after(s, &l, &["tambah server mcp", "tambah mcp"]) {
+        return mk("mcp", format!("tambah {r}"));
+    }
+    if let Some(r) = after(s, &l, &["hapus server mcp", "hapus mcp"]) {
+        return mk("mcp", format!("hapus {r}"));
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

@@ -75,10 +75,11 @@ pub fn assess(c: &Call) -> Risk {
     match c.tool.as_str() {
         "privasi" if arg.starts_with("hapus") => Risk::Confirm("menghapus riwayat aktivitas, memori, kesehatan, jurnal, dan log audit (pengaturan dan kunci tetap)".into()),
         "privasi" if arg.starts_with("ekspor") => Risk::Confirm("menyalin semua data pribadi NOVA (tanpa kunci/token) ke folder Dokumen/NOVA".into()),
+        "mcp" if !(arg.is_empty() || arg.starts_with("daftar") || arg.starts_with("hapus")) => Risk::Confirm("menjalankan program server MCP luar yang sudah kamu daftarkan (lingkungan dibersihkan, batas 30 detik)".into()),
         "cerdas" if arg.starts_with("layar") => Risk::Confirm("membaca layar dengan OCR lokal lalu merangkumnya (teks layar bisa dikirim ke model Gemini bila aktif)".into()),
         "cerdas" if arg.starts_with("memori hapus") || arg.starts_with("memori pudar") => Risk::Confirm("menghapus kenangan yang tersimpan".into()),
         "skrip" if arg.starts_with("jalankan") => Risk::Confirm("menjalankan skrip buatan (PowerShell/Python) di folder kerjanya; kodenya sudah kamu setujui, batas 60 detik".into()),
-        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" | "resume" | "selera" | "keahlian" | "kerja" | "jadwalkan" | "pemicu" | "skrip" | "kalk" | "saranproyek" | "cerdas" | "privasi" | "aturanberkas" | "githubissue" | "pesan" => Risk::Safe,
+        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" | "resume" | "selera" | "keahlian" | "kerja" | "jadwalkan" | "pemicu" | "skrip" | "kalk" | "saranproyek" | "cerdas" | "privasi" | "aturanberkas" | "githubissue" | "mcp" | "pesan" => Risk::Safe,
         "pembaruan" if arg.trim() == "pasang" => Risk::Confirm("memasang pembaruan NOVA dari GitHub (diverifikasi tanda tangan); NOVA menutup diri sebentar".into()),
         "pembaruan" => Risk::Safe,
         "kurikulum" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
@@ -494,6 +495,7 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "cerdas" => crate::cerdas::jalankan(http, arg).await,
         "privasi" => crate::audit::jalankan(arg),
         "githubissue" => crate::engineer::github_issues(http, arg).await,
+        "mcp" => crate::mcpklien::jalankan(arg).await,
         "aturanberkas" => {
             let a = arg.to_string();
             tokio::task::spawn_blocking(move || crate::berkas::aturan_berkas(&a)).await.unwrap_or_else(|_| "gagal".into())
