@@ -58,6 +58,7 @@ mod mcp;
 mod otomasi;
 mod pemicu;
 mod penjadwal;
+mod skrip;
 mod progres;
 mod pencarian;
 mod outlook;

@@ -374,6 +374,18 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["matikan nova otomatis", "matikan nyala otomatis"].iter().any(|k| l.trim() == *k) {
         return mk("jadwalkan", "latar off".into());
     }
+    if ["daftar skrip", "skrip apa saja", "lihat skrip"].iter().any(|k| l.contains(k)) {
+        return mk("skrip", "daftar".into());
+    }
+    if let Some(r) = after(s, &l, &["jalankan skrip"]) {
+        return mk("skrip", format!("jalankan {r}"));
+    }
+    if let Some(r) = after(s, &l, &["tampilkan skrip", "lihat kode skrip"]) {
+        return mk("skrip", format!("tampil {r}"));
+    }
+    if let Some(r) = after(s, &l, &["hapus skrip"]) {
+        return mk("skrip", format!("hapus {r}"));
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

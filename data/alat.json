@@ -137,7 +137,8 @@
    "kerja",
    "jadwalkan",
    "pesan",
-   "pemicu"
+   "pemicu",
+   "skrip"
   ],
   "berkas": [
    "cari",
@@ -6201,6 +6202,37 @@
     "beri tahu saat flash disk dicolok",
     "daftar pemicu",
     "pemicu templat"
+   ]
+  },
+  {
+   "id": "alat.skrip",
+   "nama": "skrip",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "buat <permintaan> | simpan | batal | daftar | tampil <nama> | hapus <nama> | jalankan <nama> [argumen]",
+   "deskripsi": "skrip PowerShell/Python kecil buatan model: kode ditampilkan penuh, dipindai, di-hash, dan setiap dijalankan minta izin Bos (folder kerja sendiri, batas 60 detik)",
+   "ringkas": "skrip PowerShell/Python kecil buatan model: kode ditampilkan penuh, dipindai, di-hash, dan setiap dijalankan minta izin Bos (folder kerja sendiri, batas 60 detik)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/skrip"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "buat skrip python hitung baris semua file .rs",
+     "catatan": "kode ditampilkan lalu minta persetujuan"
+    },
+    {
+     "perintah": "jalankan skrip hitung-baris",
+     "catatan": "selalu minta izin"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "buat skrip python untuk",
+    "tulis skrip powershell",
+    "daftar skrip",
+    "jalankan skrip"
    ]
   }
  ],

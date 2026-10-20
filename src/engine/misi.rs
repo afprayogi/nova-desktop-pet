@@ -358,7 +358,7 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                     "rapikan" | "urungkan" => Some(0),
                     "apps" => Some(2),
                     "berita" => Some(3),
-                    "kepribadian" | "keahlian" | "resume" | "selera" | "pembaruan" | "kerja" | "jadwalkan" | "pemicu" | "pesan" => Some(0),
+                    "kepribadian" | "keahlian" | "resume" | "selera" | "pembaruan" | "kerja" | "jadwalkan" | "pemicu" | "skrip" | "pesan" => Some(0),
                     "tugas" => Some(3),
                     "web" | "wifi" | "port" | "bukafile" | "bukapath" | "winapp" | "waktu" | "cli" => Some(0),
                     "jadwal" => Some(3),
@@ -375,6 +375,9 @@ Jangan mengulang langkah yang sudah berhasil. Alat:\n{}",
                 }
                 if call.tool == "jadwalkan" && crate::penjadwal::ada_draft() {
                     self.tx.send(Event::Ask { question: "Buat jadwal ini di Windows Task Scheduler?".into(), options: vec!["buat jadwal ini".into(), "batal jadwal ini".into()] });
+                }
+                if call.tool == "skrip" && crate::skrip::ada_draft() {
+                    self.tx.send(Event::Ask { question: "Simpan skrip ini (kode sudah kamu lihat)?".into(), options: vec!["simpan skrip".into(), "batal skrip".into()] });
                 }
                 if call.tool == "pemicu" && crate::pemicu::ada_draft() {
                     self.tx.send(Event::Ask { question: "Aktifkan pemicu ini?".into(), options: vec!["buat pemicu ini".into(), "batal pemicu ini".into()] });
