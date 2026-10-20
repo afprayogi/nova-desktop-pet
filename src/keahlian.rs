@@ -4,6 +4,7 @@
 //! langkah tetap melewati penilaian risiko yang sama, jadi yang berisiko selalu meminta izin lagi. Kemajuan dilaporkan lewat `progres`.
 use crate::alat::{self, Call, Risk};
 use crate::config::data_dir;
+use crate::berbagi;
 use crate::progres;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -356,8 +357,9 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
                 return "Belum ada keahlian untuk diekspor.".into();
             }
             let p = data_dir().join("keahlian_ekspor.json");
-            match std::fs::write(&p, serde_json::to_string_pretty(&v).unwrap_or_default()) {
-                Ok(()) => format!("📤 {} keahlian diekspor ke {}. Salin berkas itu ke NOVA lain, lalu ketik: impor keahlian <lokasi berkas>.", v.len(), p.display()),
+            let items: Vec<Value> = v.iter().filter_map(|k| serde_json::to_value(k).ok()).collect();
+            match berbagi::bungkus(&items).and_then(|t| std::fs::write(&p, t).map_err(|e| e.to_string())) {
+                Ok(()) => format!("📤 {} keahlian diekspor (bertanda tangan Ed25519) ke {}. Salin berkas itu ke NOVA lain, lalu ketik: impor keahlian <lokasi berkas>.", v.len(), p.display()),
                 Err(e) => format!("Gagal mengekspor: {e}"),
             }
         }
@@ -388,7 +390,11 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
             if p.extension().and_then(|e| e.to_str()) != Some("json") || p.metadata().map(|m| m.len() > 200_000).unwrap_or(true) {
                 return "Sebutkan berkas .json hasil ekspor (maks 200 KB).".into();
             }
-            let Some(arr) = std::fs::read_to_string(p).ok().and_then(|t| serde_json::from_str::<Vec<Value>>(&t).ok()) else { return "Berkas bukan daftar keahlian yang sah.".into() };
+            let Some(isi) = std::fs::read_to_string(p).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()) else { return "Berkas bukan paket keahlian yang sah.".into() };
+            let (arr, info) = match berbagi::buka(&isi) {
+                Ok(x) => x,
+                Err(e) => return e,
+            };
             let (mut ok, mut tolak) = (vec![], vec![]);
             for x in arr.iter().take(30) {
                 match validasi(x, &format!("impor dari {}", p.file_name().and_then(|n| n.to_str()).unwrap_or("berkas"))) {
@@ -403,7 +409,7 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
             if let Ok(mut i) = IMPOR.lock() {
                 *i = ok;
             }
-            format!("📥 Siap diimpor (sudah lolos pemeriksaan keamanan; langkah berisiko tetap minta izin tiap dipakai):\n{teks}{}", if tolak.is_empty() { String::new() } else { format!("\nDitolak: {}", tolak.join("; ")) })
+            format!("📥 Siap diimpor — {info}. Sudah lolos pemeriksaan keamanan; langkah berisiko tetap minta izin tiap dipakai:\n{teks}{}", if tolak.is_empty() { String::new() } else { format!("\nDitolak: {}", tolak.join("; ")) })
         }
         _ => {
             let v = daftar();

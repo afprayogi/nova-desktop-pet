@@ -62,6 +62,7 @@ mod cerdas;
 mod audit;
 mod dokumen;
 mod kondisi;
+mod berbagi;
 mod penjadwal;
 mod skrip;
 mod progres;
