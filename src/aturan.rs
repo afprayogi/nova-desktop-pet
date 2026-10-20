@@ -509,6 +509,9 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["templat jadwal", "jadwalkan templat", "contoh jadwal"].iter().any(|k| l.trim() == *k) {
         return mk("jadwalkan", "templat".into());
     }
+    if ["saran keahlian", "keahlian apa yang cocok", "ada pola yang bisa dijadikan keahlian"].iter().any(|k| l.contains(k)) {
+        return mk("keahlian", "saran".into());
+    }
     if let Some(r) = after(s, &l, &["versi keahlian"]) {
         return mk("keahlian", format!("versi {r}"));
     }

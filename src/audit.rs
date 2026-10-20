@@ -41,6 +41,31 @@ pub fn terbaru(n: usize, kata: &str) -> Vec<Value> {
     isi.lines().rev().filter_map(|l| serde_json::from_str::<Value>(l).ok()).filter(|v| k.is_empty() || v["alat"].as_str().unwrap_or("").contains(&k) || v["arg"].as_str().unwrap_or("").to_lowercase().contains(&k)).take(n).collect()
 }
 
+/// Alat yang tidak ikut dihitung sebagai pola rutinitas (otomasi/pengelolaan diri, atau argumennya disamarkan).
+const BUKAN_POLA: &[&str] = &["pesan", "keahlian", "jadwalkan", "pemicu", "skrip", "privasi", "cerdas", "tanya", "ngobrol"];
+
+/// Pasangan tindakan berurutan (selang ≤10 menit) yang sama persis di ≥ `min_hari` hari berbeda: ((alat, arg), (alat, arg), jumlah hari).
+pub fn pasangan_berulang(min_hari: usize) -> Vec<((String, String), (String, String), usize)> {
+    use std::collections::{BTreeSet, HashMap};
+    let Ok(isi) = std::fs::read_to_string(berkas()) else { return vec![] };
+    let rows: Vec<(chrono::DateTime<chrono::FixedOffset>, String, String)> = isi
+        .lines()
+        .filter_map(|l| serde_json::from_str::<Value>(l).ok())
+        .filter_map(|v| Some((chrono::DateTime::parse_from_rfc3339(v["t"].as_str()?).ok()?, v["alat"].as_str()?.to_string(), v["arg"].as_str()?.to_string())))
+        .filter(|(_, a, g)| !BUKAN_POLA.contains(&a.as_str()) && !RAHASIA.contains(&a.as_str()) && g != "***")
+        .collect();
+    let mut hitung: HashMap<((String, String), (String, String)), BTreeSet<String>> = HashMap::new();
+    for w in rows.windows(2) {
+        let (a, b) = (&w[0], &w[1]);
+        if (b.0 - a.0).num_seconds().abs() <= 600 && (a.1.as_str(), &a.2) != (b.1.as_str(), &b.2) {
+            hitung.entry(((a.1.clone(), a.2.clone()), (b.1.clone(), b.2.clone()))).or_default().insert(a.0.format("%Y-%m-%d").to_string());
+        }
+    }
+    let mut v: Vec<_> = hitung.into_iter().filter(|(_, d)| d.len() >= min_hari).map(|((a, b), d)| (a, b, d.len())).collect();
+    v.sort_by_key(|x| std::cmp::Reverse(x.2));
+    v
+}
+
 fn log(arg: &str) -> String {
     let (n, kata) = match arg.trim().parse::<usize>() {
         Ok(n) => (n.clamp(1, 50), ""),
@@ -129,6 +154,25 @@ mod tests {
         assert!(!serde_json::to_string(&semua).unwrap().contains("hunter2"));
         assert_eq!(terbaru(10, "bandung").len(), 1);
         assert!(log("").contains("cuaca"));
+    }
+
+    #[test]
+    fn pola_berulang_dikenali_lintas_hari() {
+        let _k = K.lock().unwrap_or_else(|e| e.into_inner());
+        let _ = std::fs::remove_file(berkas());
+        let tulis = |t: &str, alat: &str, arg: &str| {
+            let mut f = std::fs::OpenOptions::new().create(true).append(true).open(berkas()).unwrap();
+            writeln!(f, "{}", json!({"t": t, "alat": alat, "arg": arg, "hasil": "ok"})).unwrap();
+        };
+        for d in ["2026-10-01", "2026-10-02", "2026-10-03"] {
+            tulis(&format!("{d}T09:00:00+07:00"), "cuaca", "Jakarta");
+            tulis(&format!("{d}T09:02:00+07:00"), "agenda", "");
+        }
+        tulis("2026-10-04T09:00:00+07:00", "cuaca", "Jakarta");
+        let p = pasangan_berulang(3);
+        assert_eq!(p.len(), 1, "{p:?}");
+        assert_eq!((p[0].0 .0.as_str(), p[0].1 .0.as_str(), p[0].2), ("cuaca", "agenda", 3));
+        let _ = std::fs::remove_file(berkas());
     }
 
     #[test]

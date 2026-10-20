@@ -307,6 +307,23 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
             v.retain(|x| !x.nama.eq_ignore_ascii_case(rest));
             if v.len() < n && tulis(&v) { format!("Keahlian '{rest}' dihapus.") } else { format!("Keahlian '{rest}' tidak ditemukan.") }
         }
+        "saran" => {
+            let Some((a, b, hari)) = crate::audit::pasangan_berulang(3).into_iter().find(|(a, b, _)| daftar().iter().all(|k| !(k.langkah.len() == 2 && k.langkah[0].alat == a.0 && k.langkah[1].alat == b.0))) else {
+                return "Belum kulihat pola berulang (minimal 3 hari berbeda, dua tindakan berurutan yang sama). Terus pakai NOVA dulu.".into();
+            };
+            let nama = format!("Rutin {} {}", a.0, b.0);
+            let v = serde_json::json!({"nama": nama, "deskripsi": format!("Menjalankan {} lalu {} sekaligus", a.0, b.0), "pemicu": [format!("tolong rutin {} {}", a.0, b.0)], "langkah": [{"alat": a.0, "arg": a.1}, {"alat": b.0, "arg": b.1}]});
+            match validasi(&v, &format!("pola pemakaian: {hari} hari berbeda")) {
+                Ok(k) => {
+                    let teks = format!("💡 Kamu {hari} hari berbeda menjalankan {} {} lalu {} {} berurutan. Mau dijadikan satu keahlian?\n\n{}", a.0, a.1, b.0, b.1, pratinjau(&k));
+                    if let Ok(mut d) = DRAFT.lock() {
+                        *d = Some(k);
+                    }
+                    teks
+                }
+                Err(e) => format!("Pola ditemukan ({} lalu {}) tetapi tidak bisa dijadikan keahlian: {e}", a.0, b.0),
+            }
+        }
         "versi" => {
             let v: Vec<Keahlian> = muat_versi().into_iter().filter(|k| k.nama.eq_ignore_ascii_case(rest)).collect();
             if v.is_empty() {
