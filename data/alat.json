@@ -141,7 +141,8 @@
    "skrip",
    "kalk",
    "saranproyek",
-   "cerdas"
+   "cerdas",
+   "privasi"
   ],
   "berkas": [
    "cari",
@@ -6329,6 +6330,37 @@
     "cari di dokumen torsi baut",
     "ucapkan halo",
     "jelaskan layar ini"
+   ]
+  },
+  {
+   "id": "alat.privasi",
+   "nama": "privasi",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "log [n|kata] | ekspor | hapus",
+   "deskripsi": "privasi data: log audit tindakan alat, ekspor semua data pribadi (tanpa kunci), dan hapus data pribadi (minta izin)",
+   "ringkas": "privasi data: log audit tindakan alat, ekspor semua data pribadi (tanpa kunci), dan hapus data pribadi (minta izin)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/privasi"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "log audit",
+     "catatan": ""
+    },
+    {
+     "perintah": "ekspor semua data",
+     "catatan": "minta izin"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "log audit",
+    "apa yang sudah kamu lakukan",
+    "ekspor semua data saya",
+    "hapus semua data saya"
    ]
   }
  ],

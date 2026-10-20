@@ -443,6 +443,18 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["jelaskan layar ini", "apa yang ada di layar", "jelaskan layar"].iter().any(|k| l.contains(k)) {
         return mk("cerdas", "layar".into());
     }
+    if let Some(r) = after(s, &l, &["log audit", "riwayat tindakan", "apa yang sudah kamu lakukan"]) {
+        return mk("privasi", format!("log {r}"));
+    }
+    if ["log audit", "riwayat tindakan", "apa yang sudah kamu lakukan"].iter().any(|k| l.trim() == *k) {
+        return mk("privasi", "log".into());
+    }
+    if ["ekspor semua data", "ekspor data saya", "unduh data saya"].iter().any(|k| l.contains(k)) {
+        return mk("privasi", "ekspor".into());
+    }
+    if ["hapus semua data", "hapus data saya", "hapus data pribadi"].iter().any(|k| l.contains(k)) {
+        return mk("privasi", "hapus".into());
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }
