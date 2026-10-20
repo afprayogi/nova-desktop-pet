@@ -54,6 +54,7 @@ mod koneksi;
 mod kita;
 mod notify;
 mod pembaruan;
+mod mcp;
 mod otomasi;
 mod pemicu;
 mod penjadwal;
@@ -143,6 +144,10 @@ fn main() -> anyhow::Result<()> {
     // Dijalankan Windows Task Scheduler: satu tugas terjadwal tanpa jendela, lalu keluar.
     if let Some(i) = args.iter().position(|a| a == "--tugas") {
         std::process::exit(penjadwal::tugas_cli(args.get(i + 1).and_then(|s| s.parse().ok()).unwrap_or(0)));
+    }
+    // Server MCP lewat stdio untuk asisten lain: `nova --mcp`.
+    if args.iter().any(|a| a == "--mcp") {
+        std::process::exit(mcp::serve());
     }
     // Rilis memakai subsistem GUI (tanpa konsol); sambungkan ke konsol pemanggil agar keluaran alat pengembang terlihat.
     #[cfg(windows)]
