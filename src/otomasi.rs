@@ -153,7 +153,7 @@ pub fn templat_ke_tugas(i: usize) -> Option<Tugas> {
         nama: t.nama.into(),
         ringkas: t.ringkas.into(),
         jadwal: Jadwal { tipe: t.tipe.into(), jam: t.jam.into(), hari: t.hari.iter().map(|h| h.to_string()).collect(), tanggal: String::new(), tiap_menit: t.menit },
-        langkah: t.langkah.iter().map(|(a, g)| Langkah { alat: a.to_string(), arg: g.to_string() }).collect(),
+        langkah: t.langkah.iter().map(|(a, g)| Langkah { alat: a.to_string(), arg: g.to_string(), jika: None }).collect(),
         dibuat: Local::now().timestamp(),
     })
 }
@@ -170,7 +170,7 @@ pub async fn data_json() -> Value {
             let terakhir = riwayat(Some(&format!("t{}", t.id)), 1).into_iter().next();
             json!({"id": t.id, "nama": t.nama, "ringkas": t.ringkas, "jadwal": penjadwal::teks_jadwal(&t.jadwal), "jam": t.jadwal.jam, "tipe": t.jadwal.tipe, "berikutnya": nxt,
                    "status": status.get(&format!("Tugas-{}", t.id)).cloned().unwrap_or_else(|| "Tidak ada di Windows".into()),
-                   "langkah": t.langkah.iter().map(|l| format!("{} {}", l.alat, l.arg)).collect::<Vec<_>>(), "terakhir": terakhir})
+                   "langkah": t.langkah.iter().map(|l| format!("{} {}{}", l.alat, l.arg, l.jika.as_ref().map(|j| format!(" [jika {j}]")).unwrap_or_default())).collect::<Vec<_>>(), "terakhir": terakhir})
         })
         .collect();
     json!({

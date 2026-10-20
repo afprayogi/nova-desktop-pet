@@ -13,6 +13,9 @@ use std::sync::Mutex;
 pub struct Langkah {
     pub alat: String,
     pub arg: String,
+    /// Syarat opsional untuk rantai otomasi (lihat kondisi.rs); kosong = selalu jalan.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub jika: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -157,7 +160,7 @@ fn validasi(v: &Value, sumber: &str) -> Result<Keahlian, String> {
         if let Risk::Block(r) = alat::assess(&Call { tool: alat_n.clone(), arg: arg.replace("{*}", "contoh") }) {
             return Err(format!("langkah {} ditolak keamanan: {r}", i + 1));
         }
-        langkah.push(Langkah { alat: alat_n, arg });
+        langkah.push(Langkah { alat: alat_n, arg, jika: None });
     }
     Ok(Keahlian { nama, deskripsi: v["deskripsi"].as_str().unwrap_or("").chars().take(160).collect(), pemicu, langkah, sumber: sumber.to_string(), dibuat: chrono::Local::now().timestamp() })
 }

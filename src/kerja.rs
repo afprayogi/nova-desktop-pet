@@ -10,7 +10,7 @@ fn hm(s: &str) -> i32 {
     h.trim().parse::<i32>().unwrap_or(0) * 60 + m.trim().parse::<i32>().unwrap_or(0)
 }
 
-fn dalam_jam_kerja() -> bool {
+pub(crate) fn dalam_jam_kerja() -> bool {
     let m = crate::assistant::day_min();
     crate::assistant::schedule().work.iter().any(|(a, b)| m >= hm(a) && m < hm(b))
 }

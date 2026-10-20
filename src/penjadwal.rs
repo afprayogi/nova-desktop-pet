@@ -265,7 +265,11 @@ pub fn validasi_langkah(l: &Value, maks: usize) -> Result<Vec<Langkah>, String> 
         if let Risk::Block(r) = alat::assess(&Call { tool: a.clone(), arg: arg.clone() }) {
             return Err(format!("langkah {} ditolak keamanan: {r}", i + 1));
         }
-        langkah.push(Langkah { alat: a, arg });
+        let jika = x["jika"].as_str().map(|j| j.trim().to_string()).filter(|j| !j.is_empty());
+        if let Some(j) = &jika {
+            crate::kondisi::validasi(j).map_err(|e| format!("langkah {}: {e}", i + 1))?;
+        }
+        langkah.push(Langkah { alat: a, arg, jika });
     }
     Ok(langkah)
 }
@@ -315,7 +319,7 @@ fn pratinjau(t: &Tugas) -> String {
                 Risk::Confirm(_) => "butuh izin: hanya diberitahukan, tidak dijalankan otomatis",
                 Risk::Block(_) => "DIBLOKIR",
             };
-            format!("  {}. {} {} [{r}]", i + 1, l.alat, l.arg)
+            format!("  {}. {} {}{} [{r}]", i + 1, l.alat, l.arg, l.jika.as_ref().map(|j| format!(" (hanya jika {j})")).unwrap_or_default())
         })
         .collect::<Vec<_>>()
         .join("\n");
@@ -340,10 +344,11 @@ pub async fn buat(http: &reqwest::Client, permintaan: &str) -> String {
 {{\"nama\":\"nama pendek\",\"ringkas\":\"satu kalimat\",\"jadwal\":{{\"tipe\":\"harian|mingguan|sekali|menit|login\",\"jam\":\"HH:MM\",\"hari\":[\"senin\"],\"tanggal\":\"YYYY-MM-DD\",\"tiap_menit\":30}},\"langkah\":[{{\"alat\":\"nama alat\",\"arg\":\"argumen\"}}]}}. \
 Isi hanya kolom jadwal yang relevan untuk tipenya. Maksimal 5 langkah. Untuk sekadar mengingatkan/menampilkan teks pakai alat 'pesan' dengan arg berupa teks pengingat. \
 Sekarang: {} ({}). Hanya pakai alat berikut (nama persis):\n{}\n\
-Jangan membuat kode. Jangan memakai alat: {}.",
+{}\nJangan membuat kode. Jangan memakai alat: {}.",
         sekarang.format("%Y-%m-%d %H:%M"),
         ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"][sekarang.weekday().num_days_from_monday() as usize],
         crate::registry::bantuan(),
+        crate::kondisi::PETUNJUK_MODEL,
         DILARANG.join(", ")
     );
     progres::set(job, 25, "merancang jadwal dengan model");
@@ -526,8 +531,15 @@ async fn run_tugas(http: &reqwest::Client, t: &Tugas, otomatis: bool) -> String 
 pub async fn run_langkah(http: &reqwest::Client, nama: &str, kunci: &str, langkah: &[Langkah]) -> (String, bool) {
     let t0 = std::time::Instant::now();
     let (mut hasil, mut dilewati, mut gagal) = (vec![], vec![], false);
+    let mut sebelumnya_ok = true;
     for l in langkah {
         let c = Call { tool: l.alat.clone(), arg: l.arg.clone() };
+        if let Some(j) = &l.jika {
+            if !crate::kondisi::terpenuhi(j, sebelumnya_ok) {
+                hasil.push(format!("{}: dilewati (syarat '{j}' tidak terpenuhi)", l.alat));
+                continue;
+            }
+        }
         match alat::assess(&c) {
             Risk::Safe => {
                 let mut r = Box::pin(alat::run(&c, http)).await;
@@ -536,6 +548,7 @@ pub async fn run_langkah(http: &reqwest::Client, nama: &str, kunci: &str, langka
                     r = Box::pin(alat::run(&c, http)).await;
                     gagal |= r.starts_with("Gagal");
                 }
+                sebelumnya_ok = !r.starts_with("Gagal") && !r.starts_with("gagal");
                 hasil.push(format!("{}: {}", l.alat, crate::research::truncate(&r, 500)));
             }
             Risk::Confirm(r) => {
@@ -630,5 +643,16 @@ mod tests {
         assert!(validasi(&terlalu_sering, 1).is_err());
         let lalu = json!({"nama": "Lalu", "jadwal": {"tipe": "sekali", "jam": "08:00", "tanggal": "2020-01-01"}, "langkah": [{"alat": "cuaca", "arg": "x"}]});
         assert!(validasi(&lalu, 1).is_err());
+    }
+
+    #[test]
+    fn syarat_langkah_divalidasi_dan_rantai_dilewati() {
+        let ok = json!([{"alat": "hitung", "arg": "2+2"}, {"alat": "hitung", "arg": "3+3", "jika": "sebelumnya_gagal"}, {"alat": "hitung", "arg": "4+4", "jika": "!hari:sabtu,minggu dan sebelumnya_ok"}]);
+        let l = validasi_langkah(&ok, 5).unwrap();
+        assert_eq!(l[1].jika.as_deref(), Some("sebelumnya_gagal"));
+        assert!(validasi_langkah(&json!([{"alat": "hitung", "arg": "1", "jika": "rm -rf"}]), 5).is_err());
+        let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+        let (teks, _) = rt.block_on(run_langkah(&reqwest::Client::new(), "uji-rantai", "tuji", &l));
+        assert!(teks.contains("= 4") && teks.contains("dilewati (syarat 'sebelumnya_gagal'"), "{teks}");
     }
 }

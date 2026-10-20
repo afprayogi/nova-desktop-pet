@@ -94,7 +94,7 @@ fn dari_templat(i: usize) -> Option<Pemicu> {
         syarat: Syarat::default(),
         cooldown_menit: t.cooldown,
         aktif: true,
-        langkah: t.langkah.iter().map(|(a, g)| Langkah { alat: a.to_string(), arg: g.to_string() }).collect(),
+        langkah: t.langkah.iter().map(|(a, g)| Langkah { alat: a.to_string(), arg: g.to_string(), jika: None }).collect(),
         dibuat: Local::now().timestamp(),
     })
 }
@@ -187,7 +187,7 @@ fn pratinjau(p: &Pemicu) -> String {
                 alat::Risk::Confirm(_) => "butuh izin Bos setiap kali",
                 alat::Risk::Block(_) => "DIBLOKIR",
             };
-            format!("  {}. {} {} [{r}]", i + 1, l.alat, l.arg)
+            format!("  {}. {} {}{} [{r}]", i + 1, l.alat, l.arg, l.jika.as_ref().map(|j| format!(" (hanya jika {j})")).unwrap_or_default())
         })
         .collect::<Vec<_>>()
         .join("\n");
@@ -210,8 +210,9 @@ pub async fn buat(http: &reqwest::Client, permintaan: &str) -> String {
 {{\"nama\":\"nama pendek\",\"ringkas\":\"satu kalimat\",\"kejadian\":{{\"tipe\":\"baterai_rendah|aplikasi_dibuka|flashdisk|berkas_baru|jaringan_berubah\",\"param\":\"ambang % | nama aplikasi | path folder\"}},\
 \"syarat\":{{\"jam_mulai\":\"HH:MM\",\"jam_selesai\":\"HH:MM\",\"hari\":[\"senin\"]}},\"cooldown_menit\":10,\"langkah\":[{{\"alat\":\"nama alat\",\"arg\":\"argumen\"}}]}}. \
 Kolom syarat opsional (kosongkan bila tak diminta). Maksimal 4 langkah. Untuk menampilkan teks pakai alat 'pesan'. Di argumen boleh memakai {{peristiwa}} \
-(diganti: drive flash disk, nama berkas baru, nama aplikasi, atau nama Wi-Fi). Hanya pakai alat berikut (nama persis):\n{}\nJangan membuat kode. Jangan memakai alat: {}.",
+(diganti: drive flash disk, nama berkas baru, nama aplikasi, atau nama Wi-Fi). Hanya pakai alat berikut (nama persis):\n{}\n{}\nJangan membuat kode. Jangan memakai alat: {}.",
         crate::registry::bantuan(),
+        crate::kondisi::PETUNJUK_MODEL,
         crate::penjadwal::DILARANG.join(", ")
     );
     progres::set(job, 25, "merancang pemicu dengan model");
@@ -278,7 +279,7 @@ pub fn daftar_json() -> Vec<Value> {
         .iter()
         .map(|p| {
             json!({"id": p.id, "nama": p.nama, "ringkas": p.ringkas, "kejadian": teks_kejadian(&p.kejadian), "syarat": teks_syarat(&p.syarat), "cooldown": p.cooldown_menit, "aktif": p.aktif,
-                   "langkah": p.langkah.iter().map(|l| format!("{} {}", l.alat, l.arg)).collect::<Vec<_>>(), "terakhir": crate::otomasi::riwayat(Some(&format!("p{}", p.id)), 1).into_iter().next()})
+                   "langkah": p.langkah.iter().map(|l| format!("{} {}{}", l.alat, l.arg, l.jika.as_ref().map(|j| format!(" [jika {j}]")).unwrap_or_default())).collect::<Vec<_>>(), "terakhir": crate::otomasi::riwayat(Some(&format!("p{}", p.id)), 1).into_iter().next()})
         })
         .collect()
 }
@@ -361,7 +362,7 @@ fn flash_disk() -> u32 {
     0
 }
 
-fn ssid() -> Option<String> {
+pub(crate) fn ssid() -> Option<String> {
     let t = crate::sistem::wifi();
     t.lines().find_map(|l| l.strip_prefix("Tersambung: ")).map(|r| r.split(" · ").next().unwrap_or("").trim().to_string())
 }
@@ -442,7 +443,7 @@ pub fn mulai(tx: Tx) {
             let semua = muat();
             if semua.iter().any(|p| p.aktif) && !crate::gerbang::senyap() {
                 for (p, e) in periksa(&mut ks, &semua, putaran) {
-                    let langkah: Vec<Langkah> = p.langkah.iter().map(|l| Langkah { alat: l.alat.clone(), arg: l.arg.replace("{peristiwa}", &e) }).collect();
+                    let langkah: Vec<Langkah> = p.langkah.iter().map(|l| Langkah { alat: l.alat.clone(), arg: l.arg.replace("{peristiwa}", &e), jika: l.jika.clone() }).collect();
                     let (ringkas, _) = rt.block_on(crate::penjadwal::run_langkah(&http, &p.nama, &format!("p{}", p.id), &langkah));
                     tx.notice(format!("🔔 {}: {}", p.nama, crate::research::truncate(&ringkas, 400)));
                 }
