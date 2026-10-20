@@ -16,6 +16,14 @@
 :root[data-theme=dark]{
  --bg:#12151b;--surface:#1a1e26;--surface-2:#232834;--text:#e8ebf1;--muted:#a7b0c0;--border:#2e3543;--border-strong:#7f8aa0;
  --accent:#7db0ff;--on-accent:#0a1a36;--accent-soft:#1d2b45;--success:#62d493;--warning:#f2bb4e;--danger:#ff8f85;--focus:#7db0ff;--shadow:0 1px 2px #0006,0 4px 16px #0004}
+/* aksesibilitas: kontras tinggi (>= 7:1) dan teks besar; dipilih lewat tombol di bawah menu */
+:root[data-kontras=tinggi]{color-scheme:dark;--bg:#000;--surface:#000;--surface-2:#111;--text:#fff;--muted:#e6e6e6;--border:#fff;--border-strong:#fff;--accent:#ffe14d;--on-accent:#000;--accent-soft:#222;--success:#7dff9e;--warning:#ffd166;--danger:#ff9a90;--focus:#ffe14d}
+:root[data-teks=besar] body{font-size:19px}
+.a11y{display:flex;gap:6px;margin-top:8px}.a11y button{flex:1;min-height:40px;border-radius:var(--r-sm);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}.a11y button[aria-pressed=true]{background:var(--accent);color:var(--on-accent)}
+#wiz{position:fixed;inset:0;background:#000a;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+#wiz .bx{width:min(520px,100%);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow)}
+#wiz h2{font-size:22px;margin-bottom:8px}#wiz p,#wiz li{color:var(--muted);line-height:1.6}#wiz ul{padding-left:20px;margin:8px 0}
+#wiz .st{font-size:14px;color:var(--muted);margin-bottom:8px}#wiz .ft{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--text);font:16px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;display:flex;overflow:hidden;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4,h5{margin:0;line-height:1.3}
@@ -170,6 +178,7 @@ details.how ol{margin:8px 0 0 20px;padding:0;color:var(--muted);line-height:1.6}
   <div class="railft">
     <div class="seg" role="group" aria-label="Tema tampilan"><button data-t="auto" aria-pressed="true">Sistem</button><button data-t="light" aria-pressed="false">Terang</button><button data-t="dark" aria-pressed="false">Gelap</button></div>
     <button class="bell" id="bn" title="Notifikasi" aria-label="Notifikasi">🔔<span class="badge" id="nb" style="display:none"></span></button>
+    <div class="a11y" role="group" aria-label="Aksesibilitas dan bahasa"><button id="a-k" aria-pressed="false" title="Kontras tinggi">◐ Kontras</button><button id="a-t" aria-pressed="false" title="Teks besar">A+ Teks</button><button id="a-l" aria-pressed="false" title="English interface">EN</button></div>
   </div>
 </aside>
 <div id="stage">
@@ -213,6 +222,10 @@ const MENUS={
 };
 const IS_APP=/[?&]app=1/.test(location.search);
 const $=s=>document.querySelector(s), chat=$("#chat"), inp=$("#in");
+// i18n ringan: hanya kerangka antarmuka (menu, wizard); jawaban NOVA tetap berbahasa Indonesia
+const EN_D={"Obrolan":"Chat","Akun dan koneksi":"Accounts","Otomasi":"Automation","Dasbor":"Dashboard","Cari fitur":"Find a feature","Selamat datang":"Welcome","Lanjut":"Next","Lewati":"Skip","Mulai":"Start","Sistem":"System","Terang":"Light","Gelap":"Dark"};
+let LANG="id";try{LANG=localStorage.getItem("nova-bahasa")||"id"}catch(e){}
+const T=s=>LANG==="en"&&EN_D[s]||s;
 let lastSeq=-1,seenN=0,notes=0,state=null,sugI=-1;
 function av(i,sz){const c=COL[i%4];return `<svg class="av" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" rx="4" fill="#0c1a33"/><rect x="3" y="4" width="10" height="8" fill="${c}"/><rect x="5" y="6" width="2" height="2" fill="#0b1220"/><rect x="9" y="6" width="2" height="2" fill="#0b1220"/><rect x="7" y="2" width="2" height="2" fill="#fbbf24"/><rect x="6" y="10" width="4" height="1" fill="#0b1220"/></svg>`}
 function esc(t){return t.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
@@ -238,17 +251,41 @@ const GROUPS={"Alat":["Kerja","Aksi","Berkas","Tim","Perkakas","Belajar"],"Sahab
 function applyTheme(t){if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}
 function cycleTheme(){let t="auto";try{t=localStorage.getItem("nova-tema")||"auto"}catch(e){}const n={auto:"dark",dark:"light",light:"auto"}[t]||"auto";try{localStorage.setItem("nova-tema",n)}catch(e){}applyTheme(n);toast("Tema: "+({auto:"otomatis",dark:"gelap",light:"terang"}[n]))}
 try{applyTheme(localStorage.getItem("nova-tema")||"auto")}catch(e){}
+function setPref(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function getPref(k){try{return localStorage.getItem(k)||""}catch(e){return ""}}
+function applyA11y(){const R=document.documentElement;
+ if(getPref("nova-kontras")==="1")R.dataset.kontras="tinggi";else delete R.dataset.kontras;
+ if(getPref("nova-teks")==="1")R.dataset.teks="besar";else delete R.dataset.teks;
+ $("#a-k").setAttribute("aria-pressed",getPref("nova-kontras")==="1");$("#a-t").setAttribute("aria-pressed",getPref("nova-teks")==="1");$("#a-l").setAttribute("aria-pressed",LANG==="en");
+ document.querySelectorAll(".seg button[data-t]").forEach(b=>{const k={auto:"Sistem",light:"Terang",dark:"Gelap"}[b.dataset.t];b.textContent=T(k)})}
+$("#a-k").onclick=()=>{setPref("nova-kontras",getPref("nova-kontras")==="1"?"0":"1");applyA11y()};
+$("#a-t").onclick=()=>{setPref("nova-teks",getPref("nova-teks")==="1"?"0":"1");applyA11y()};
+$("#a-l").onclick=()=>{LANG=LANG==="en"?"id":"en";setPref("nova-bahasa",LANG);document.documentElement.lang=LANG;applyA11y();buildNav()};
+document.documentElement.lang=LANG;applyA11y();
+// wizard pertama kali: 3 langkah, bisa dilewati, tidak muncul lagi setelah selesai
+function wizard(){if(getPref("nova-wizard")==="1")return;
+ const L=LANG==="en"?[["Welcome to NOVA","Your desktop assistant. It runs on your laptop, remembers your habits locally and asks before doing anything risky.",""],["Make it comfortable","Pick what suits your eyes. You can change this any time with the buttons below the menu.",""],["Good to know","",""]]:
+ [["Selamat datang di NOVA","Asisten desktop Anda. Berjalan di laptop ini, mengingat kebiasaan secara lokal, dan selalu bertanya dulu sebelum melakukan hal berisiko.",""],["Atur agar nyaman","Pilih yang cocok untuk mata Anda. Bisa diubah kapan saja lewat tombol di bawah menu.",""],["Yang perlu diketahui","",""]];
+ const tips=LANG==="en"?["Type in plain language, e.g. 'schedule every weekday 08:00 show the weather'.","Press Ctrl+K to find any feature.","Risky actions always show an approval card first.","Connect email under Accounts (optional)."]:["Ketik bebas, mis. 'jadwalkan setiap hari kerja jam 08:00 tampilkan cuaca'.","Tekan Ctrl+K untuk mencari fitur apa pun.","Tindakan berisiko selalu menampilkan kartu persetujuan dulu.","Hubungkan email di Akun dan koneksi (opsional)."];
+ let i=0;const w=document.createElement("div");w.id="wiz";w.setAttribute("role","dialog");w.setAttribute("aria-modal","true");w.setAttribute("aria-labelledby","wz-h");document.body.appendChild(w);
+ const tutup=()=>{setPref("nova-wizard","1");w.remove();inp.focus()};
+ const gambar=()=>{const [h,p]=L[i];
+  w.innerHTML=`<div class="bx"><div class="st">${i+1} / 3</div><h2 id="wz-h">${h}</h2>${i===2?`<ul>${tips.map(t=>`<li>${t}</li>`).join("")}</ul>`:`<p>${p}</p>`}${i===1?`<div class="a11y" style="max-width:420px"><button id="w-k" aria-pressed="${getPref("nova-kontras")==="1"}">◐ ${LANG==="en"?"High contrast":"Kontras tinggi"}</button><button id="w-t" aria-pressed="${getPref("nova-teks")==="1"}">A+ ${LANG==="en"?"Large text":"Teks besar"}</button></div>`:""}<div class="ft"><button class="btn" id="w-s">${T("Lewati")}</button><button class="btn p" id="w-n">${i===2?T("Mulai"):T("Lanjut")}</button></div></div>`;
+  $("#w-s").onclick=tutup;$("#w-n").onclick=()=>{if(i===2)tutup();else{i++;gambar()}};
+  if(i===1){$("#w-k").onclick=()=>{setPref("nova-kontras",getPref("nova-kontras")==="1"?"0":"1");applyA11y();gambar()};$("#w-t").onclick=()=>{setPref("nova-teks",getPref("nova-teks")==="1"?"0":"1");applyA11y();gambar()}}
+  $("#w-n").focus()};
+ w.addEventListener("keydown",e=>{if(e.key==="Escape")tutup()});gambar()}
 function closeMenus(){document.querySelectorAll(".m").forEach(m=>m.classList.remove("open"))}
 let view="chat";
 const openG=new Set();
 function buildNav(){const nav=$("#nav");nav.innerHTML="";
  const item=(id,ico,label,fn,extra)=>{const b=document.createElement("button");b.className="nv";b.id=id;b.innerHTML=`<span class="ic" aria-hidden="true">${ico}</span><span>${label}</span>${extra||""}`;b.onclick=fn;nav.appendChild(b);return b};
- item("nv-chat","💬","Obrolan",()=>showView("chat"));
- item("nv-kon","🔗","Akun dan koneksi",()=>showView("kon"));
- item("nv-oto","⚙️","Otomasi",()=>showView("oto"));
- item("nv-dash","📊","Dasbor",()=>run("/dash",false,true,false));
+ item("nv-chat","💬",T("Obrolan"),()=>showView("chat"));
+ item("nv-kon","🔗",T("Akun dan koneksi"),()=>showView("kon"));
+ item("nv-oto","⚙️",T("Otomasi"),()=>showView("oto"));
+ item("nv-dash","📊",T("Dasbor"),()=>run("/dash",false,true,false));
  item("bw","🧩","Widget",toggleWidget);
- item("nv-find","🔍","Cari fitur",openPal,"<kbd>Ctrl K</kbd>");
+ item("nv-find","🔍",T("Cari fitur"),openPal,"<kbd>Ctrl K</kbd>");
  for(const [g,secs] of Object.entries(GROUPS)){const d=document.createElement("details");d.className="grp";d.open=openG.has(g);d.ontoggle=()=>{d.open?openG.add(g):openG.delete(g)};
   d.innerHTML=`<summary>${g}</summary>${secs.filter(k=>MENUS[k]).map(k=>`<h5>${k}</h5>${MENUS[k].map((x,i)=>`<button class="sub-nv" data-k="${k}" data-i="${i}"><span class="ic" aria-hidden="true">${x[0]}</span>${x[1]}</button>`).join("")}`).join("")}`;
   d.querySelectorAll(".sub-nv").forEach(b=>b.onclick=()=>{const x=MENUS[b.dataset.k][b.dataset.i];showView("chat");run(x[2],x[3]==="fill",x[3]==="tab",x[3]==="modal")});nav.appendChild(d)}
@@ -444,7 +481,7 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#oto butto
  if(a==="tugas_jam")o.jam=(document.getElementById("jam-"+t.dataset.id)||{}).value||"";
  if(a==="mulai_otomatis")o.aktif=t.getAttribute("aria-checked")!=="true";
  t.disabled=true;OM.x=await oapi(o);await loadOto()});
-poll();inp.focus();
+poll();inp.focus();wizard();
 </script>
 </body>
 </html>
