@@ -467,6 +467,9 @@ fn rule_kode(s: &str) -> Option<Call> {
     if let Some(r) = after(s, &l, &["hapus aturan berkas"]) {
         return mk("aturanberkas", format!("hapus {r}"));
     }
+    if let Some(r) = after(s, &l, &["issue github", "issue di github", "daftar issue"]) {
+        return mk("githubissue", r.to_string());
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

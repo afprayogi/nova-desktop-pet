@@ -143,7 +143,8 @@
    "saranproyek",
    "cerdas",
    "privasi",
-   "aturanberkas"
+   "aturanberkas",
+   "githubissue"
   ],
   "berkas": [
    "cari",
@@ -6392,6 +6393,31 @@
     "tambah aturan berkas",
     "terapkan aturan berkas",
     "daftar aturan berkas"
+   ]
+  },
+  {
+   "id": "alat.githubissue",
+   "nama": "githubissue",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "<pemilik>/<repo> (kosong = repo proyek aktif)",
+   "deskripsi": "ringkasan issue terbuka di repo GitHub publik (tanpa kunci; repo proyek aktif bila tidak disebut)",
+   "ringkas": "ringkasan issue terbuka di repo GitHub publik (tanpa kunci; repo proyek aktif bila tidak disebut)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/githubissue"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "issue github afprayogi/nova-desktop-pet",
+     "catatan": ""
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "issue github",
+    "daftar issue"
    ]
   }
  ],
