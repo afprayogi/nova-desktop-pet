@@ -117,9 +117,9 @@ canvas.ch{display:block;width:100%;max-width:480px;height:auto;border-radius:var
 .th{display:block;max-width:100%;width:320px;border-radius:var(--r);margin:8px 0 4px}
 
 /* halaman Akun & koneksi */
-#kon{position:absolute;inset:0;background:var(--bg);overflow-y:auto;padding:24px max(16px,calc((100% - 820px)/2)) 48px;z-index:5}
-#kon[hidden]{display:none}
-#kon h2{font-size:24px;margin-bottom:8px}#kon .lead{color:var(--muted);max-width:60ch;margin:0 0 24px}
+#kon,#oto{position:absolute;inset:0;background:var(--bg);overflow-y:auto;padding:24px max(16px,calc((100% - 820px)/2)) 48px;z-index:5}
+#kon[hidden],#oto[hidden]{display:none}
+#kon h2,#oto h2{font-size:24px;margin-bottom:8px}#kon .lead,#oto .lead{color:var(--muted);max-width:60ch;margin:0 0 24px}
 .kc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .kc>header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
 .kc h3{font-size:18px}.kc p{margin:0 0 12px;color:var(--muted);max-width:62ch}
@@ -177,6 +177,7 @@ details.how ol{margin:8px 0 0 20px;padding:0;color:var(--muted);line-height:1.6}
   <main>
     <div id="chat" role="log" aria-live="polite" aria-label="Percakapan"></div>
     <section id="kon" hidden aria-label="Akun dan koneksi"></section>
+    <section id="oto" hidden aria-label="Otomasi"></section>
     <aside id="wd" aria-label="Widget"></aside>
     <aside id="side" aria-label="Notifikasi"><b>Notifikasi</b><div id="nl"></div></aside>
   </main>
@@ -244,6 +245,7 @@ function buildNav(){const nav=$("#nav");nav.innerHTML="";
  const item=(id,ico,label,fn,extra)=>{const b=document.createElement("button");b.className="nv";b.id=id;b.innerHTML=`<span class="ic" aria-hidden="true">${ico}</span><span>${label}</span>${extra||""}`;b.onclick=fn;nav.appendChild(b);return b};
  item("nv-chat","💬","Obrolan",()=>showView("chat"));
  item("nv-kon","🔗","Akun dan koneksi",()=>showView("kon"));
+ item("nv-oto","⚙️","Otomasi",()=>showView("oto"));
  item("nv-dash","📊","Dasbor",()=>run("/dash",false,true,false));
  item("bw","🧩","Widget",toggleWidget);
  item("nv-find","🔍","Cari fitur",openPal,"<kbd>Ctrl K</kbd>");
@@ -330,9 +332,9 @@ async function loadWidget(){let d;try{d=await (await fetch("/api/widget",{header
 function renderProg(list){const el=$("#prog");if(!list.length){if(el.innerHTML)el.innerHTML="";return}
  el.innerHTML=list.map(j=>`<div class="pg ${j.gagal?"bad":j.selesai?"done":""}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${j.pct}" aria-label="${esc(j.judul)}"><div class="pt"><b>${esc(j.judul)}</b><span>${j.gagal?"✖ gagal":j.selesai?"✔ selesai":j.pct+"%"} · ${j.detik} dtk</span></div><div class="tr" aria-hidden="true"><i style="width:${j.pct}%"></i></div><div class="pl">${esc(j.label)}</div></div>`).join("")}
 // ---------- tema, navigasi, halaman akun & koneksi ----------
-function showView(v){view=v;$("#kon").hidden=v!=="kon";document.querySelector("footer").hidden=v!=="chat";
+function showView(v){view=v;$("#kon").hidden=v!=="kon";$("#oto").hidden=v!=="oto";document.querySelector("footer").hidden=v!=="chat";
  document.querySelectorAll("#nav .nv[id^=nv-]").forEach(b=>b.removeAttribute("aria-current"));const c=$("#nv-"+v);if(c)c.setAttribute("aria-current","page");
- document.body.classList.remove("railopen");if(v==="kon")loadKon();else inp.focus()}
+ document.body.classList.remove("railopen");if(v==="kon")loadKon();else if(v==="oto")loadOto();else inp.focus()}
 function setTheme(t){try{localStorage.setItem("nova-tema",t)}catch(e){}applyTheme(t);markTheme()}
 function markTheme(){let t="auto";try{t=localStorage.getItem("nova-tema")||"auto"}catch(e){}document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===t))}
 document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>setTheme(b.dataset.t));markTheme();
@@ -416,6 +418,32 @@ document.addEventListener("click",async e=>{const t=e.target.closest("#kon butto
   const id=a.split("-")[0];const m={"imap-hapus":{aksi:"imap_hapus",label:t.dataset.l},"google-hapus":{aksi:"google_hapus",email:t.dataset.l},"outlook-hapus":{aksi:"outlook_hapus",email:t.dataset.l}}[a];
   KM[id==="imap"?"imap":id]=await kapi(m);await loadKon();return}
  if(view==="kon")renderKon()});
+// ---------- halaman Otomasi ----------
+let OS=null;const OM={};
+async function oapi(o){try{const r=await fetch("/api/otomasi",{method:"POST",headers:{"x-nova-token":TOKEN,"content-type":"application/json"},body:JSON.stringify(o)});return await r.json()}catch(e){return{ok:false,pesan:"Tidak bisa menghubungi NOVA."}}}
+async function loadOto(){try{OS=await (await fetch("/api/otomasi",{headers:{"x-nova-token":TOKEN}})).json()}catch(e){$("#oto").innerHTML='<h2>Otomasi</h2><div class="msg err" role="alert">Tidak bisa memuat otomasi. Coba lagi sebentar lagi.</div>';return}renderOto()}
+function renderOto(){const s=OS;if(!s)return;
+ const ter=t=>t?`<small class="sub">Terakhir: ${esc((t.waktu||"").slice(5,16).replace("T"," "))} · ${t.status==="gagal"?"✖ gagal":t.status==="ok"?"✔ ok":"⏳ sebagian"} · ${t.detik} dtk</small>`:`<small class="sub">Belum pernah jalan</small>`;
+ const mnt=s.menunggu.map(m=>`<div class="acc"><span><b>${esc(m.sumber)}</b> ingin menjalankan <code>${esc(m.alat)} ${esc(m.arg)}</code><br><small class="sub">${esc(m.alasan)}</small></span><button class="btn" data-a="izinkan" data-id="${m.id}">Izinkan</button><button class="btn d" data-a="tolak" data-id="${m.id}">Tolak</button></div>`).join("");
+ const tg=s.tugas.map(t=>`<div class="acc"><span><b>${esc(t.nama)}</b> <span class="badge2 ${t.status==="Disabled"?"warn":"ok"}">${t.status==="Disabled"?"mati":t.status==="Running"?"jalan":t.status==="Ready"?"siap":esc(t.status)}</span><br><small class="sub">${esc(t.jadwal)}${t.berikutnya?` · berikutnya ${esc(t.berikutnya)}`:""}</small><br><small class="sub">${esc(t.langkah.join(" → "))}</small><br>${ter(t.terakhir)}</span>
+  ${["harian","mingguan","sekali"].includes(t.tipe)?`<input class="fi" style="width:100px" type="time" id="jam-${t.id}" value="${esc(t.jam)}" aria-label="Jam ${esc(t.nama)}"><button class="btn" data-a="tugas_jam" data-id="${t.id}">Ubah jam</button>`:""}
+  <button class="btn" data-a="tugas_jalankan" data-id="${t.id}">Jalankan</button><button class="btn" data-a="${t.status==="Disabled"?"tugas_aktif":"tugas_nonaktif"}" data-id="${t.id}">${t.status==="Disabled"?"Aktifkan":"Matikan"}</button><button class="btn d" data-a="tugas_hapus" data-id="${t.id}">Hapus</button></div>`).join("");
+ const pm=s.pemicu.map(p=>`<div class="acc"><span><b>${esc(p.nama)}</b> <span class="badge2 ${p.aktif?"ok":"no"}">${p.aktif?"aktif":"mati"}</span><br><small class="sub">Bila ${esc(p.kejadian)}${esc(p.syarat)} · jeda ${p.cooldown} menit</small><br><small class="sub">${esc(p.langkah.join(" → "))}</small><br>${ter(p.terakhir)}</span>
+  <button class="btn" data-a="${p.aktif?"pemicu_nonaktif":"pemicu_aktif"}" data-id="${p.id}">${p.aktif?"Matikan":"Aktifkan"}</button><button class="btn d" data-a="pemicu_hapus" data-id="${p.id}">Hapus</button></div>`).join("");
+ const tp=(arr,a)=>arr.map(t=>`<button class="btn" data-a="${a}" data-nomor="${t.nomor}" title="${esc(t.ringkas)}">${esc(t.nama)}</button>`).join(" ");
+ $("#oto").innerHTML=`<h2>Otomasi</h2><p class="lead">Tugas terjadwal dan pemicu yang bekerja untuk Anda. Langkah yang berisiko tidak jalan sendiri: NOVA meminta izin Anda dulu. Untuk membuat yang baru, tulis di obrolan, mis. <i>jadwalkan setiap hari kerja jam 08:00 tampilkan cuaca</i> atau <i>kalau baterai di bawah 15% ingatkan aku</i>.</p>
+ ${OM.x?`<div class="msg ${OM.x.ok?"ok":"err"}" role="${OM.x.ok?"status":"alert"}">${esc(OM.x.pesan)}</div>`:""}
+ ${s.menunggu.length?`<div class="kc"><header><h3>Menunggu izin Anda</h3><span class="badge2 warn">${s.menunggu.length}</span></header>${mnt}</div>`:""}
+ <div class="kc"><header><h3>Tugas terjadwal</h3></header>${tg||'<p>Belum ada tugas terjadwal.</p>'}<p style="margin-top:12px">Dari templat: ${tp(s.templat,"templat_tugas")}</p></div>
+ <div class="kc"><header><h3>Pemicu</h3></header>${pm||'<p>Belum ada pemicu.</p>'}<p style="margin-top:12px">Dari templat: ${tp(s.pemicu_templat,"templat_pemicu")}</p></div>
+ <div class="kc"><header><h3>Mulai otomatis</h3></header>${sw("mulai_otomatis","NOVA menyala saat Windows dimulai","Lewat Task Scheduler; dihidupkan lagi bila berhenti karena galat.",s.mulai_otomatis)}</div>`}
+document.addEventListener("click",async e=>{const t=e.target.closest("#oto button");if(!t)return;
+ const a=t.dataset.a||(t.dataset.tg?"mulai_otomatis":"");if(!a)return;
+ if(["tugas_hapus","pemicu_hapus"].includes(a)&&t.dataset.sure!=="1"){t.dataset.sure="1";const old=t.textContent;t.textContent="Yakin hapus?";setTimeout(()=>{t.dataset.sure="";t.textContent=old},5000);return}
+ const o={aksi:a,id:+t.dataset.id||0,nomor:+t.dataset.nomor||0};
+ if(a==="tugas_jam")o.jam=(document.getElementById("jam-"+t.dataset.id)||{}).value||"";
+ if(a==="mulai_otomatis")o.aktif=t.getAttribute("aria-checked")!=="true";
+ t.disabled=true;OM.x=await oapi(o);await loadOto()});
 poll();inp.focus();
 </script>
 </body>
