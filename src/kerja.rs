@@ -242,7 +242,9 @@ pub fn jalankan(arg: &str) -> String {
         "minggu" => rekap_minggu(),
         "proyek" => crate::engineer::waktu_proyek(1),
         "proyek minggu" => crate::engineer::waktu_proyek(7),
-        "ekspor" => crate::engineer::ekspor_laporan(),
+        "ekspor" | "ekspor md" => crate::engineer::ekspor_laporan("md"),
+        "ekspor docx" | "ekspor word" => crate::engineer::ekspor_laporan("docx"),
+        "ekspor pdf" => crate::engineer::ekspor_laporan("pdf"),
         "istirahat" => istirahat(),
         "fokus" => mulai_fokus(25),
         "tunda" => {

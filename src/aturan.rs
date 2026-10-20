@@ -413,6 +413,12 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["waktu proyek", "waktu per proyek", "berapa lama di proyek"].iter().any(|k| l.contains(k)) {
         return mk("kerja", "proyek".into());
     }
+    if ["laporan"].iter().any(|k| l.contains(k)) && ["ekspor", "simpan", "buat"].iter().any(|k| l.contains(k)) && l.contains("pdf") {
+        return mk("kerja", "ekspor pdf".into());
+    }
+    if ["laporan"].iter().any(|k| l.contains(k)) && ["ekspor", "simpan", "buat"].iter().any(|k| l.contains(k)) && (l.contains("docx") || l.contains("word") || l.contains("doc ")) {
+        return mk("kerja", "ekspor docx".into());
+    }
     if ["ekspor laporan", "simpan laporan kerja", "buat laporan kerja"].iter().any(|k| l.contains(k)) {
         return mk("kerja", "ekspor".into());
     }

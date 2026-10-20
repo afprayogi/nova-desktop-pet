@@ -60,6 +60,7 @@ mod pemicu;
 mod engineer;
 mod cerdas;
 mod audit;
+mod dokumen;
 mod penjadwal;
 mod skrip;
 mod progres;

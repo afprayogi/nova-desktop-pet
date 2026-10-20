@@ -225,12 +225,27 @@ fn folder_laporan() -> PathBuf {
 }
 
 /// Tulis rekap hari ini + 7 hari + waktu proyek sebagai Markdown di Dokumen\NOVA. Mengembalikan pesan berisi lokasi.
-pub fn ekspor_laporan() -> String {
+pub fn ekspor_laporan(format: &str) -> String {
     let dir = folder_laporan();
     if std::fs::create_dir_all(&dir).is_err() {
         return "Gagal membuat folder laporan.".into();
     }
     let hari = Local::now().format("%Y-%m-%d").to_string();
+    if matches!(format, "docx" | "pdf") {
+        let mut baris: Vec<String> = vec![];
+        for (judul, isi) in [("# Hari ini", crate::kerja::rekap_hari()), ("# 7 hari terakhir", crate::kerja::rekap_minggu()), ("# Waktu per proyek (7 hari)", waktu_proyek(7))] {
+            baris.push(judul.into());
+            baris.extend(isi.lines().map(String::from));
+            baris.push(String::new());
+        }
+        let p = dir.join(format!("laporan-{hari}.{format}"));
+        let judul = format!("Laporan kerja {hari}");
+        let r = if format == "pdf" { crate::dokumen::tulis_pdf(&p, &judul, &baris) } else { crate::dokumen::tulis_docx(&p, &judul, &baris) };
+        return match r {
+            Ok(()) => format!("📄 Laporan {} disimpan: {}", format.to_uppercase(), p.display()),
+            Err(e) => format!("Gagal menyimpan laporan: {e}"),
+        };
+    }
     let md = format!("# Laporan kerja {hari}\n\n## Hari ini\n```\n{}\n```\n\n## 7 hari terakhir\n```\n{}\n```\n\n## Waktu per proyek (7 hari)\n```\n{}\n```\n\n_Dibuat NOVA {} dari data lokal (nama aplikasi, git, tugas)._\n", crate::kerja::rekap_hari(), crate::kerja::rekap_minggu(), waktu_proyek(7), Local::now().format("%H:%M"));
     let p = dir.join(format!("laporan-{hari}.md"));
     match std::fs::write(&p, md) {
@@ -323,6 +338,8 @@ mod tests {
             ("saran proyek", "saranproyek", ""),
             ("waktu proyek minggu ini", "kerja", "proyek minggu"),
             ("ekspor laporan kerja", "kerja", "ekspor"),
+            ("ekspor laporan ke pdf", "kerja", "ekspor pdf"),
+            ("simpan laporan kerja sebagai word docx", "kerja", "ekspor docx"),
         ] {
             let c = crate::aturan::rule(kalimat).or_else(|| crate::alat::plan_offline(kalimat).and_then(|p| p.into_iter().next())).unwrap_or_else(|| panic!("tidak ada aturan: {kalimat}"));
             assert_eq!((c.tool.as_str(), c.arg.as_str()), (alat, arg), "{kalimat}");
