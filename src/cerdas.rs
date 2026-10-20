@@ -56,6 +56,7 @@ pub const EMAS: &[(&str, &str)] = &[
     ("daftar pemicu", "pemicu"),
     ("buat skrip python hitung baris semua file rs", "skrip"),
     ("cek wifi", "wifi"),
+    ("tutup dan ganti video lagu one piece ending", "open"),
     ("daftar skrip", "skrip"),
     ("cek pembaruan", "pembaruan"),
     ("resume kita", "resume"),

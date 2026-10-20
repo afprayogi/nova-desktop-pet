@@ -470,6 +470,10 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
             tokio::task::spawn_blocking(move || crate::sistem::winapp(&a)).await.unwrap_or_else(|_| "gagal membuka aplikasi".into())
         }
         "tugas" => crate::tugas::set(arg),
+        "musik" if arg == "tutup" => {
+            let n = tokio::task::spawn_blocking(crate::musik::tutup_video).await.unwrap_or(0);
+            if n > 0 { format!("Menutup {n} jendela video YouTube.") } else { "Tidak ada jendela video YouTube milik NOVA yang terbuka.".into() }
+        }
         "musik" => tokio::task::spawn_blocking(crate::musik::play).await.unwrap_or_else(|_| "gagal memutar musik".into()),
         "bukahasil" => crate::indeks::reveal(arg.chars().filter(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap_or(1)),
         "rapikan" => {
@@ -796,6 +800,15 @@ pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     }
     if kecil == "batal jadwal ini" {
         return Some(vec![Call { tool: "jadwalkan".into(), arg: "batal".into() }]);
+    }
+    // "tutup dan ganti video lagu X": pemutar lama ditutup otomatis saat video baru dibuka, jadi cukup "putar lagu X".
+    for p in ["tutup dan ganti", "tutup lalu ganti", "tutup terus ganti", "tutup video dan ganti", "tutup lagu dan ganti"] {
+        if let Some(sisa) = kecil.strip_prefix(p) {
+            let sisa = sisa.trim().trim_start_matches("ke ").trim_start_matches("video ").trim_start_matches("dengan ").trim();
+            if sisa.len() > 3 {
+                return plan_offline(&format!("putar {sisa}"));
+            }
+        }
     }
     if kecil == "simpan skrip" || kecil == "batal skrip" {
         return Some(vec![Call { tool: "skrip".into(), arg: kecil.trim_end_matches(" skrip").into() }]);

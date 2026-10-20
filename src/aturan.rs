@@ -503,6 +503,9 @@ fn rule_kode(s: &str) -> Option<Call> {
     if let Some(r) = after(s, &l, &["hapus plugin"]) {
         return mk("plugin", format!("hapus {r}"));
     }
+    if ["tutup video", "tutup lagu", "tutup youtube", "matikan video", "matikan lagu", "stop video", "stop lagu"].iter().any(|k| l.trim() == *k) {
+        return mk("musik", "tutup".into());
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

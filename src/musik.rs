@@ -185,7 +185,41 @@ pub fn jumlah_lagu() -> i64 {
     baca_riwayat()["hitung"].as_object().map(|o| o.len() as i64).unwrap_or(0)
 }
 
+/// Judul jendela app YouTube buatan NOVA berakhiran " - YouTube" (tab biasa di browser berakhiran nama browser, jadi tidak ikut tertutup).
+fn judul_pemutar(t: &str) -> bool {
+    t.trim_end().ends_with(" - YouTube")
+}
+
+/// Tutup semua jendela pemutar YouTube (mode app) yang dibuka NOVA; mengembalikan jumlahnya.
+#[cfg(windows)]
+pub fn tutup_video() -> usize {
+    use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
+    use windows_sys::Win32::UI::WindowsAndMessaging::{EnumWindows, GetClassNameW, GetWindowTextW, IsWindowVisible, PostMessageW, WM_CLOSE};
+    unsafe extern "system" fn tiap(h: HWND, p: LPARAM) -> BOOL {
+        let (mut kelas, mut judul) = ([0u16; 64], [0u16; 256]);
+        let k = GetClassNameW(h, kelas.as_mut_ptr(), 64) as usize;
+        let t = GetWindowTextW(h, judul.as_mut_ptr(), 256) as usize;
+        if IsWindowVisible(h) != 0 && String::from_utf16_lossy(&kelas[..k]) == "Chrome_WidgetWin_1" && judul_pemutar(&String::from_utf16_lossy(&judul[..t])) {
+            PostMessageW(h, WM_CLOSE, 0, 0);
+            *(p as *mut usize) += 1;
+        }
+        1
+    }
+    let mut n = 0usize;
+    unsafe { EnumWindows(Some(tiap), &mut n as *mut usize as LPARAM) };
+    n
+}
+
+#[cfg(not(windows))]
+pub fn tutup_video() -> usize {
+    0
+}
+
 pub fn buka_url(u: &str) {
+    // Video baru menggantikan yang lama: tutup pemutar sebelumnya dulu agar tidak ada beberapa video menyala bersamaan.
+    if u.contains("youtube.com/watch") && tutup_video() > 0 {
+        std::thread::sleep(std::time::Duration::from_millis(800));
+    }
     if u.contains("youtube.com") {
         let _ = std::fs::write(aktif_file(), now_s().to_string());
     }
@@ -235,6 +269,13 @@ pub fn auto(tx: &Tx) {
 
 #[cfg(test)]
 mod riwayat_tests {
+    #[test]
+    fn jendela_pemutar_dikenali_dari_judul() {
+        assert!(super::judul_pemutar("One Piece Opening 1 - YouTube"));
+        assert!(!super::judul_pemutar("One Piece Opening 1 - YouTube - Google Chrome"));
+        assert!(!super::judul_pemutar("Dokumen - Word"));
+    }
+
     #[test]
     fn only_music_queries_counted() {
         super::catat("tutorial rust"); // bukan musik: diabaikan
