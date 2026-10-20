@@ -58,6 +58,7 @@ mod mcp;
 mod otomasi;
 mod pemicu;
 mod engineer;
+mod cerdas;
 mod penjadwal;
 mod skrip;
 mod progres;

@@ -416,6 +416,33 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["ekspor laporan", "simpan laporan kerja", "buat laporan kerja"].iter().any(|k| l.contains(k)) {
         return mk("kerja", "ekspor".into());
     }
+    if ["rekomendasi model", "model apa yang cocok", "model lokal apa"].iter().any(|k| l.contains(k)) {
+        return mk("cerdas", "model".into());
+    }
+    if ["uji kecerdasan", "uji emas", "tes kecerdasan"].iter().any(|k| l.contains(k)) {
+        return mk("cerdas", "uji".into());
+    }
+    if let Some(r) = after(s, &l, &["hapus kenangan"]) {
+        return mk("cerdas", format!("memori hapus {r}"));
+    }
+    if let Some(r) = after(s, &l, &["pudarkan kenangan", "pudarkan memori"]) {
+        return mk("cerdas", format!("memori pudar {r}"));
+    }
+    if let Some(r) = after(s, &l, &["cari kenangan", "cari di memori"]) {
+        return mk("cerdas", format!("memori cari {r}"));
+    }
+    if ["daftar kenangan", "kelola memori", "lihat kenangan"].iter().any(|k| l.contains(k)) {
+        return mk("cerdas", "memori".into());
+    }
+    if let Some(r) = after(s, &l, &["cari di dokumen", "dokumen apa kata", "kata dokumen"]) {
+        return mk("cerdas", format!("dokumen {r}"));
+    }
+    if let Some(r) = after(s, &l, &["ucapkan", "bacakan"]) {
+        return mk("cerdas", format!("ucap {r}"));
+    }
+    if ["jelaskan layar ini", "apa yang ada di layar", "jelaskan layar"].iter().any(|k| l.contains(k)) {
+        return mk("cerdas", "layar".into());
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

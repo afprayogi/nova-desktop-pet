@@ -140,7 +140,8 @@
    "pemicu",
    "skrip",
    "kalk",
-   "saranproyek"
+   "saranproyek",
+   "cerdas"
   ],
   "berkas": [
    "cari",
@@ -6296,6 +6297,38 @@
    "pemicu_bahasa_alami": [
     "saran proyek",
     "apa yang perlu dikerjakan di proyek"
+   ]
+  },
+  {
+   "id": "alat.cerdas",
+   "nama": "cerdas",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "model | uji | memori [cari x|hapus n|pudar n] | dokumen <tanya> | ucap <teks> | layar",
+   "deskripsi": "kecerdasan tambahan: rekomendasi model lokal sesuai RAM, uji emas bahasa Indonesia, kelola/hapus/pudarkan memori, cari di dokumen dengan sitasi, ucapan suara, dan jelaskan layar (OCR, atas izin)",
+   "ringkas": "kecerdasan tambahan: rekomendasi model lokal sesuai RAM, uji emas bahasa Indonesia, kelola/hapus/pudarkan memori, cari di dokumen dengan sitasi, ucapan suara, dan jelaskan layar (OCR, atas izin)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/cerdas"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "rekomendasi model",
+     "catatan": ""
+    },
+    {
+     "perintah": "jelaskan layar ini",
+     "catatan": "minta izin"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "rekomendasi model lokal",
+    "daftar kenangan",
+    "cari di dokumen torsi baut",
+    "ucapkan halo",
+    "jelaskan layar ini"
    ]
   }
  ],
