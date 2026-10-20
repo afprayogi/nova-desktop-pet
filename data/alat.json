@@ -138,7 +138,9 @@
    "jadwalkan",
    "pesan",
    "pemicu",
-   "skrip"
+   "skrip",
+   "kalk",
+   "saranproyek"
   ],
   "berkas": [
    "cari",
@@ -6093,7 +6095,7 @@
    "nama": "kerja",
    "versi": "1.0.0",
    "status": "stabil",
-   "arg": "mulai | akhir | rekap | minggu | istirahat | fokus | tunda | penjaga on|off",
+   "arg": "mulai | akhir | rekap | minggu | istirahat | fokus | tunda | penjaga on|off | proyek | proyek minggu | ekspor",
    "deskripsi": "pembantu kerja: rekap harian/mingguan, mulai/akhiri kerja, istirahat, penjaga fokus jam kerja",
    "ringkas": "rekap dan rutinitas kerja",
    "kategori": "kognisi",
@@ -6116,7 +6118,9 @@
    "pemicu_bahasa_alami": [
     "rekap hari ini",
     "mulai kerja",
-    "akhiri kerja"
+    "akhiri kerja",
+    "waktu proyek",
+    "ekspor laporan"
    ]
   },
   {
@@ -6236,6 +6240,62 @@
     "tulis skrip powershell",
     "daftar skrip",
     "jalankan skrip"
+   ]
+  },
+  {
+   "id": "alat.kalk",
+   "nama": "kalk",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "drop|luas|seri|paralel|pf|db ...",
+   "deskripsi": "kalkulator teknik kelistrikan: jatuh tegangan kabel, luas penampang, resistor seri/paralel, koreksi faktor daya, desibel",
+   "ringkas": "kalkulator teknik kelistrikan: jatuh tegangan kabel, luas penampang, resistor seri/paralel, koreksi faktor daya, desibel",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/kalk"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "hitung jatuh tegangan 220 10 50 2.5",
+     "catatan": ""
+    },
+    {
+     "perintah": "koreksi faktor daya 100 0.7 0.95",
+     "catatan": ""
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "hitung jatuh tegangan",
+    "luas penampang kabel",
+    "koreksi faktor daya",
+    "resistor paralel 100 220"
+   ]
+  },
+  {
+   "id": "alat.saranproyek",
+   "nama": "saranproyek",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "",
+   "deskripsi": "saran sadar-proyek dari git, TODO/FIXME, dan berkas build proyek aktif",
+   "ringkas": "saran sadar-proyek dari git, TODO/FIXME, dan berkas build proyek aktif",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/saranproyek"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "saran proyek",
+     "catatan": ""
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "saran proyek",
+    "apa yang perlu dikerjakan di proyek"
    ]
   }
  ],

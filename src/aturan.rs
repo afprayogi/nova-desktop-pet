@@ -386,6 +386,36 @@ fn rule_kode(s: &str) -> Option<Call> {
     if let Some(r) = after(s, &l, &["hapus skrip"]) {
         return mk("skrip", format!("hapus {r}"));
     }
+    if let Some(r) = after(s, &l, &["hitung jatuh tegangan", "jatuh tegangan"]) {
+        return mk("kalk", format!("drop {r}"));
+    }
+    if let Some(r) = after(s, &l, &["luas penampang kabel", "luas kabel"]) {
+        return mk("kalk", format!("luas {r}"));
+    }
+    if let Some(r) = after(s, &l, &["koreksi faktor daya", "kapasitor koreksi"]) {
+        return mk("kalk", format!("pf {r}"));
+    }
+    if let Some(r) = after(s, &l, &["resistor paralel", "hambatan paralel"]) {
+        return mk("kalk", format!("paralel {r}"));
+    }
+    if let Some(r) = after(s, &l, &["resistor seri", "hambatan seri"]) {
+        return mk("kalk", format!("seri {r}"));
+    }
+    if let Some(r) = after(s, &l, &["kalkulator teknik", "kalk"]) {
+        return mk("kalk", r.to_string());
+    }
+    if ["saran proyek", "saran untuk proyek", "apa yang perlu dikerjakan di proyek"].iter().any(|k| l.contains(k)) {
+        return mk("saranproyek", String::new());
+    }
+    if ["waktu proyek minggu", "waktu per proyek minggu"].iter().any(|k| l.contains(k)) {
+        return mk("kerja", "proyek minggu".into());
+    }
+    if ["waktu proyek", "waktu per proyek", "berapa lama di proyek"].iter().any(|k| l.contains(k)) {
+        return mk("kerja", "proyek".into());
+    }
+    if ["ekspor laporan", "simpan laporan kerja", "buat laporan kerja"].iter().any(|k| l.contains(k)) {
+        return mk("kerja", "ekspor".into());
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

@@ -105,6 +105,9 @@ pub fn rekap_hari() -> String {
             o.push_str(&format!("🔧 {} commit di '{proyek}': {}\n", c.len(), c.iter().take(3).cloned().collect::<Vec<_>>().join(" | ")));
         }
     }
+    if let Some(l) = crate::engineer::waktu_proyek(1).strip_prefix("⏱ Waktu per proyek (hari ini):\n") {
+        o.push_str(&format!("📁 Waktu per proyek: {}\n", l.replace("\n", " ").replace("• ", "")));
+    }
     if let Some((jam, _)) = puncak {
         o.push_str(&format!("💡 Jam paling produktif hari ini sekitar {jam:02}:00 (bukan hiburan).\n"));
     }
@@ -237,6 +240,9 @@ pub fn jalankan(arg: &str) -> String {
         "mulai" => mulai_kerja(),
         "akhir" => akhiri_kerja(),
         "minggu" => rekap_minggu(),
+        "proyek" => crate::engineer::waktu_proyek(1),
+        "proyek minggu" => crate::engineer::waktu_proyek(7),
+        "ekspor" => crate::engineer::ekspor_laporan(),
         "istirahat" => istirahat(),
         "fokus" => mulai_fokus(25),
         "tunda" => {

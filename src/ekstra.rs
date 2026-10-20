@@ -2,7 +2,7 @@
 use std::path::PathBuf;
 use std::process::Command;
 
-fn git(dir: &PathBuf, args: &[&str]) -> String {
+pub(crate) fn git(dir: &PathBuf, args: &[&str]) -> String {
     let mut c = Command::new("git");
     c.args(args).current_dir(dir);
     #[cfg(windows)]

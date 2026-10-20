@@ -616,6 +616,7 @@ pub async fn run(tx: Tx) {
         }
         if n % 2 == 0 {
             crate::kerja::penjaga(&tx);
+            crate::engineer::catat_waktu();
             for m in crate::penjadwal::hasil_baru() {
                 tx.notice(m);
             }
