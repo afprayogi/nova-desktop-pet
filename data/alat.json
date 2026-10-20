@@ -136,7 +136,8 @@
    "pembaruan",
    "kerja",
    "jadwalkan",
-   "pesan"
+   "pesan",
+   "pemicu"
   ],
   "berkas": [
    "cari",
@@ -6119,7 +6120,7 @@
    "nama": "jadwalkan",
    "versi": "1.0.0",
    "status": "stabil",
-   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <id> | jalankan <id> | latar on|off",
+   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <id> | jalankan <id> | latar on|off | izinkan <id> | tolak <id> | riwayat | templat [n]",
    "deskripsi": "membuat tugas terjadwal di Windows Task Scheduler dari permintaan bahasa sehari-hari (dirancang model, diperiksa keamanan, butuh persetujuan Bos)",
    "ringkas": "membuat tugas terjadwal di Windows Task Scheduler dari permintaan bahasa sehari-hari (dirancang model, diperiksa keamanan, butuh persetujuan Bos)",
    "kategori": "kognisi",
@@ -6141,7 +6142,10 @@
    "pemicu_bahasa_alami": [
     "jadwalkan setiap hari jam 8",
     "daftar tugas terjadwal",
-    "nyalakan nova otomatis"
+    "nyalakan nova otomatis",
+    "izinkan tugas 1",
+    "riwayat tugas",
+    "jadwalkan templat 1"
    ]
   },
   {
@@ -6166,6 +6170,37 @@
    ],
    "pemicu_bahasa_alami": [
     "tampilkan pesan"
+   ]
+  },
+  {
+   "id": "alat.pemicu",
+   "nama": "pemicu",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "buat <permintaan> | simpan | batal | daftar | hapus <id> | aktif <id> | nonaktif <id> | templat [n] | riwayat",
+   "deskripsi": "pemicu non-waktu: jalankan langkah otomatis saat baterai rendah, aplikasi dibuka, flash disk dicolok, berkas baru muncul, atau Wi-Fi berganti (dirancang model, butuh persetujuan Bos)",
+   "ringkas": "pemicu non-waktu: jalankan langkah otomatis saat baterai rendah, aplikasi dibuka, flash disk dicolok, berkas baru muncul, atau Wi-Fi berganti (dirancang model, butuh persetujuan Bos)",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/pemicu"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "kalau baterai di bawah 15% ingatkan aku colok charger",
+     "catatan": "dirancang model lalu minta persetujuan"
+    },
+    {
+     "perintah": "daftar pemicu",
+     "catatan": "lihat pemicu aktif"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "kalau baterai di bawah 15% ingatkan aku",
+    "beri tahu saat flash disk dicolok",
+    "daftar pemicu",
+    "pemicu templat"
    ]
   }
  ],

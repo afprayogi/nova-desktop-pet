@@ -601,6 +601,7 @@ pub async fn run(tx: Tx) {
     briefing(&tx, &c, booted);
     crate::adegan::greet(&tx, booted);
     let http = crate::research::client(15);
+    crate::pemicu::mulai(tx.clone());
     let mut n = 0u64;
     std::thread::spawn(|| {
         std::thread::sleep(std::time::Duration::from_secs(40));
@@ -618,6 +619,7 @@ pub async fn run(tx: Tx) {
             for m in crate::penjadwal::hasil_baru() {
                 tx.notice(m);
             }
+            crate::otomasi::umumkan(&tx);
             tick(&tx, &c, &s);
             tx.send(Event::Assist(Box::new(state(&c))));
         }

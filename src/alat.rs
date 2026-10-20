@@ -73,7 +73,7 @@ pub fn assess(c: &Call) -> Risk {
         return Risk::Block("akses komputer dikunci: server web terbuka tanpa KH_PASSWORD".into());
     }
     match c.tool.as_str() {
-        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" | "resume" | "selera" | "keahlian" | "kerja" | "jadwalkan" | "pesan" => Risk::Safe,
+        "info" | "ps" | "health" | "kode" | "gambar" | "jurnal" | "harga" | "pantau" | "cuacapantau" | "gitringkas" | "halaman" | "peramban" | "internet" | "riwayat" | "csv" | "hitung" | "konversi" | "zona" | "ohm" | "fase3" | "hari" | "password" | "catat" | "catatan" | "cuaca" | "kurs" | "wiki" | "berpikir" | "terjemah" | "jadwal" | "otomatis" | "wifi" | "port" | "bukafile" | "cli" | "atur" | "winapp" | "waktu" | "web" | "tugas" | "musik" | "bukahasil" | "ingatan" | "email" | "cari" | "rapikan" | "apps" | "meme" | "baterai" | "ngobrol" | "berita" | "kepribadian" | "remind" | "agenda" | "habit" | "tidur" | "tanya" | "resume" | "selera" | "keahlian" | "kerja" | "jadwalkan" | "pemicu" | "pesan" => Risk::Safe,
         "pembaruan" if arg.trim() == "pasang" => Risk::Confirm("memasang pembaruan NOVA dari GitHub (diverifikasi tanda tangan); NOVA menutup diri sebentar".into()),
         "pembaruan" => Risk::Safe,
         "kurikulum" if SENSITIVE.iter().any(|s| arg.contains(s)) => Risk::Confirm("path tampak sensitif".into()),
@@ -483,6 +483,7 @@ Risiko: {}{}", t["nama"].as_str().unwrap_or(""), t["arg"].as_str().unwrap_or("")
         "kepribadian" => crate::bandit::report(),
         "keahlian" => crate::keahlian::jalankan(http, arg).await,
         "jadwalkan" => crate::penjadwal::jalankan(http, arg).await,
+        "pemicu" => crate::pemicu::jalankan(http, arg).await,
         "pesan" => {
             crate::notify::kirim("NOVA", arg);
             format!("📣 {arg}")
@@ -770,6 +771,24 @@ pub fn plan_offline(goal: &str) -> Option<Vec<Call>> {
     }
     if kecil == "batal jadwal ini" {
         return Some(vec![Call { tool: "jadwalkan".into(), arg: "batal".into() }]);
+    }
+    if kecil == "buat pemicu ini" {
+        return Some(vec![Call { tool: "pemicu".into(), arg: "simpan".into() }]);
+    }
+    if kecil == "batal pemicu ini" {
+        return Some(vec![Call { tool: "pemicu".into(), arg: "batal".into() }]);
+    }
+    if let Some(n) = kecil.strip_prefix("jadwalkan templat ").or_else(|| kecil.strip_prefix("pemicu templat ")) {
+        let alat = if kecil.starts_with("pemicu") { "pemicu" } else { "jadwalkan" };
+        return Some(vec![Call { tool: alat.into(), arg: format!("templat {}", n.trim()) }]);
+    }
+    for p in ["buat pemicu", "buatkan pemicu", "tambah pemicu", "pasang pemicu"] {
+        if kecil.starts_with(p) && kecil.len() > p.len() + 3 {
+            return Some(vec![Call { tool: "pemicu".into(), arg: format!("buat {}", goal.trim()[p.len()..].trim()) }]);
+        }
+    }
+    if ["kalau ", "jika ", "ketika ", "setiap kali "].iter().any(|p| kecil.starts_with(p)) && kecil.len() > 20 && ["baterai", "flash", "wifi", "wi-fi", "berkas baru", "file baru", "dibuka", "dicolok"].iter().any(|k| kecil.contains(k)) {
+        return Some(vec![Call { tool: "pemicu".into(), arg: format!("buat {}", goal.trim()) }]);
     }
     for p in ["jadwalkan", "tolong jadwalkan", "buat jadwal", "buatkan jadwal", "otomatiskan"] {
         if kecil.starts_with(p) && kecil.len() > p.len() + 3 {

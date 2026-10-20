@@ -374,6 +374,39 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["matikan nova otomatis", "matikan nyala otomatis"].iter().any(|k| l.trim() == *k) {
         return mk("jadwalkan", "latar off".into());
     }
+    if l.trim() == "buat pemicu ini" {
+        return mk("pemicu", "simpan".into());
+    }
+    if l.trim() == "batal pemicu ini" {
+        return mk("pemicu", "batal".into());
+    }
+    if ["daftar pemicu", "pemicu apa saja", "lihat pemicu"].iter().any(|k| l.contains(k)) {
+        return mk("pemicu", "daftar".into());
+    }
+    if ["templat pemicu", "pemicu templat", "contoh pemicu"].iter().any(|k| l.contains(k)) {
+        return mk("pemicu", "templat".into());
+    }
+    if let Some(r) = after(s, &l, &["hapus pemicu"]) {
+        return mk("pemicu", format!("hapus {r}"));
+    }
+    if let Some(r) = after(s, &l, &["aktifkan pemicu"]) {
+        return mk("pemicu", format!("aktif {r}"));
+    }
+    if let Some(r) = after(s, &l, &["matikan pemicu", "nonaktifkan pemicu"]) {
+        return mk("pemicu", format!("nonaktif {r}"));
+    }
+    if let Some(r) = after(s, &l, &["izinkan tugas"]) {
+        return mk("jadwalkan", format!("izinkan {r}"));
+    }
+    if let Some(r) = after(s, &l, &["tolak tugas"]) {
+        return mk("jadwalkan", format!("tolak {r}"));
+    }
+    if ["riwayat tugas", "riwayat otomasi", "riwayat jadwal"].iter().any(|k| l.contains(k)) {
+        return mk("jadwalkan", "riwayat".into());
+    }
+    if ["templat jadwal", "jadwalkan templat", "contoh jadwal"].iter().any(|k| l.trim() == *k) {
+        return mk("jadwalkan", "templat".into());
+    }
     if l.trim() == "buat keahlian ini" {
         return mk("keahlian", "buat_calon".into());
     }

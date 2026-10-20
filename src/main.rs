@@ -54,6 +54,8 @@ mod koneksi;
 mod kita;
 mod notify;
 mod pembaruan;
+mod otomasi;
+mod pemicu;
 mod penjadwal;
 mod progres;
 mod pencarian;

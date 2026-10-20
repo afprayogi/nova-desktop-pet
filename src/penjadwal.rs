@@ -244,7 +244,31 @@ pub fn autostart_set(on: bool) -> bool {
 
 // ---------- validasi & pratinjau ----------
 
-const DILARANG: &[&str] = &["keahlian", "jadwalkan", "pembaruan", "kirim", "bersih", "urungkan"];
+/// Alat yang tidak boleh jadi langkah otomatis (membuat otomasi lain, mengubah NOVA sendiri, atau mengirim keluar).
+pub const DILARANG: &[&str] = &["keahlian", "jadwalkan", "pemicu", "skrip", "pembaruan", "kirim", "urungkan"];
+
+/// Periksa daftar langkah dari model: alat terdaftar dan tidak dilarang, argumen wajar, tidak diblokir keamanan.
+pub fn validasi_langkah(l: &Value, maks: usize) -> Result<Vec<Langkah>, String> {
+    let l = l.as_array().ok_or("langkah kosong")?;
+    if l.is_empty() || l.len() > maks {
+        return Err(format!("butuh 1-{maks} langkah"));
+    }
+    let mut langkah = vec![];
+    for (i, x) in l.iter().enumerate() {
+        let (a, arg) = (x["alat"].as_str().unwrap_or("").trim().to_lowercase(), x["arg"].as_str().unwrap_or("").to_string());
+        if DILARANG.contains(&a.as_str()) || !crate::registry::ada(&a) {
+            return Err(format!("langkah {} memakai alat yang tidak boleh/tidak ada: '{a}'", i + 1));
+        }
+        if arg.chars().count() > 300 || arg.contains(['\n', '\r']) {
+            return Err(format!("argumen langkah {} tidak valid", i + 1));
+        }
+        if let Risk::Block(r) = alat::assess(&Call { tool: a.clone(), arg: arg.clone() }) {
+            return Err(format!("langkah {} ditolak keamanan: {r}", i + 1));
+        }
+        langkah.push(Langkah { alat: a, arg });
+    }
+    Ok(langkah)
+}
 
 fn validasi(v: &Value, id: u32) -> Result<Tugas, String> {
     let nama = v["nama"].as_str().unwrap_or("").trim().to_string();
@@ -266,28 +290,11 @@ fn validasi(v: &Value, id: u32) -> Result<Tugas, String> {
         "harian" | "mingguan" | "sekali" | "menit" | "login" => {}
         _ => return Err("tipe jadwal harus harian, mingguan, sekali, menit, atau login".into()),
     }
-    let l = v["langkah"].as_array().ok_or("langkah kosong")?;
-    if l.is_empty() || l.len() > 5 {
-        return Err("butuh 1-5 langkah".into());
-    }
-    let mut langkah = vec![];
-    for (i, x) in l.iter().enumerate() {
-        let (a, arg) = (x["alat"].as_str().unwrap_or("").trim().to_lowercase(), x["arg"].as_str().unwrap_or("").to_string());
-        if DILARANG.contains(&a.as_str()) || !crate::registry::ada(&a) {
-            return Err(format!("langkah {} memakai alat yang tidak boleh/tidak ada: '{a}'", i + 1));
-        }
-        if arg.chars().count() > 300 || arg.contains(['\n', '\r']) {
-            return Err(format!("argumen langkah {} tidak valid", i + 1));
-        }
-        if let Risk::Block(r) = alat::assess(&Call { tool: a.clone(), arg: arg.clone() }) {
-            return Err(format!("langkah {} ditolak keamanan: {r}", i + 1));
-        }
-        langkah.push(Langkah { alat: a, arg });
-    }
+    let langkah = validasi_langkah(&v["langkah"], 5)?;
     Ok(Tugas { id, nama, ringkas: v["ringkas"].as_str().unwrap_or("").chars().take(160).collect(), jadwal, langkah, dibuat: Local::now().timestamp() })
 }
 
-fn teks_jadwal(j: &Jadwal) -> String {
+pub fn teks_jadwal(j: &Jadwal) -> String {
     match j.tipe.as_str() {
         "harian" => format!("setiap hari pukul {}", j.jam),
         "mingguan" => format!("setiap {} pukul {}", j.hari.join(", "), j.jam),
@@ -340,7 +347,7 @@ Jangan membuat kode. Jangan memakai alat: {}.",
         DILARANG.join(", ")
     );
     progres::set(job, 25, "merancang jadwal dengan model");
-    let id = muat().iter().map(|t| t.id).max().unwrap_or(0) + 1;
+    let id = id_baru();
     let mut galat = String::new();
     for percobaan in 0..2 {
         let u = if galat.is_empty() { permintaan.to_string() } else { format!("{permintaan}\n\nRANCANGAN SEBELUMNYA DITOLAK: {galat}. Perbaiki dan balas JSON saja.") };
@@ -369,11 +376,21 @@ Jangan membuat kode. Jangan memakai alat: {}.",
     format!("Rancangan jadwal ditolak: {galat}. Coba jelaskan dengan kata lain.")
 }
 
+pub fn id_baru() -> u32 {
+    muat().iter().map(|t| t.id).max().unwrap_or(0) + 1
+}
+
+pub fn set_draft(t: Tugas) {
+    if let Ok(mut d) = DRAFT.lock() {
+        *d = Some(t);
+    }
+}
+
 fn nama_tugas(id: u32) -> String {
     format!("{FOLDER}\\Tugas-{id}")
 }
 
-fn simpan() -> String {
+pub fn simpan() -> String {
     let d = DRAFT.lock().ok().and_then(|mut d| d.take());
     let Some(t) = d else { return "Tidak ada rancangan jadwal yang menunggu.".into() };
     let xml = match trigger_xml(&t.jadwal) {
@@ -390,6 +407,42 @@ fn simpan() -> String {
         return "Tugas dibuat di Windows tetapi gagal menyimpan daftar NOVA.".into();
     }
     format!("✅ Tugas '{nama}' dijadwalkan {kapan}. Lihat: 'daftar tugas terjadwal'. Coba sekarang: 'jalankan tugas terjadwal {}'.", v.last().map(|t| t.id).unwrap_or(0))
+}
+
+/// Status tiap tugas NOVA di Windows (kunci "Tugas-<id>"): Ready / Disabled / Running.
+pub fn status_semua() -> std::collections::HashMap<String, String> {
+    let ps = format!("Get-ScheduledTask -TaskPath '\\{FOLDER}\\' -ErrorAction SilentlyContinue | ForEach-Object {{ $_.TaskName + '=' + $_.State }}");
+    let mut c = std::process::Command::new("powershell");
+    c.args(["-NoProfile", "-NonInteractive", "-Command", &ps]);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        c.creation_flags(0x0800_0000);
+    }
+    let o = c.output().map(|o| String::from_utf8_lossy(&o.stdout).into_owned()).unwrap_or_default();
+    o.lines().filter_map(|l| l.trim().split_once('=')).map(|(a, b)| (a.to_string(), b.to_string())).collect()
+}
+
+pub fn ubah_aktif(id: u32, aktif: bool) -> Result<(), String> {
+    if !muat().iter().any(|t| t.id == id) {
+        return Err(format!("Tugas {id} tidak ditemukan."));
+    }
+    schtasks(&["/Change", "/TN", &nama_tugas(id), if aktif { "/ENABLE" } else { "/DISABLE" }]).map(|_| ())
+}
+
+/// Ganti jam tugas harian/mingguan/sekali; XML dibuat ulang dari jadwal yang sama.
+pub fn ubah_jam(id: u32, jam: &str) -> Result<String, String> {
+    let mut v = muat();
+    let t = v.iter_mut().find(|t| t.id == id).ok_or("Tugas tidak ditemukan.")?;
+    if !matches!(t.jadwal.tipe.as_str(), "harian" | "mingguan" | "sekali") || waktu(jam).is_none() {
+        return Err("Jam hanya bisa diubah untuk tugas harian/mingguan/sekali dengan format HH:MM.".into());
+    }
+    t.jadwal.jam = jam.trim().to_string();
+    let xml = task_xml(&trigger_xml(&t.jadwal)?, &exe(), &format!("--tugas {}", t.id), &format!("NOVA: {}", t.nama), false);
+    buat_task(&nama_tugas(id), &xml)?;
+    let kabar = format!("Tugas '{}' sekarang {}.", t.nama, teks_jadwal(&t.jadwal));
+    tulis(&v);
+    Ok(kabar)
 }
 
 fn cari(v: &[Tugas], rest: &str) -> Option<Tugas> {
@@ -418,6 +471,17 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
             tulis(&v);
             format!("Tugas '{}' dihapus dari jadwal.", t.nama)
         }
+        "izinkan" => crate::otomasi::izinkan(http, rest.trim_start_matches("tugas").trim().parse().unwrap_or(0)).await,
+        "tolak" => crate::otomasi::tolak(rest.trim_start_matches("tugas").trim().parse().unwrap_or(0)),
+        "riwayat" => crate::otomasi::riwayat_teks(None),
+        "templat" => match rest.trim().parse::<usize>().ok().and_then(|n| crate::otomasi::templat_ke_tugas(n.saturating_sub(1))) {
+            Some(t) => {
+                let teks = pratinjau(&t);
+                set_draft(t);
+                teks
+            }
+            None => crate::otomasi::templat_daftar(),
+        },
         "jalankan" => {
             let v = muat();
             let Some(t) = cari(&v, rest) else { return format!("Tugas '{rest}' tidak ditemukan.") };
@@ -445,28 +509,49 @@ pub async fn jalankan(http: &reqwest::Client, arg: &str) -> String {
 // ---------- eksekusi (dipanggil Task Scheduler lewat `nova --tugas <id>`) ----------
 
 async fn run_tugas(http: &reqwest::Client, t: &Tugas, otomatis: bool) -> String {
-    let (mut hasil, mut dilewati) = (vec![], vec![]);
-    for l in &t.langkah {
-        let c = Call { tool: l.alat.clone(), arg: l.arg.clone() };
-        match alat::assess(&c) {
-            Risk::Safe => hasil.push(format!("{}: {}", l.alat, crate::research::truncate(&Box::pin(alat::run(&c, http)).await, 500))),
-            Risk::Confirm(r) => dilewati.push(format!("{} ({r})", l.alat)),
-            Risk::Block(r) => dilewati.push(format!("{} (diblokir: {r})", l.alat)),
-        }
-    }
-    let mut ringkas = hasil.join("\n");
-    if !dilewati.is_empty() {
-        ringkas.push_str(&format!("\nDilewati karena butuh izin Bos: {}", dilewati.join("; ")));
-    }
+    let (ringkas, _) = run_langkah(http, &t.nama, &format!("t{}", t.id), &t.langkah).await;
     if otomatis {
         crate::notify::kirim(&format!("NOVA - {}", t.nama), &crate::research::truncate(&ringkas, 240));
         let baris = serde_json::json!({"id": t.id, "nama": t.nama, "waktu": Local::now().to_rfc3339(), "hasil": ringkas});
-        if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(data_dir().join("tugas_hasil.jsonl")) {
+        if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(data_dir().join("tugas_pesan.jsonl")) {
             use std::io::Write;
             let _ = writeln!(f, "{baris}");
         }
     }
     format!("▶ {}\n{ringkas}", t.nama)
+}
+
+/// Jalankan langkah: aman langsung (gagal dicoba sekali lagi), berisiko masuk antrean izin, diblokir dilewati. Mencatat riwayat.
+/// Mengembalikan (ringkasan, ada_gagal).
+pub async fn run_langkah(http: &reqwest::Client, nama: &str, kunci: &str, langkah: &[Langkah]) -> (String, bool) {
+    let t0 = std::time::Instant::now();
+    let (mut hasil, mut dilewati, mut gagal) = (vec![], vec![], false);
+    for l in langkah {
+        let c = Call { tool: l.alat.clone(), arg: l.arg.clone() };
+        match alat::assess(&c) {
+            Risk::Safe => {
+                let mut r = Box::pin(alat::run(&c, http)).await;
+                if r.starts_with("Gagal") {
+                    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+                    r = Box::pin(alat::run(&c, http)).await;
+                    gagal |= r.starts_with("Gagal");
+                }
+                hasil.push(format!("{}: {}", l.alat, crate::research::truncate(&r, 500)));
+            }
+            Risk::Confirm(r) => {
+                let n = crate::otomasi::tunda(nama, &c, &r);
+                dilewati.push(format!("{} (menunggu izin #{n}: {r})", l.alat));
+            }
+            Risk::Block(r) => dilewati.push(format!("{} (diblokir: {r})", l.alat)),
+        }
+    }
+    let mut ringkas = hasil.join("\n");
+    if !dilewati.is_empty() {
+        ringkas.push_str(&format!("\nMenunggu izin Bos / dilewati: {}", dilewati.join("; ")));
+    }
+    let status = if gagal { "gagal" } else if dilewati.is_empty() { "ok" } else { "sebagian" };
+    crate::otomasi::catat_riwayat(kunci, nama, status, t0.elapsed().as_secs(), &ringkas);
+    (ringkas, gagal)
 }
 
 /// Titik masuk `nova --tugas <id>`: jalankan satu tugas terjadwal tanpa jendela lalu keluar.
@@ -491,8 +576,8 @@ pub fn tugas_cli(id: u32) -> i32 {
 
 /// Hasil tugas otomatis yang belum diteruskan ke obrolan (dipanggil berkala saat NOVA berjalan).
 pub fn hasil_baru() -> Vec<String> {
-    let p = data_dir().join("tugas_hasil.jsonl");
-    let off = data_dir().join("tugas_hasil.offset");
+    let p = data_dir().join("tugas_pesan.jsonl");
+    let off = data_dir().join("tugas_pesan.offset");
     let Ok(isi) = std::fs::read_to_string(&p) else { return vec![] };
     let mulai: usize = std::fs::read_to_string(&off).ok().and_then(|t| t.trim().parse().ok()).unwrap_or(0);
     let mulai = if mulai > isi.len() { 0 } else { mulai };
