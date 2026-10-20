@@ -142,7 +142,8 @@
    "kalk",
    "saranproyek",
    "cerdas",
-   "privasi"
+   "privasi",
+   "aturanberkas"
   ],
   "berkas": [
    "cari",
@@ -6361,6 +6362,36 @@
     "apa yang sudah kamu lakukan",
     "ekspor semua data saya",
     "hapus semua data saya"
+   ]
+  },
+  {
+   "id": "alat.aturanberkas",
+   "nama": "aturanberkas",
+   "versi": "1.0.0",
+   "status": "stabil",
+   "arg": "tambah <folder> | <.ext/kata> | <tujuan> | daftar | hapus <no> | terapkan",
+   "deskripsi": "aturan berkas tersimpan: pindahkan berkas yang cocok (ekstensi/kata) dari satu folder ke folder tujuan, dengan pratinjau, persetujuan, dan urungkan",
+   "ringkas": "aturan berkas tersimpan: pindahkan berkas yang cocok (ekstensi/kata) dari satu folder ke folder tujuan, dengan pratinjau, persetujuan, dan urungkan",
+   "kategori": "kognisi",
+   "sub_perintah": [],
+   "alias": [
+    "/aturanberkas"
+   ],
+   "parameter": [],
+   "contoh": [
+    {
+     "perintah": "tambah aturan berkas download | .pdf | Dokumen/PDF",
+     "catatan": ""
+    },
+    {
+     "perintah": "terapkan aturan berkas",
+     "catatan": "pratinjau lalu ya/tidak"
+    }
+   ],
+   "pemicu_bahasa_alami": [
+    "tambah aturan berkas",
+    "terapkan aturan berkas",
+    "daftar aturan berkas"
    ]
   }
  ],

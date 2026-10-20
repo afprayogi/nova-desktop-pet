@@ -455,6 +455,18 @@ fn rule_kode(s: &str) -> Option<Call> {
     if ["hapus semua data", "hapus data saya", "hapus data pribadi"].iter().any(|k| l.contains(k)) {
         return mk("privasi", "hapus".into());
     }
+    if ["terapkan aturan berkas", "jalankan aturan berkas", "pakai aturan berkas"].iter().any(|k| l.contains(k)) {
+        return mk("aturanberkas", "terapkan".into());
+    }
+    if ["daftar aturan berkas", "lihat aturan berkas", "aturan berkas apa saja"].iter().any(|k| l.contains(k)) {
+        return mk("aturanberkas", "daftar".into());
+    }
+    if let Some(r) = after(s, &l, &["tambah aturan berkas"]) {
+        return mk("aturanberkas", format!("tambah {r}"));
+    }
+    if let Some(r) = after(s, &l, &["hapus aturan berkas"]) {
+        return mk("aturanberkas", format!("hapus {r}"));
+    }
     if l.trim() == "buat pemicu ini" {
         return mk("pemicu", "simpan".into());
     }

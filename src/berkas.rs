@@ -411,9 +411,129 @@ pub fn confirm() -> Option<String> {
     })
 }
 
+// ---------- Aturan berkas tersimpan ----------
+
+#[derive(Serialize, Deserialize, Clone)]
+struct AturanBerkas {
+    folder: String,
+    /// ".pdf" (ekstensi) atau kata yang harus ada di nama berkas
+    cocok: String,
+    tujuan: String,
+}
+
+fn aturan_path() -> PathBuf {
+    data_dir().join("aturan_berkas.json")
+}
+
+fn muat_aturan() -> Vec<AturanBerkas> {
+    std::fs::read_to_string(aturan_path()).ok().and_then(|t| serde_json::from_str(&t).ok()).unwrap_or_default()
+}
+
+fn cocok_nama(cocok: &str, nama: &str) -> bool {
+    let (c, n) = (cocok.to_lowercase(), nama.to_lowercase());
+    if let Some(ext) = c.strip_prefix('.') { n.ends_with(&format!(".{ext}")) } else { n.contains(&c) }
+}
+
+/// Folder tujuan: sub-folder bernama (relatif ke folder sumber) atau path di dalam profil pengguna; tidak boleh folder sistem.
+fn tujuan_aman(folder: &Path, t: &str) -> Result<PathBuf, String> {
+    let t = t.trim().trim_matches('"');
+    if t.is_empty() || t.contains("..") {
+        return Err("tujuan tidak valid".into());
+    }
+    let p = if Path::new(t).is_absolute() { PathBuf::from(t) } else { folder.join(t) };
+    let home = dirs::home_dir().ok_or("folder rumah tidak ditemukan")?;
+    if !p.starts_with(&home) || forbidden(&p) {
+        return Err("tujuan harus di dalam profil pengguna dan bukan folder sistem".into());
+    }
+    Ok(p)
+}
+
+fn simpan_aturan(a: &[AturanBerkas]) {
+    let _ = std::fs::write(aturan_path(), serde_json::to_string_pretty(a).unwrap_or_default());
+}
+
+/// `aturanberkas tambah <folder> | <.ext atau kata> | <tujuan>` · `daftar` · `hapus <no>` · `terapkan`
+/// Menerapkan hanya MEMINDAH berkas (yang tidak baru diubah) lewat pratinjau dan jawaban "ya"; bisa diurungkan.
+pub fn aturan_berkas(arg: &str) -> String {
+    let (cmd, rest) = arg.trim().split_once(' ').map(|(a, b)| (a, b.trim())).unwrap_or((arg.trim(), ""));
+    let mut aturan = muat_aturan();
+    match cmd {
+        "tambah" => {
+            let p: Vec<&str> = rest.split('|').map(|x| x.trim()).collect();
+            if p.len() != 3 || p[1].len() < 2 {
+                return "Format: aturanberkas tambah <folder> | <.pdf atau kata> | <folder tujuan>, mis. 'download | .pdf | Dokumen/PDF'.".into();
+            }
+            let folder = match resolve_folder(p[0]) {
+                Ok(f) => f,
+                Err(e) => return e,
+            };
+            if let Err(e) = tujuan_aman(&folder, p[2]) {
+                return e;
+            }
+            if aturan.len() >= 20 {
+                return "Sudah 20 aturan (batas).".into();
+            }
+            aturan.push(AturanBerkas { folder: folder.to_string_lossy().into(), cocok: p[1].to_string(), tujuan: p[2].to_string() });
+            simpan_aturan(&aturan);
+            format!("✅ Aturan {} disimpan: di {} berkas '{}' → {}. Terapkan: 'terapkan aturan berkas' (selalu ada pratinjau).", aturan.len(), folder.display(), p[1], p[2])
+        }
+        "hapus" => match rest.parse::<usize>() {
+            Ok(n) if n >= 1 && n <= aturan.len() => {
+                aturan.remove(n - 1);
+                simpan_aturan(&aturan);
+                format!("Aturan {n} dihapus.")
+            }
+            _ => "Sebutkan nomor aturan yang valid.".into(),
+        },
+        "terapkan" => {
+            let (mut moves, now): (Vec<(PathBuf, PathBuf)>, SystemTime) = (vec![], SystemTime::now());
+            for a in &aturan {
+                let folder = PathBuf::from(&a.folder);
+                let Ok(tujuan) = tujuan_aman(&folder, &a.tujuan) else { continue };
+                let Ok(rd) = std::fs::read_dir(&folder) else { continue };
+                for e in rd.flatten() {
+                    let name = e.file_name().to_string_lossy().to_string();
+                    let p = e.path();
+                    let baru = e.metadata().and_then(|m| m.modified()).map(|t| now.duration_since(t).map(|d| d < Duration::from_secs(600)).unwrap_or(true)).unwrap_or(true);
+                    if !p.is_file() || name.starts_with('.') || baru || !cocok_nama(&a.cocok, &name) || moves.iter().any(|(f, _)| *f == p) {
+                        continue;
+                    }
+                    let mut to = tujuan.join(&name);
+                    let stem = p.file_stem().map(|s| s.to_string_lossy().to_string()).unwrap_or_default();
+                    let ext = p.extension().map(|x| format!(".{}", x.to_string_lossy())).unwrap_or_default();
+                    let mut n = 1;
+                    while to.exists() || moves.iter().any(|(_, t)| *t == to) {
+                        to = tujuan.join(format!("{stem} ({n}){ext}"));
+                        n += 1;
+                    }
+                    moves.push((p, to));
+                }
+            }
+            if moves.is_empty() {
+                return if aturan.is_empty() { "Belum ada aturan berkas. Tambah: aturanberkas tambah download | .pdf | Dokumen/PDF".into() } else { "Tidak ada berkas yang cocok dengan aturan (atau baru saja diubah).".into() };
+            }
+            let mut s = format!("📁 Rencana memindahkan {} berkas menurut aturanmu (tidak ada yang dihapus):\n", moves.len());
+            for (from, to) in moves.iter().take(8) {
+                s.push_str(&format!("   {} → {}\n", from.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default(), to.parent().map(|p| p.display().to_string()).unwrap_or_default()));
+            }
+            s.push_str("Ketik 'ya' untuk menjalankan (bisa diurungkan dengan 'urungkan'), atau 'tidak' untuk batal.");
+            let folder = moves[0].0.parent().map(|p| p.to_path_buf()).unwrap_or_default();
+            set_pending(Action::Rapikan { folder, moves });
+            s
+        }
+        _ => {
+            if aturan.is_empty() {
+                return "Belum ada aturan berkas. Tambah: aturanberkas tambah download | .pdf | Dokumen/PDF".into();
+            }
+            format!("📁 Aturan berkas:\n{}", aturan.iter().enumerate().map(|(i, a)| format!("{}. {} · '{}' → {}", i + 1, a.folder, a.cocok, a.tujuan)).collect::<Vec<_>>().join("\n"))
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    static K: Mutex<()> = Mutex::new(()); // PENDING e urungkan.json bersama
     #[test]
     fn categories_and_folder_rules() {
         assert_eq!(category("pdf"), "Dokumen");
@@ -425,6 +545,7 @@ mod tests {
     }
     #[test]
     fn rapikan_moves_old_files_and_undo() {
+        let _k = K.lock().unwrap_or_else(|e| e.into_inner());
         let d = dirs::home_dir().unwrap().join("nova-rapikan-test");
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
@@ -442,5 +563,29 @@ mod tests {
         assert!(urungkan().contains("1 berkas dikembalikan"));
         assert!(f.exists());
         let _ = std::fs::remove_dir_all(&d);
+    }
+    #[test]
+    fn aturan_berkas_memindah_hanya_yang_cocok_dan_bisa_diurungkan() {
+        let _k = K.lock().unwrap_or_else(|e| e.into_inner());
+        let d = dirs::home_dir().unwrap().join("nova-aturan-test");
+        let _ = std::fs::remove_dir_all(&d);
+        std::fs::create_dir_all(&d).unwrap();
+        for n in ["a.pdf", "b.txt", "spesifikasi-plc.docx"] {
+            let f = d.join(n);
+            std::fs::write(&f, "x").unwrap();
+            let h = std::fs::File::options().write(true).open(&f).unwrap();
+            h.set_modified(SystemTime::now() - Duration::from_secs(3600)).unwrap();
+        }
+        let dir = d.to_string_lossy().to_string();
+        assert!(aturan_berkas(&format!("tambah {dir} | .pdf | ../../Windows")).contains("tujuan"));
+        assert!(aturan_berkas(&format!("tambah {dir} | .pdf | PDF")).contains("disimpan"));
+        assert!(aturan_berkas(&format!("tambah {dir} | plc | Teknik")).contains("disimpan"));
+        let r = aturan_berkas("terapkan");
+        assert!(r.contains("2 berkas"), "{r}");
+        assert!(confirm().unwrap().contains("2 berkas dirapikan"));
+        assert!(d.join("PDF").join("a.pdf").exists() && d.join("Teknik").join("spesifikasi-plc.docx").exists() && d.join("b.txt").exists());
+        assert!(urungkan().contains("2 berkas dikembalikan"));
+        let _ = std::fs::remove_dir_all(&d);
+        let _ = std::fs::remove_file(aturan_path());
     }
 }
